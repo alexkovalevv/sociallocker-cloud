@@ -1,0 +1,118 @@
+/*!
+ * bootstrap-vertical-tabs - v1.2.1
+ * https://dbtek.github.io/bootstrap-vertical-tabs
+ * 2014-11-07
+ * Copyright (c) 2014 İsmail Demirbilek
+ * License: MIT
+ */
+.onp-vertical-tabs {
+    display:table;
+}
+.onp-vertical-tabs .nav-tabs, .onp-vertical-tabs .tab-content {
+    display:table-cell;
+}
+.onp-vertical-tabs .tab-content {
+    padding:20px;
+}
+.onp-vertical-tabs .tabs-left, .onp-vertical-tabs .tabs-right {
+    width: 200px;
+    border-bottom: none;
+    padding-top: 2px;
+}
+
+.onp-vertical-tabs .tabs-left {
+    border-right: 1px solid #ddd;
+}
+
+.onp-vertical-tabs .tabs-right {
+    border-left: 1px solid #ddd;
+}
+
+.onp-vertical-tabs .tabs-left > li, .onp-vertical-tabs .tabs-right > li {
+    float: none;
+    margin-bottom: 2px;
+}
+
+.onp-vertical-tabs .tabs-left > li {
+    margin-right: -1px;
+}
+
+.onp-vertical-tabs .tabs-right > li {
+    margin-left: -1px;
+}
+
+.onp-vertical-tabs .tabs-left > li.active > a,
+.onp-vertical-tabs .tabs-left > li.active > a:hover,
+.onp-vertical-tabs .tabs-left > li.active > a:focus {
+    border-bottom-color: #ddd;
+    border-right-color: transparent;
+}
+
+.onp-vertical-tabs .tabs-right > li.active > a,
+.onp-vertical-tabs .tabs-right > li.active > a:hover,
+.onp-vertical-tabs .tabs-right > li.active > a:focus {
+    border-bottom: 1px solid #ddd;
+    border-left-color: transparent;
+}
+
+.onp-vertical-tabs .tabs-left > li > a {
+    border-radius: 4px 0 0 4px;
+    margin-right: 0;
+    display: block;
+}
+
+.onp-vertical-tabs .tabs-right > li > a {
+    border-radius: 0 4px 4px 0;
+    margin-right: 0;
+}
+
+.onp-vertical-tabs .sideways {
+    margin-top: 50px;
+    border: none;
+    position: relative;
+}
+
+.onp-vertical-tabs .sideways > li {
+    height: 20px;
+    width: 120px;
+    margin-bottom: 100px;
+}
+
+.onp-vertical-tabs .sideways > li > a {
+    border-bottom: 1px solid #ddd;
+    border-right-color: transparent;
+    text-align: center;
+    border-radius: 4px 4px 0px 0px;
+}
+
+.onp-vertical-tabs .sideways > li.active > a,
+.onp-vertical-tabs .sideways > li.active > a:hover,
+.onp-vertical-tabs .sideways > li.active > a:focus {
+    border-bottom-color: transparent;
+    border-right-color: #ddd;
+    border-left-color: #ddd;
+}
+
+.onp-vertical-tabs .sideways.tabs-left {
+    left: -50px;
+}
+
+.onp-vertical-tabs .sideways.tabs-right {
+    right: -50px;
+}
+
+.onp-vertical-tabs .sideways.tabs-right > li {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.onp-vertical-tabs .sideways.tabs-left > li {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}

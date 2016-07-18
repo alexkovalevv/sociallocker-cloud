@@ -1,0 +1,38 @@
+.nav-tabs > li.active, .nav-tabs > li.active > a {
+    background: #fbfbfb !important;
+}
+select {
+    max-width: 450px;
+}
+.tab-content {
+    padding:40px;
+    background: #fbfbfb;
+    border: 1px solid #ddd;
+    border-top:0;
+}
+.separator {
+    padding: 9px 12px;
+    background-color: #ecf0f5;
+}
+.separator-title {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 14px;
+    color: #555;
+    margin: 0px;
+}
+.separator-hint {
+    margin: 0px;
+    font-size: 12px;
+    line-height: 16px;
+    margin-top: 6px;
+}
+.help-block {
+    color: #737373 !important;
+}
+.help-block-error {
+    color:  #dd4b39 !important;
+}
+legend + .control-group {
+    margin-top: 0px;
+}

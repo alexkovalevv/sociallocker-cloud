@@ -1,0 +1,26 @@
+.opanda-item {
+    width: 220px;
+    height: 210px;
+    margin: 10px 30px 20px;
+    vertical-align: top;
+    float: left;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    line-height: 150%;
+    position: relative;
+}
+.opanda-item h3 {
+    margin-top:0;
+    font-size: 22px;
+}
+.opanda-buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 18px;
+    background-color: #f9f9f9;
+    height: 66px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}

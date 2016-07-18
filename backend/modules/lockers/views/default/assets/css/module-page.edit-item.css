@@ -1,0 +1,109 @@
+.right-box {
+    padding:20px;
+    background-color: #fbfbfb;
+    margin-bottom: 30px;
+}
+
+#lockersform-style, #lockersform-subscribe_mode {
+    width:300px
+}
+
+/**
+    Опции подписки
+*/
+.subscribe-options {
+    margin:20px 0;
+    padding:20px;
+    background-color: #fbfbfb;
+}
+
+.onp-vertical-tabs,  .onp-vertical-tabs .nav-tabs {
+    position:relative;
+}
+.onp-vertical-tabs ul {
+    vertical-align: top;
+    border: 0 !important;
+}
+.onp-vertical-tabs ul li {
+    margin-bottom:5px;
+    padding-left:28px;
+    cursor:move;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADJJREFUeNpinDR5yn8GJJCbk804ecpUgmJMDGQC+mtk/P//P1kaWYgJiNHAGb6BAxBgAJlYJkaIHn1BAAAAAElFTkSuQmCC') left center no-repeat;
+}
+.onp-vertical-tabs ul li:first-child {
+    margin-top:-2px;
+}
+.onp-vertical-tabs .tab-content {
+    background: #fbfbfb;
+    border: 1px solid #ddd;
+}
+
+.onp-vertical-tabs ul li,
+.onp-vertical-tabs ul li > a,
+.onp-vertical-tabs ul li > a:hover,
+.onp-vertical-tabs ul li.active > a,
+.onp-vertical-tabs > li.active > a,
+.onp-vertical-tabs> li.active > a:hover,
+.onp-vertical-tabs > li.active > a:focus{
+    /*border:0 !important;*/
+    border-radius: 0 !important;
+    /*background: none !important;*/
+}
+
+.onp-vertical-tabs ul li.active > a,
+.onp-vertical-tabs ul li.active > a:hover,
+.onp-vertical-tabs ul li.active > a:focus{
+    background: #fbfbfb !important;
+    border: 1px solid #ddd;
+}
+
+.onp-vertical-tabs ul li a {
+    padding:0;
+    color:#222;
+    font-size:12px;
+    font-weight:bold;
+    text-transform: uppercase !important;
+    /*background: #fbfbfb;*/
+}
+.onp-vertical-tabs ul li a .onp-tab-list-icon {
+    display:inline-block;
+    height: 30px;
+    width: 30px;
+    font-size: 15px;
+    text-align: center;
+    line-height: 2.1;
+    color:#fff;
+    margin-right: 10px;
+    border:0;
+}
+.onp-vertical-tabs ul li.disabled-button .onp-tab-list-icon {
+    background: #928e8e;
+}
+.onp-tab-list-icon.facebook {
+    background: #4965B5;
+}
+.onp-tab-list-icon.twitter {
+    background: #1B95E0;
+}
+.onp-tab-list-icon.google {
+    background: #DB4437;
+}
+.onp-tab-list-icon.linkedin {
+    background: #0077B5;
+}
+.onp-tab-list-icon.vk {
+    background: #5F83AA;
+}
+.onp-tab-list-icon.mail {
+    background: #1A65A7;
+}
+.onp-tab-list-icon.odnoklassniki {
+    background: #F98E32;
+}
+.sortable-placeholder {
+    border: 1px dashed #CCC !important;
+    height:30px;
+    background: none;
+    visibility: visible !important;
+}
+
