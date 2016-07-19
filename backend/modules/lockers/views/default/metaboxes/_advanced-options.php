@@ -10,33 +10,36 @@ use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 
 ?>
 
-<?= SwitchControl::widget([
-	'model' => $model,
-	'attribute' => 'counters'
-]);
+<?php
+if( $type == 'sociallocker' ) {
+	echo SwitchControl::widget([
+		'model' => $model->getModel('social'),
+		'attribute' => 'counters'
+	]);
+}
 ?>
 
 <?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('advanced'),
 	'attribute' => 'close'
 ]);
 ?>
 
-<?= $form->field($model, 'timer')->textInput([
-	'value' => empty($model->timer)
-		? 0	: $model->timer
+<?= $form->field($model->getModel('advanced'), 'timer')->textInput([
+	'value' => empty($model->getModel('advanced')->timer)
+		? 0	: $model->getModel('advanced')->timer
     ]
 );?>
 
 <?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('advanced'),
 	'attribute' => 'ajax',
 	'default'   => true
 ]);
 ?>
 
 <?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('advanced'),
 	'attribute' => 'highlight',
 	'default'   => true
 ]);
