@@ -1,17 +1,27 @@
 <?php
+/**
+ * Контроллер манипулирует замками.
+ * @author Alex Kovalev <alex.kovalevv@gmail.com>
+ */
 
 namespace backend\modules\lockers\controllers;
 
 use Yii;
 use yii\web\Controller;
-use yii\web\Response;
 use yii\web\NotFoundHttpException;
-use yii\helpers\Json;
 
-use backend\modules\lockers\models\LockersForm;
-use backend\modules\lockers\models\Lockers;
+use backend\modules\lockers\models\lockers\LockersForm;
+use backend\modules\lockers\models\lockers\Lockers;
 use backend\modules\lockers\models\search\LockersSearch;
 use backend\modules\lockers\models\settings\Settings;
+
+use backend\modules\lockers\models\lockers\metaboxes\Advanced;
+use backend\modules\lockers\models\lockers\metaboxes\Basic;
+use backend\modules\lockers\models\lockers\metaboxes\Save;
+use backend\modules\lockers\models\lockers\metaboxes\Social;
+use backend\modules\lockers\models\lockers\metaboxes\Subscribe;
+use backend\modules\lockers\models\lockers\metaboxes\Visability;
+use backend\modules\lockers\models\lockers\metaboxes\SigninSocial;
 
 
 class DefaultController extends Controller
@@ -41,9 +51,28 @@ class DefaultController extends Controller
 			return $this->redirect(['index']);
 
 		$settings = new Settings();
-		$model = new LockersForm();
 
-		if ($model->load(Yii::$app->request->post()) && $model->save($type)) {
+		$model_list = [
+			'models' => [
+				'basic'      => new Basic(),
+				'advanced'   => new Advanced(),
+				'save'       => new Save(),
+				'subscribe'  => new Subscribe(),
+				'visability' => new Visability()
+			]
+		];
+
+		if( $type == 'signinlocker' ) {
+			$model_list['models']['signin_social'] = new SigninSocial();
+		}
+
+		if( $type == 'sociallocker' ) {
+			$model_list['models']['social'] = new Social();
+		}
+
+		$model = new LockersForm($model_list);
+
+		if ( $model->load(Yii::$app->request->post()) && $model->saveMultiModel($type) ) {
 			return $this->redirect(['index']);
 		}
 
@@ -54,29 +83,41 @@ class DefaultController extends Controller
 		]);
 	}
 
-	public function actionPreview()
-	{
-		Yii::$app->response->format = Response::FORMAT_JSON;
-
-		$model = new LockersForm();
-
-		if( $model->load(Yii::$app->request->post()) ) {
-			return $model->getLockerOptions();
-		}
-		return null;
-	}
-
 	public function actionEdit($id, $type)
 	{
 		$settings = new Settings();
-		$model = new LockersForm();
-		$model->setModel($this->findModel($id));
+
+		$model_list = [
+			'models' => [
+				'basic'      => new Basic(),
+				'advanced'   => new Advanced(),
+				'save'       => new Save(),
+				'subscribe'  => new Subscribe(),
+				'visability' => new Visability()
+			]
+		];
+
+		if( $type == 'signinlocker' ) {
+			$model_list['models']['signin_social'] = new SigninSocial();
+		}
+
+		if( $type == 'sociallocker' ) {
+			$model_list['models']['social'] = new Social();
+		}
+
+		$model = new LockersForm($model_list);
+		$model->setMultiModel($this->findModel($id));
 
 		if( (!isset($type) && empty($type)) || (!isset($id) && empty($id)) )
 			return $this->redirect(['index']);
 
-		if ($model->load(Yii::$app->request->post()) && $model->save($type, $this->findModel($id))) {
-			return $this->redirect(['edit?type=' . $type . '&id=' . $id . '&save=success']);
+		if ($model->load(Yii::$app->request->post()) && $model->saveMultiModel( $type, $this->findModel($id) )) {
+			Yii::$app->session->setFlash('alert', [
+				'body' => Yii::t('backend', 'Settings was successfully saved'),
+				'options' => ['class' => 'alert alert-success']
+			]);
+			return $this->refresh();
+			//return $this->redirect(['edit?type=' . $type . '&id=' . $id . '&save=success']);
 		}
 
 		return $this->render( $type . '-create', [

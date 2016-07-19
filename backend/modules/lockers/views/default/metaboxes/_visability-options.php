@@ -8,26 +8,20 @@ use yii\helpers\Html;
 use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 
 ?>
-
 <?= SwitchControl::widget([
-	'model' => $model,
-	'attribute' => 'hide_for_member'
-]);
-?>
-<?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('visability'),
 	'attribute' => 'relock',
 	'default'   => false
 ]);
 ?>
 <?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('visability'),
 	'attribute' => 'always',
 	'default'   => false
 ]);
 ?>
 <?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('visability'),
 	'attribute' => 'mobile',
 	'default'   => true
 ]);

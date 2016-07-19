@@ -6,15 +6,15 @@
 
 use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 ?>
-<?= $form->field($model, 'title'); ?>
+<?= $form->field($model->getModel('basic'), 'title'); ?>
 
-<?= $form->field($model, 'header')->textInput(
-	empty($model->header) ?
+<?= $form->field($model->getModel('basic'), 'header')->textInput(
+	empty($model->getModel('basic')->header) ?
 		['value' => 'Этот контент заблокирован!']
 		: []
 );?>
 
-<?= $form->field($model, 'message')->widget(
+<?= $form->field($model->getModel('basic'), 'message')->widget(
 	\yii\imperavi\Widget::className(),
 	[
 		'plugins' => ['fullscreen', 'fontcolor', 'video'],
@@ -52,9 +52,9 @@ if( $type === 'signinlocker' ) {
 	$styles_default = 'great-attractor';
 }
 
-echo $form->field($model, 'style')->dropDownList(
+echo $form->field($model->getModel('basic'), 'style')->dropDownList(
 	$styles,
-	empty($model->style) ? [
+	empty($model->getModel('basic')->style) ? [
 		'options'=>	[
 			$styles_default => [
 				'Selected'=> true
@@ -66,7 +66,7 @@ echo $form->field($model, 'style')->dropDownList(
 <div class="row">
 	<div class="col-sm-6">
 		<?= SwitchControl::widget([
-			'model' => $model,
+			'model' => $model->getModel('basic'),
 			'attribute' => 'overlap',
 			'default'   => 'full',
 			'items' => [
@@ -79,13 +79,13 @@ echo $form->field($model, 'style')->dropDownList(
 	</div>
 	<div class="col-sm-3" style="padding:5px 0 0;">
 		<div class="onp-overlap-position-box" style="display: none;">
-			<?= $form->field($model, 'overlap_position')->dropDownList(
+			<?= $form->field($model->getModel('basic'), 'overlap_position')->dropDownList(
 				[
 					'top' => 'Сверху',
 					'middle' =>'По середине',
 					'scroll' => 'Прокручивается',
 				],
-				empty($model->style) ? [
+				empty($model->getModel('basic')->style) ? [
 					'options'=>	[
 						'middle'=> [
 							'Selected'=> true

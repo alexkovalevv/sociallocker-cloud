@@ -30,12 +30,40 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 		/**
 		 * Starts to track user input to refresh the preview.
 		 */
-		trackInputChanges: function() {
-			var self = this;
+		getAllFields: function() {
+			var self = this,
+				models = [
+					'Basic',
+					'Social',
+					'Visability',
+					'Save',
+					'Advanced',
+					'Subscribe',
+					'Social',
+					'SigninSocial'
+				],
+				fields = [];
 
-			$('input[name^="LockersForm"], select[name^="LockersForm"], textarea[name^="LockersForm"]' ).bind('change keyup', function(){
-				self.refreshPreview();
-			});
+			for( m in models ) {
+				$('[name^="' + models[m] + '"]').each(function () {
+					fields.push($(this ).attr('name'));
+				});
+			}
+
+			return fields;
+		},
+
+		trackInputChanges: function() {
+			var self = this,
+				fields = this.getAllFields();
+
+			for( f in fields ) {
+				$( '[name^="' + fields[f] + '"]').bind('change keyup',
+					function(){
+						self.refreshPreview();
+					}
+				);
+			}
 		},
 
 		updateButtonOrder: function() {
@@ -75,27 +103,30 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 		updatePreviewOptions: function(callback) {
 			var self = this,
 				data = {},
-				setting = JSON.parse(window.bizpanda.lockersSettings);
+				setting = JSON.parse(window.bizpanda.lockersSettings ),
+				fields = this.getAllFields();
 
-			$('input[name^="LockersForm"], select[name^="LockersForm"], textarea[name^="LockersForm"]' ).each(function(){
-				var el = $(this),
-					elName = el.attr('name').replace(/LockersForm\[(.*)\]/, '$1');
+			for( f in fields ) {
 
-				if( el.attr('type') === 'radio' || el.attr('type') === 'checkbox' )  {
-					if( !el.prop("checked") ) return;
+				var el = $('[name^="' + fields[f] + '"]'),
+					elName = fields[f].replace(/\w+\[(.*)\]/, '$1');
 
-					if( el.val() === "0" ) {
-						data[elName] = false;
-					} else if( el.val() === "1" ) {
-						data[elName] = true;
-					} else {
-						data[elName] = el.val();
-					}
+				if( el.attr('type') === 'radio' || el.attr('type') === 'checkbox' ) {
+					el.each( function () {
+						if ( $(this).prop("checked") ) {
+							if ( $(this).val () === "0" ) {
+								data[elName] = false;
+							} else if ( $(this).val () === "1" ) {
+								data[elName] = true;
+							} else {
+								data[elName] = $(this).val ();
+							}
+						}
+					});
 				} else {
 					data[elName] = el.val();
 				}
-
-			});
+			}
 
 			$.extend(true, data, setting);
 
@@ -307,7 +338,7 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 				}
 			}
 
-			console.log(self.lockerOptions);
+			//console.log(self.lockerOptions);
 
 			newContent.find(".content-to-lock").pandalocker(self.lockerOptions);
 
@@ -355,7 +386,8 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 				var tab = $(this),
 					tabId = $(this).attr('id'),
 					buttonId = tabId.replace('tab-', '' ).replace('-', '_'),
-					activateButton = $('input[name="LockersForm[' + buttonId + '_available]"]:checked');
+					activateButton = $('input[name="Social[' + buttonId + '_available]"]:checked, ' +
+					'input[name="SigninSocial[' + buttonId + '_available]"]:checked');
 
 				if( activateButton.val() == 1 ) {
 					tab.hasClass('disabled-button') && tab.removeClass('disabled-button');

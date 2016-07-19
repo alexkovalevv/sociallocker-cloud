@@ -37,7 +37,7 @@ use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 			<!-- Опции подписки -->
 			<div class="subscribe-options">
 				<?=SwitchControl::widget([
-					'model' => $model,
+					'model' => $model->getModel('subscribe'),
 					'attribute' => 'subscribe_to_service',
 					'containerOptions' => [
 						'class' => 'onp-activate-social-button-switch'
@@ -45,13 +45,13 @@ use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 				]); ?>
 
 				<div class="subscribe-available">
-					<?=$form->field($model, 'subscribe_mode')->dropDownList(
+					<?=$form->field($model->getModel('subscribe'), 'subscribe_mode')->dropDownList(
 						[
 							'quick' => 'Одинарная проверка',
 							'double_optin' => 'Двойная проверка',
 							'quick_double_optin' => 'Ленивая проверка'
 						],
-						empty($model->subscribe_mode) ? [
+						empty($model->getModel('subscribe')->subscribe_mode) ? [
 							'options'=>	[
 								'quick' => [
 									'Selected'=> true

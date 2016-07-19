@@ -15,7 +15,7 @@
 	 =========================================== */
 
 	$facebook = SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'facebook_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -28,7 +28,7 @@
 	]);
 
 	$facebook .= SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'facebook_lead_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -45,7 +45,7 @@
 	 =========================================== */
 
 	$twitter = SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'twitter_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -58,7 +58,7 @@
 	]);
 
 	$twitter .= SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'twitter_lead_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -75,7 +75,7 @@
 	 =========================================== */
 
 	$google = SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'google_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -88,7 +88,7 @@
 	]);
 
 	$google .= SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'google_lead_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -105,7 +105,7 @@
 	 =========================================== */
 
 	$linkedin = SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'linkedin_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -118,7 +118,7 @@
 	]);
 
 	$linkedin .= SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'linkedin_lead_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -135,7 +135,7 @@
 	 =========================================== */
 
 	$vk = SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'vk_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'
@@ -148,7 +148,7 @@
 	]);
 
 	$vk .= SwitchControl::widget([
-		'model' => $model,
+		'model' => $model->getModel('signin_social'),
 		'attribute' => 'vk_lead_available',
 		'containerOptions' => [
 			'class' => 'onp-activate-social-button-switch'

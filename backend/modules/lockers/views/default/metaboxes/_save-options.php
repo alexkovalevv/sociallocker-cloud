@@ -8,7 +8,7 @@ use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 use yii\helpers\Html;
 ?>
 <?= SwitchControl::widget([
-	'model' => $model,
+	'model' => $model->getModel('save'),
 	'attribute' => 'status',
 	'containerOptions' => [
 		'class' => 'onp-activate-social-button-switch'

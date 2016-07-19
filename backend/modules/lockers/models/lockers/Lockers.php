@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\modules\lockers\models;
+namespace backend\modules\lockers\models\lockers;
 
 use Yii;
 use yii\db\ActiveRecord;
