@@ -55,4 +55,14 @@ class Visability extends Model
 		];
 	}
 
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'mobile' => true
+		];
+	}
+
 }

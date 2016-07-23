@@ -1,48 +1,24 @@
 <?php
 /**
  * Шаблон дополнительных настроек замка. Часть шаблона редактирования замков.
+ * @author Alex Kovalev <alex.kovalevv@gmail.com>
  * @package sociallocker-create, signlocker-create, emaillocker-create
  */
 
+/* @var $model common\base\MultiModel */
+/* @var string $type */
 
-use yii\helpers\Html;
-use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
+$fields->model = $model->getModel('social');
 
-?>
-
-<?php
 if( $type == 'sociallocker' ) {
-	echo SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'counters'
-	]);
+	echo $fields->checkbox('counters');
 }
-?>
 
-<?= SwitchControl::widget([
-	'model' => $model->getModel('advanced'),
-	'attribute' => 'close'
-]);
-?>
+$fields->model = $model->getModel('advanced');
 
-<?= $form->field($model->getModel('advanced'), 'timer')->textInput([
-	'value' => empty($model->getModel('advanced')->timer)
-		? 0	: $model->getModel('advanced')->timer
-    ]
-);?>
+echo $fields->checkbox('close');
 
-<?= SwitchControl::widget([
-	'model' => $model->getModel('advanced'),
-	'attribute' => 'ajax',
-	'default'   => true
-]);
-?>
+echo $fields->textInput('timer');
 
-<?= SwitchControl::widget([
-	'model' => $model->getModel('advanced'),
-	'attribute' => 'highlight',
-	'default'   => true
-]);
-?>
-
+echo $fields->checkbox('highlight');
 

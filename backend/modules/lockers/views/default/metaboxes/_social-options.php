@@ -1,279 +1,198 @@
 <?php
 /**
  * Шаблон социальных кнопок. Часть шаблона редактирования социальных замков.
+ * @author Alex Kovalev <alex.kovalevv@gmail.com>
  * @package sociallocker-create
  */
 
-	use backend\modules\lockers\widgets\vtabs\VerticalTabs;
-	use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
+use backend\modules\lockers\widgets\vtabs\VerticalTabs;
 
-	$social_buttons = [];
-	/* =========================================
-	                Facebook кнопки
-	 =========================================== */
+/* @var $model common\base\MultiModel */
+/* @var string $type */
 
-	// Facebook мне нравится
-	$facebook_like = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'facebook_like_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		],
-		'default'   => true
-	]);
+$fields->model = $model->getModel('social');
 
-	$facebook_like .= $form->field($model->getModel('social'), 'facebook_like_url')->textInput();
+$social_buttons = [];
 
-	$facebook_like .= $form->field($model->getModel('social'), 'facebook_like_title')->textInput(
-		['value' => 'мне нравится']
-	);
+// Facebook мне нравится
+// ========================================================================================
+$facebook_like = $fields->checkbox('facebook_like_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	// Facebook поделиться
-	$facebook_share = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'facebook_share_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+$facebook_like .= $fields->textInput( 'facebook_like_url');
 
-	$facebook_share .= $form->field($model->getModel('social'), 'facebook_share_url')->textInput();
+$facebook_like .= $fields->textInput( 'facebook_like_title');
+// ========================================================================================
 
-	$facebook_share .= $form->field($model->getModel('social'), 'facebook_share_title')->textInput(
-		['value' => 'поделиться']
-	);
+// Facebook поделиться
+// ========================================================================================
+$facebook_share = $fields->checkbox('facebook_share_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$facebook_share .= SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'facebook_share_dialog'
-	]);
+$facebook_share .= $fields->textInput( 'facebook_share_url');
 
-	$facebook_share .= $form->field($model->getModel('social'), 'facebook_share_message_name')->textInput();
-	$facebook_share .= $form->field($model->getModel('social'), 'facebook_share_message_caption')->textInput();
-	$facebook_share .= $form->field($model->getModel('social'), 'facebook_share_message_description')->textInput();
-	$facebook_share .= $form->field($model->getModel('social'), 'facebook_share_message_image')->textInput();
+$facebook_share .= $fields->textInput( 'facebook_share_title');
 
-	/* =========================================
-					Twitter кнопки
-	 =========================================== */
+$facebook_share .= $fields->checkbox('facebook_share_dialog');
 
-	// Twitter твитнуть
-	$twitter_tweet = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'twitter_tweet_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		],
-		'default'   => true
-	]);
+$facebook_share .= $fields->textInput( 'facebook_share_message_name');
 
-	$twitter_tweet .= $form->field($model->getModel('social'), 'twitter_tweet_url')->textInput();
-	$twitter_tweet .= $form->field($model->getModel('social'), 'twitter_tweet_text')->textarea();
+$facebook_share .= $fields->textInput( 'facebook_share_message_caption');
 
-	$twitter_tweet .= SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'twitter_tweet_auth',
-		'default'   => true
-	]);
+$facebook_share .= $fields->textInput( 'facebook_share_message_description');
 
-	$twitter_tweet .= $form->field($model->getModel('social'), 'twitter_tweet_via')->textInput();
-	$twitter_tweet .= $form->field($model->getModel('social'), 'twitter_tweet_title')->textInput(
-		['value' => 'твитнуть']
-	);
+$facebook_share .= $fields->textInput( 'facebook_share_message_image');
+// ========================================================================================
 
-	//Twitter подписаться
-	$twitter_follow = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'twitter_follow_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+// Twitter твитнуть
+// ========================================================================================
+$twitter_tweet = $fields->checkbox('twitter_tweet_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$twitter_follow .= $form->field($model->getModel('social'), 'twitter_follow_url')->textInput();
+$twitter_tweet .= $fields->textInput( 'twitter_tweet_url');
+$twitter_tweet .= $fields->textInput( 'twitter_tweet_text');
 
-	$twitter_follow .= SwitchControl::widget([
-			'model' => $model->getModel('social'),
-			'attribute' => 'twitter_follow_auth',
-			'default'   => true
-		]);
+$twitter_tweet .= $fields->checkbox('twitter_tweet_auth');
 
-	$twitter_follow .= $form->field($model->getModel('social'), 'twitter_follow_hide_name')->textInput();
-	$twitter_follow .= $form->field($model->getModel('social'), 'twitter_follow_title')->textInput(
-		['value' => 'подписаться']
-	);
+$twitter_tweet .= $fields->textInput( 'twitter_tweet_via');
+$twitter_tweet .= $fields->textInput( 'twitter_tweet_title');
 
-	/* =========================================
-					Google кнопки
-	 =========================================== */
+//Twitter подписаться
+// ========================================================================================
+$twitter_follow = $fields->checkbox('twitter_follow_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	// Google плюс
-	$google_plus = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'google_plus_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		],
-		'default'   => true
-	]);
+$twitter_follow .= $fields->textInput( 'twitter_follow_url');
 
-	$google_plus .= $form->field($model->getModel('social'), 'google_plus_url')->textInput();
+$twitter_follow .= $fields->checkbox('twitter_follow_auth');
 
-	$google_plus .= $form->field($model->getModel('social'), 'google_plus_title')->textInput(
-		['value' => 'плюсануть']
-	);
+$twitter_follow .= $fields->textInput( 'twitter_follow_hide_name');
 
-	// Google поделиться
-	$google_share = SwitchControl::widget([
-			'model' => $model->getModel('social'),
-			'attribute' => 'google_share_available',
-			'containerOptions' => [
-				'class' => 'onp-activate-social-button-switch'
-			]
-		]);
+$twitter_follow .= $fields->textInput( 'twitter_follow_title');
+// ========================================================================================
 
-	$google_share .= $form->field($model->getModel('social'), 'google_share_url')->textInput();
+// Google плюс
+// ========================================================================================
+$google_plus = $fields->checkbox('google_plus_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$google_share .= $form->field($model->getModel('social'), 'google_share_title')->textInput(
-		['value' => 'поделиться']
-	);
+$google_plus .= $fields->textInput( 'google_plus_url');
 
-	// Google youtube
-	$google_youtube = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'google_youtube_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+$google_plus .= $fields->textInput( 'google_plus_title');
+// ========================================================================================
 
-	$google_youtube .= $form->field($model->getModel('social'), 'google_youtube_channel_id')->textInput();
+// Google поделиться
+// ========================================================================================
+$google_share = $fields->checkbox('google_share_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$google_youtube .= $form->field($model->getModel('social'), 'google_youtube_title')->textInput(
-		['value' => 'подписаться']
-	);
+$google_share .= $fields->textInput( 'google_share_url');
 
-	/* =========================================
-					LinkedIn кнопки
-	 =========================================== */
+$google_share .= $fields->textInput( 'google_share_title');
+// ========================================================================================
 
-	// Linkedin поделиться
-	$linkedin_share = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'linkedin_share_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+// Google youtube
+// ========================================================================================
+$google_youtube = $fields->checkbox('google_youtube_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$linkedin_share .= $form->field($model->getModel('social'), 'linkedin_share_url')->textInput();
+$google_youtube .= $fields->textInput( 'google_youtube_channel_id');
 
-	$linkedin_share .= $form->field($model->getModel('social'), 'linkedin_share_title')->textInput(
-		['value' => 'подписаться']
-	);
+$google_youtube .= $fields->textInput( 'google_youtube_title');
+// ========================================================================================
 
-	/* =========================================
-					Кнопки Вконтакте
-	 =========================================== */
+// Linkedin поделиться
+// ========================================================================================
+$linkedin_share = $fields->checkbox('linkedin_share_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	// Vkontakte мне нравится
-	$vk_like = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'vk_like_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		],
-		'default'   => true
-	]);
+$linkedin_share .= $fields->textInput( 'linkedin_share_url');
 
-	$vk_like .= SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'vk_like_require_sharing',
-		'default'   => true
-	]);
+$linkedin_share .= $fields->textInput( 'linkedin_share_title');
+// ========================================================================================
 
-	$vk_like .= $form->field($model->getModel('social'), 'vk_like_url')->textInput();
+// Vkontakte мне нравится
+// ========================================================================================
+$vk_like = $fields->checkbox('vk_like_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$vk_like .= $form->field($model->getModel('social'), 'vk_like_title')->textInput(
-			['value' => 'мне нравится']
-	);
+$vk_like .= $fields->checkbox('vk_like_require_sharing');
 
-	$vk_like .= $form->field($model->getModel('social'), 'vk_like_message_title')->textInput();
-	$vk_like .= $form->field($model->getModel('social'), 'vk_like_message_description')->textarea();
-	$vk_like .= $form->field($model->getModel('social'), 'vk_like_message_image')->textInput();
+$vk_like .= $fields->textInput( 'vk_like_url');
 
-	// Vkontakete поделиться
-	$vk_share = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'vk_share_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+$vk_like .= $fields->textInput( 'vk_like_title');
 
-	$vk_share .= $form->field($model->getModel('social'), 'vk_share_url')->textInput();
+$vk_like .= $fields->textInput( 'vk_like_message_title');
 
-	$vk_share .= $form->field($model->getModel('social'), 'vk_share_title')->textInput(
-			['value' => 'поделиться']
-	);
+$vk_like .= $fields->textInput( 'vk_like_message_description');
 
-	$vk_share .= $form->field($model->getModel('social'), 'vk_like_message_title')->textInput();
-	$vk_share .= $form->field($model->getModel('social'), 'vk_like_message_description')->textarea();
-	$vk_share .= $form->field($model->getModel('social'), 'vk_like_message_image')->textInput();
+$vk_like .= $fields->textInput( 'vk_like_message_image');
+// ========================================================================================
 
-	// Vkontakete подписаться
-	$vk_subscribe = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'vk_subscribe_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+// Vkontakete поделиться
+// ========================================================================================
+$vk_share = $fields->checkbox('vk_share_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$vk_subscribe .= $form->field($model->getModel('social'), 'vk_subscribe_group_id')->textInput();
+$vk_share .= $fields->textInput( 'vk_share_url');
 
-	$vk_subscribe .= $form->field($model->getModel('social'), 'vk_subscribe_title')->textInput(
-		['value' => 'поделиться']
-	);
+$vk_share .= $fields->textInput( 'vk_share_title');
 
-	/* =========================================
-					Кнопки Майл
-	 =========================================== */
+$vk_share .= $fields->textInput( 'vk_like_message_title');
 
-	// Odnoklassniki поделиться
-	$ok_share = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'ok_share_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+$vk_share .= $fields->textInput( 'vk_like_message_description');
 
-	$ok_share .= $form->field($model->getModel('social'), 'ok_share_url')->textInput();
+$vk_share .= $fields->textInput( 'vk_like_message_image');
+// ========================================================================================
 
-	$ok_share .= $form->field($model->getModel('social'), 'ok_share_title')->textInput(
-		['value' => 'поделиться']
-	);
+// Vkontakete подписаться
+// ========================================================================================
+$vk_subscribe = $fields->checkbox('vk_subscribe_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	// Mail поделиться
-	$mail_share = SwitchControl::widget([
-		'model' => $model->getModel('social'),
-		'attribute' => 'mail_share_available',
-		'containerOptions' => [
-			'class' => 'onp-activate-social-button-switch'
-		]
-	]);
+$vk_subscribe .= $fields->textInput( 'vk_subscribe_group_id');
 
-	$mail_share .= $form->field($model->getModel('social'), 'mail_share_url')->textInput();
+$vk_subscribe .= $fields->textInput( 'vk_subscribe_title');
+// ========================================================================================
 
-	$mail_share .= $form->field($model->getModel('social'), 'mail_share_title')->textInput(
-			['value' => 'поделиться']
-	);
+// Odnoklassniki поделиться
+// ========================================================================================
+$ok_share = $fields->checkbox('ok_share_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
 
-	$mail_share .= $form->field($model->getModel('social'), 'mail_share_message_title')->textInput();
-	$mail_share .= $form->field($model->getModel('social'), 'mail_share_message_description')->textarea();
-	$mail_share .= $form->field($model->getModel('social'), 'mail_share_message_image')->textInput();
+$ok_share .= $fields->textInput( 'ok_share_url');
 
+$ok_share .= $fields->textInput( 'ok_share_title');
+// ========================================================================================
+
+// Mail поделиться
+// ========================================================================================
+$mail_share = $fields->checkbox('mail_share_available', [
+	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+]);
+
+$mail_share .= $fields->textInput( 'mail_share_url');
+
+$mail_share .= $fields->textInput( 'mail_share_title');
+
+$mail_share .= $fields->textInput( 'mail_share_message_title');
+
+$mail_share .= $fields->textInput( 'mail_share_message_description');
+
+$mail_share .= $fields->textInput( 'mail_share_message_image');
+// ========================================================================================
 
 ?>
 <?=	VerticalTabs::widget([

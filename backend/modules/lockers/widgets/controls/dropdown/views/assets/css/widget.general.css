@@ -1,0 +1,22 @@
+.control-label {
+    display:block;
+}
+
+/**
+* Dropdown As ddSlick
+* http://designwithpc.com/plugins/ddslick
+*/
+
+.dd-container .dd-select {
+    background-color: #fff !important;
+}
+.dd-container label {
+    margin-bottom: 1px;
+}
+.dd-container .dd-option,
+.dd-container .dd-selected {
+    padding: 8px 12px 8px 11px !important;
+}
+.dd-container .dd-option-image, .dd-container .dd-selected-image {
+    max-width: none !important;
+}

@@ -89,4 +89,23 @@ class SigninSocial extends Model
 		];
 	}
 
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'facebook_available'      => false,
+			'facebook_lead_available' => true,
+			'twitter_available'       => true,
+			'twitter_lead_available'  => true,
+			'google_available'        => true,
+			'google_lead_available'   => true,
+			'linkedin_available'      => false,
+			'linkedin_lead_available' => true,
+			'vk_available'            => true,
+			'vk_lead_available'       => true
+		];
+	}
+
 }

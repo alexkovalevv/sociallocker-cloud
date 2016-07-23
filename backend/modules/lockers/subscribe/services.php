@@ -4,7 +4,7 @@
 //
 
 $items = array(
-	'database'        => array(
+	'default'        => array(
 		'title'       => 'По умолчанию',
 		'description' => 'Email адреса подписчиков будут сохранены в базе данных WP.',
 		'class'       => 'OPanda_DatabaseSubscriptionService',

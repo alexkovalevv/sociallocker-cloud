@@ -65,4 +65,17 @@ class Basic extends Model
 			'overlap' => 'Выберите режим наложения'
 		];
 	}
+
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'header'           => 'Этот контент заблокирован!',
+			'message'          => 'Пожалуйста, поддержите нас, нажмите на одну из социальных кнопок ниже, чтобы открыть контент.',
+			'overlap'          => 'full',
+			'overlap_position' => 'middle',
+		];
+	}
 }

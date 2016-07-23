@@ -4,6 +4,15 @@
 select {
     max-width: 450px;
 }
+input[type="text"] {
+    display: inline-block;
+    max-width: 450px;
+}
+.how-get-this {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 10px;
+}
 .tab-content {
     padding:40px;
     background: #fbfbfb;
@@ -35,4 +44,7 @@ select {
 }
 legend + .control-group {
     margin-top: 0px;
+}
+.fieldset-hidden {
+    display: none;
 }

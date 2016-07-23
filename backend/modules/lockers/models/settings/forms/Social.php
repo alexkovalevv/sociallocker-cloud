@@ -55,7 +55,6 @@ class Social extends Model
 	public function attributeLabels() {
 		return [
 			'buttons_lang'                     => 'Язык кнопок',
-			'lazy'                             => 'Отложенная загрузка',
 			'vk_app_id'                        => 'Идентификатор приложения в Вконтакте',
 			'vk_app_secret'                    => 'Защищенный ключ',
 			'vk_access_token'                  => 'Токен доступа Вконтакте',
@@ -73,7 +72,6 @@ class Social extends Model
 	public function attributeHints() {
 		return [
 			'buttons_lang'                     => 'Выберите язык, который будет использоваться для социальных кнопок. Для кнопок Вконтакте язык определяется автоматически на основе настроек браузера.',
-			'lazy'                             => 'Если Вкл, создает социальные кнопки, после того как социальный замок станет видимым (для лучшей производительности)',
 			'vk_app_id'                        => 'Если вы хотите использовать кнопки Вконтакте, вам необходимо зарегистрировать приложение и получить идентификатор приложения для вашего сайта.',
 			'vk_app_secret'                    => 'Если вы хотите использовать кнопки авторизации Вконтакте вам необходимо зарегистрировать приложение и получить защищенный ключ.',
 			'vk_access_token'                  => 'Токен доступа Вконтакте необходим для корректной работы кнопок Вконтакте на мобильных устройствах и кириллических доменах. Чтобы получить токен доступа, перейдите по ссылке.',
@@ -85,6 +83,32 @@ class Social extends Model
 			'google_client_id'                 => 'Если вы хотите использовать кнопку youtube или google аторизации, вам нужно зарегистрировать приложение в google и получить client ID, чтобы вставить в форму выше.',
 			'linkedin_client_id'               => 'Если вы хотите использовать кнопку авторизации Linkedin, вам необходимо зарегистрировать приложение, а полученные Client ID и Secret вписать в соответствующие поля.',
 			'linkedin_client_secret'           => 'Client Secret вашего приложения в Linkedin',
+		];
+	}
+
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'buttons_lang'                     => 'ru_RU',
+			'facebook_version'                 => 'v2.5',
+			'twitter_use_dev_keys'             => 'default',
+		];
+	}
+
+	public function attributeInstructions() {
+		return [
+			'vk_app_id'                        => '#',
+			'vk_app_secret'                    => '#',
+			'vk_access_token'                  => '#',
+			'facebook_app_id'                  => '#',
+			'twitter_consumer_key'             => '#',
+			'twitter_consumer_secret'          => '#',
+			'google_client_id'                 => '#',
+			'linkedin_client_id'               => '#',
+			'linkedin_client_secret'           => '#',
 		];
 	}
 }

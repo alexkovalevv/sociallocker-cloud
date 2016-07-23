@@ -9,5 +9,14 @@
 			window.location.hash = this.hash;
 			$('html,body').scrollTop(scrollmem);
 		});
+
+		$('input[name="Subscribe[subscription_to_service]"]').change(
+			function() {
+				var serviceName = $(this).val();
+
+				$( '.fieldset-hidden' ).hide();
+				$( '.' + serviceName + '-fieldset' ).fadeIn(300);
+			}
+		);
 	});
 })(jQuery);

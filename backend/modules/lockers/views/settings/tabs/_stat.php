@@ -1,35 +1,17 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Александр
- * Date: 16.07.2016
- * Time: 3:32
+ * Шаблон настройки статистики замков. Часть шаблона общих настроек замков.
+ * @author Alex Kovalev <alex.kovalevv@gmail.com>
+ * @package setting
  */
 
 use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 
-//---------------------------------------
-/**  Статистика                       */
-//---------------------------------------
+/* @var $model common\base\MultiModel */
 
-$stat = SwitchControl::widget([
-	'model' => $model->getModel('stat'),
-	'attribute' => 'google_analytics',
-	'default'   => false,
-	'items' => [
-		['label' => 'Вкл.', 'value' => 1],
-		['label' => 'Выкл.', 'value' => 0]
-	]
-]);
+$fields->model = $model->getModel('stat');
 
-$stat .= SwitchControl::widget([
-	'model' => $model->getModel('stat'),
-	'attribute' => 'tracking',
-	'default'   => false,
-	'items' => [
-		['label' => 'Вкл.', 'value' => 1],
-		['label' => 'Выкл.', 'value' => 0]
-	]
-]);
+$stat = $fields->checkbox('google_analytics');
+$stat .= $fields->checkbox('tracking');
 
 return $stat;

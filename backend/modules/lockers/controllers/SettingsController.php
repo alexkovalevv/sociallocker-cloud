@@ -38,10 +38,11 @@ class SettingsController extends Controller
 	    }
 
 	    if ($model->load(Yii::$app->request->post()) && $model->saveMultiModel($model_query->getModel()) ) {
-		    return $this->render('index', [
-			    'model'=> $model,
-		        'success' => true
+		    Yii::$app->session->setFlash('alert', [
+			    'body' => 'Настройки успешно обновлены!',
+			    'options' => ['class' => 'alert alert-success']
 		    ]);
+		    return $this->refresh();
 	    }
 
 	    return $this->render('index', [

@@ -5,7 +5,7 @@ namespace backend\modules\lockers\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use backend\modules\lockers\models\Lockers;
+use backend\modules\lockers\models\lockers\Lockers;
 
 
 class LockersSearch extends Lockers

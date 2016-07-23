@@ -2,33 +2,28 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Tabs;
-use yii\helpers\Url;
-use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 use backend\modules\lockers\assets\SettingsAsset;
+use common\helpers\CustomFields;
 
 /* @var $this yii\web\View */
+/* @var $model \common\base\MultiModel */
+
 $this->title = "Общие настройки";
 $this->params['breadcrumbs'][] = ['label' => 'Замки', 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 // Скрипты и стили страницы настроек
 SettingsAsset::register($this);
-?>
 
-<?php if( isset($success) ): ?>
-	<div class="callout callout-success">
-		<h4>Настройки успешно обновлены!</h4>
-		<p>Если вы хотите вернуться к настройкам по умолчанию, нажмите кнопку "Восстановить настройки". Api данные соц. сетей и сервисов подписки не будут удалены.</p>
-	</div>
-<?php endif; ?>
-
-<?php
 $form = ActiveForm::begin(
 	[
 		/*'enableClientValidation' => false,
 		'enableAjaxValidation' => false*/
 	]
 );
+
+// Настройка полей ActiveForm под требования проекта
+$fields = new CustomFields($form, $model);
 ?>
 	<div class="row">
 	<div class="col-sm-9">

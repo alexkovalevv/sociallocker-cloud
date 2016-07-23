@@ -423,4 +423,34 @@ class Social extends Model
 		];
 	}
 
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'facebook_like_available'            => true,
+			'facebook_like_title'                => 'мне нравится',
+			'facebook_share_title'               => 'поделиться',
+			'twitter_tweet_available'            => true,
+			'twitter_tweet_auth'                 => true,
+			'twitter_tweet_title'                => 'твитнуть',
+			'twitter_follow_available'           => true,
+			'twitter_follow_auth'                => true,
+			'twitter_follow_title'               => 'читать',
+			'google_plus_available'              => true,
+			'google_plus_title'                  => 'плюсануть',
+			'google_share_title'                 => 'поделиться',
+			'google_youtube_title'               => 'подписаться',
+			'linkedin_share_title'               => 'поделиться',
+			'vk_like_available'                  => true,
+			'vk_like_require_sharing'            => true,
+			'vk_like_title'                      => 'мне нравится',
+			'vk_share_title'                     => 'поделиться',
+			'vk_subscribe_title'                 => 'подписаться',
+			'ok_share_title'                     => 'класс',
+			'mail_share_title'                   => 'поделиться',
+			'counters'                           => true
+		];
+	}
 }

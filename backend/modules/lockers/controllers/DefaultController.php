@@ -113,11 +113,10 @@ class DefaultController extends Controller
 
 		if ($model->load(Yii::$app->request->post()) && $model->saveMultiModel( $type, $this->findModel($id) )) {
 			Yii::$app->session->setFlash('alert', [
-				'body' => Yii::t('backend', 'Settings was successfully saved'),
+				'body' => 'Настройки успешно обновлены!',
 				'options' => ['class' => 'alert alert-success']
 			]);
 			return $this->refresh();
-			//return $this->redirect(['edit?type=' . $type . '&id=' . $id . '&save=success']);
 		}
 
 		return $this->render( $type . '-create', [
@@ -129,16 +128,15 @@ class DefaultController extends Controller
 
 	public function actionDelete($id) {
 		$this->findModel($id)->delete();
+
+		Yii::$app->session->setFlash('alert', [
+			'body' => 'Замок успешно удален!',
+			'options' => ['class' => 'alert alert-danger']
+		]);
+
 		return $this->redirect(['index']);
 	}
 
-	/**
-	 * Finds the User model based on its primary key value.
-	 * If the model is not found, a 404 HTTP exception will be thrown.
-	 * @param integer $id
-	 * @return User the loaded model
-	 * @throws NotFoundHttpException if the model cannot be found
-	 */
 	protected function findModel($id)
 	{
 		if (($model = Lockers::findOne($id)) !== null) {

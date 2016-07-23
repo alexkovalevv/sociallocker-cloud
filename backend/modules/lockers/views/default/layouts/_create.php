@@ -4,7 +4,6 @@
  * @package sociallocker-create, signlocker-create, emaillocker-create
  */
 
-use yii\helpers\Html;
 use backend\modules\lockers\assets\ItemEditAsset;
 
 /* @var $this yii\web\View */
@@ -42,11 +41,4 @@ $this->registerJs( $output, $this::POS_END );
 
 // Подключение js и css файлов
 ItemEditAsset::register( $this );
-
 ?>
-<?php if( Yii::$app->request->get('save') === 'success' ): ?>
-	<div class="alert alert-success alert-dismissible">
-		<h4><i class="icon fa fa-check"></i> Настройки успешно обновлены!</h4>
-		Вы можете перейти к <?=Html::a( 'списку всех ваших замков', ['/lockers/default/index'] )?>.
-	</div>
-<?php endif; ?>

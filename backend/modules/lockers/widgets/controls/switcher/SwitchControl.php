@@ -1,8 +1,10 @@
 <?php
 /**
- * @copyright Copyright &copy; Alexander Kovalev, sociallocker.ru, 2016
+ * Кнопка переключатель
+ * @author Alex Kovalevv <alex.kovalevv@gmail.com>
+ * @copyright Copyright &copy; Alex Kovalev, sociallocker.ru, 2016
  * @package yii2-widgets
- * @version 1.3.1
+ * @version 1.0.0
  */
 namespace backend\modules\lockers\widgets\controls\switcher;
 

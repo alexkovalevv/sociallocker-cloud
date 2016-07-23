@@ -1,20 +1,18 @@
 <?php
 /**
  * Шаблон сохранения настроек замка. Часть шаблона редактирования замков.
+ * @author Alex Kovalev <alex.kovalevv@gmail.com>
  * @package sociallocker-create, signlocker-create, emaillocker-create
  */
 
-use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 use yii\helpers\Html;
-?>
-<?= SwitchControl::widget([
-	'model' => $model->getModel('save'),
-	'attribute' => 'status',
-	'containerOptions' => [
-		'class' => 'onp-activate-social-button-switch'
-	],
-	'default'   => true
-]);
+
+/* @var $model common\base\MultiModel */
+/* @var string $type */
+
+$fields->model = $model->getModel('save');
+
+echo $fields->checkbox('status');
 ?>
 <p>
 	<?php

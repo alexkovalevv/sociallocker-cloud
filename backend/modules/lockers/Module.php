@@ -12,7 +12,5 @@ class Module extends \yii\base\Module
         parent::init();
 
 	    Yii::setAlias('@lockers', dirname(__FILE__));
-
-	    include_once(Yii::getAlias('@lockers/includes/helper-functions.php'));
     }
 }

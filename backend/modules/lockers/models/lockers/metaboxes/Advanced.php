@@ -31,7 +31,6 @@ class Advanced extends Model
 				 'timer',
 				 'highlight',
 				 'close',
-			     'ajax'
 			 ], 'integer']
 		];
 	}
@@ -40,7 +39,6 @@ class Advanced extends Model
 		return [
 			'close'     => 'Кнопка закрыть',
 			'timer'     => 'Таймер (в сек.)',
-			'ajax'      => 'AJAX',
 			'highlight' => 'Подсветка'
 		];
 	}
@@ -49,8 +47,20 @@ class Advanced extends Model
 		return [
 			'close'     => 'Показывает кнопку "Закрыть" в углу.',
 			'timer'     => 'Устанавливает таймер обратного отсчета для Замка.',
-			'ajax'      => 'Если Вкл, скрытый контент будет подгружаться только после разблокировки, то есть будет вырезан из исходного кода страницы.',
 			'highlight' => 'Если Вкл, Замок подсвечивает заблокированное содержимое после разблокировки.',
 		];
 	}
+
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'close'     => true,
+			'timer'     => 0,
+			'highlight' => true
+		];
+	}
+
 }

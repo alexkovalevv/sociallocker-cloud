@@ -3,6 +3,7 @@
  * Шаблон создания и редактирования социальных замков.
  */
 
+use common\helpers\CustomFields;
 use yii\bootstrap\ActiveForm;
 ?>
 
@@ -13,13 +14,18 @@ use yii\bootstrap\ActiveForm;
 <div class="sociallocker-create">
 	<div class="row">
 
-		<?php $form = ActiveForm::begin(
-			[
-				'action' => [$form_action]
-				/*'enableClientValidation' => false,
-		        'enableAjaxValidation' => false*/
-			]
-		); ?>
+		<?php
+			$form = ActiveForm::begin(
+					[
+						'action' => [$form_action]
+						/*'enableClientValidation' => false,
+				        'enableAjaxValidation' => false*/
+					]
+			);
+
+			// Настройка полей ActiveForm под требования проекта
+			$fields = new CustomFields($form, $model);
+		?>
 
 		<div class="col-sm-9">
 			<!-- Базовые опции -->

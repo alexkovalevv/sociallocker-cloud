@@ -175,4 +175,50 @@ class Localization extends Model
 			'res_errors_not_granted'           => 'Используйте переменную {permissions} , чтобы показать необходимые права.',
 		];
 	}
+
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			//Экран "Пожалуйста, подтвердите ваш Email"
+			'res_confirm_screen_title'         => 'Пожалуйста, подтвердите ваш Email',
+			'res_confirm_screen_instructiont'  => 'Мы отправили Вам письмо с подтверждением на {email}. Пожалуйста, откройте свою электронную почту и подтвердите подписку.',
+			'res_confirm_screen_note1'         => 'Контент будет разблокирован автоматически в течение 10 секунд после подтверждения подписки.',
+			'res_confirm_screen_note2'         => 'Примечание, доставка письма с подтверждением может занять несколько минут, пожалуйста подождите.',
+			'res_confirm_screen_cancel'        => '(Отмена)',
+			'res_confirm_screen_open'          => 'Открыть мой почтовый ящик в  {service}',
+			//Кнопки авторизации
+			'res_signin_long'                  => 'Войти через {name}',
+			'res_signin_short'                 => 'через {name}',
+			'res_signin_facebook_name'         => 'Facebook',
+			'res_signin_twitter_name'          => 'Twitter',
+			'res_signin_google_name'           => 'Google',
+			'res_signin_linkedin_name'         => 'LinkedIn',
+			'res_signin_vk_name'               => 'Вконтакте',
+			//Разное
+			'res_misc_data_processing'         => 'Обработка данных, пожалуйста, подождите...',
+			'res_misc_or_enter_email'          => 'или введите email адрес вручную, чтобы авторизоваться',
+			'res_misc_enter_your_name'         => 'введите ваше имя',
+			'res_misc_enter_your_email'        => 'введите ваш email адрес',
+			'res_misc_your_agree_with'         => 'При нажатии на кнопку(и) вы соглашаетесь с {links}',
+			'res_misc_terms_of_use'            => 'Правила использования',
+			'res_misc_privacy_policy'          => 'Политика конфиденциальности',
+			'res_misc_or_wait'                 => 'или подождите {timer}сек',
+			'res_misc_close'                   => 'закрыть',
+			'res_misc_or'                      => 'ИЛИ',
+			//Экран "Первый шаг завершен"
+			'res_onestep_screen_title'         => 'Первый шаг завершен',
+			'res_onestep_screen_instructiont'  => 'Пожалуйста, введите ваш email адрес ниже, чтобы продолжить.',
+			'res_onestep_screen_button'        => 'Завершить',
+			//Ошибки и Уведомления
+			'res_errors_empty_email'           => 'Пожалуйста, введите ваш email адрес.',
+			'res_errors_inorrect_email'        => 'Введенный вами email адрес некорректен. Пожалуйста, проверьте введенные вами данные.',
+			'res_errors_empty_name'            => 'Пожалуйста, введите ваше имя.',
+			'res_errors_subscription_canceled' => 'Вы отменили подписку.',
+			'res_errors_not_signed_in'         => 'Извините, но вы не смогли пройти авторизацию в социальной сети. Пожалуйста, попробуйте снова.',
+			'res_errors_not_granted'           => 'Извините, но вы не предоставили все необходимые права ({permissions}) нашему приложению. Пожалуйста, попробуйте еще раз.',
+		];
+	}
 }

@@ -41,6 +41,17 @@ class Subscribe extends Model
 			'subscribe_mode'       => ''
 		];
 	}
+
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'subscribe_to_service' => false,
+			'subscribe_mode'       => 'quick'
+		];
+	}
 }
 
 

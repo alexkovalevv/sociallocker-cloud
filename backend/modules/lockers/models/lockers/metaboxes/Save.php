@@ -33,4 +33,14 @@ class Save extends Model
 			'status' => 'В состоянии отключен, замок не будет отображаться на вашем сайте.'
 		];
 	}
+
+	/**
+	 * Значения полей по умолчанию. Если элемента массива не существует, то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeDefaults() {
+		return [
+			'status' => true
+		];
+	}
 }
