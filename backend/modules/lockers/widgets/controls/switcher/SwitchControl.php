@@ -16,6 +16,9 @@ use yii\bootstrap\InputWidget;
 
 class SwitchControl extends InputWidget
 {
+	public $model;
+
+	public $attribute;
 	/**
 	 * @var array элементы массива, где label это текст кнопки, value - значение
 	 * пример использования:
@@ -27,25 +30,18 @@ class SwitchControl extends InputWidget
 	];
 
 	/**
+	 * @var $value значение поля
+	 */
+	public $value;
+
+	/**
 	 * @var string значение по умолчанию
 	 */
 	public $default = false;
 
-	/**
-	 * @var string название поля
-	 */
-	public $attributeLabel;
+	public $options = [];
 
-	/**
-	 * @var string короткое описание поля
-	 */
-	public $attributeLabelHint;
-
-	public $itemOptions = [];
-
-	public $labelOptions = [];
-
-	public $containerOptions = ['class' => 'form-group'];
+	public $itemsOptions = ['class' => 'btn btn-default'];
 
 	/**
 	 * @inheritdoc
@@ -54,10 +50,11 @@ class SwitchControl extends InputWidget
 	{
 		parent::init();
 
-		$this->value = isset($this->model->attributes[$this->attribute])
-			? $this->model->attributes[$this->attribute]
-		    : null;
-		$this->containerOptions['id'] = $this->options['id'];
+		$this->value = Html::getAttributeValue($this->model, $this->attribute);
+
+		if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) )
+			$this->value = $this->default;
+
 	}
 
 	public function run()
@@ -68,53 +65,32 @@ class SwitchControl extends InputWidget
 
 	protected function renderInput()
 	{
-		list($text_label_output, $text_label_hint_output, $output, $label) = '';
-
-		$model_attribute_labels = $this->model->attributeLabels();
-		if( isset($model_attribute_labels[$this->attribute]) )
-			$label = $model_attribute_labels[$this->attribute];
-		else if( isset($this->attributeLabel) ) {
-			$label = $this->attributeLabel;
-		}
-		if( !empty($label) ) {
-			$text_label_output .= Html::tag( 'strong', $label, ['style' => 'display:block; margin:5px 0;'] );
-		}
-
-		$model_attribute_hint_labels = $this->model->attributeHints();
-
-		if( isset($model_attribute_hint_labels[$this->attribute]) )
-			$text_label_hint_output .= Html::tag('div', $model_attribute_hint_labels[$this->attribute], ['class' => 'help-block']);
-		else
-			$text_label_hint_output .= !empty($this->attributeLabelHint) ? Html::tag('div', $this->attributeLabelHint, ['class' => 'help-block']) : '';
-
-		Html::addCssClass($this->containerOptions, ['field-' . $this->options['id']]);
-		Html::addCssClass($this->labelOptions, 'btn btn-default');
-
+		$output = '';
 		foreach ($this->items as $item) {
+
 			if (!is_array($item)) continue;
 
-			$options = ArrayHelper::merge($this->itemOptions, ArrayHelper::getValue($item, 'options', []));
-			$label_options = ArrayHelper::merge($this->labelOptions, ArrayHelper::getValue($item, 'labelOptions', []));
-
 			$value = ArrayHelper::getValue($item, 'value', null);
-			$options['value'] = $value;
 
-			if( !isset($this->value) || $this->value == '' && isset($this->default) )
-				$this->value = $this->default;
+			$this->options['value'] = $value;
 
 			$checked = $value == $this->value;
 
 			$input_name = Html::getInputName($this->model, $this->attribute);
-			$input = Html::radio($input_name, $checked, $options);
-			$input .= ArrayHelper::getValue($item, 'label', false);
+			$input = Html::radio($input_name, $checked, $this->options);
 
-			if( $checked ) Html::addCssClass($label_options, 'active');
-			$output .= Html::label($input, $input_name, $label_options);
+
+			$label = ArrayHelper::getValue($item, 'label');
+			$itemsOptions = ArrayHelper::merge($this->itemsOptions, []);
+
+			if( $checked ) {
+				Html::addCssClass($itemsOptions, 'active');
+			}
+
+			$output .= Html::tag('div', $input . $label, $itemsOptions);
+
 		}
-		return Html::tag('div',
-			$text_label_output . Html::tag('div', $output, ['class' => 'btn-group', 'role' => "group", 'data-toggle' => 'buttons']) . $text_label_hint_output,
-			$this->containerOptions
-		);
+		return Html::tag('div', $output, ['class' => 'btn-group', 'role' => "group", 'data-toggle' => 'buttons']);
 	}
 
 }

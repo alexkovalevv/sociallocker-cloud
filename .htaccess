@@ -1,0 +1,36 @@
+#RewriteEngine on
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+# Otherwise forward the request to index.php
+#RewriteRule . backend/web/index.php
+#AddDefaultCharset utf-8
+#AddType 'text/html; charset=utf-8' .html .htm .shtml
+
+#RewriteCond %{HTTP_HOST} ^test.sociallocker.ru$ [NC,OR]
+#RewriteCond %{REQUEST_URI} !backend/web
+#RewriteRule (.*) /backend/web/$1 [L]
+
+Options +FollowSymLinks
+IndexIgnore */*
+RewriteEngine on
+ 
+# Если запрос начинается с /admin, то заменяем на /backend/web/
+RewriteCond %{REQUEST_URI} ^/admin
+RewriteRule ^admin\/?(.*) /backend/web/$1
+ 
+# Добавляем другой запрос /frontend/web/$1
+RewriteCond %{REQUEST_URI} !^/(frontend/web|backend/web|admin)
+RewriteRule (.*) /frontend/web/$1
+ 
+# Если frontend запрос
+RewriteCond %{REQUEST_URI} ^/frontend/web
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /frontend/web/index.php
+ 
+# Если backend запрос
+RewriteCond %{REQUEST_URI} ^/backend/web
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /backend/web/index.php

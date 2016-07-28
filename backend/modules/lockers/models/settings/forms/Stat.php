@@ -19,7 +19,14 @@ class Stat extends Model
 	public function rules()
 	{
 		return [
-			[['google_analytics', 'tracking'], 'integer']
+			[[
+				 'google_analytics',
+				 'tracking'
+			 ], 'integer'],
+			[[
+				'google_analytics',
+				'tracking'
+			 ], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}],
 		];
 	}
 

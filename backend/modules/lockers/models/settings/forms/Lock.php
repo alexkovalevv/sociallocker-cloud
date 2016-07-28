@@ -29,20 +29,28 @@ class Lock extends Model
 	{
 		return [
 			[[
-				 'permanent_passcode',
+				 'passcode',
 				 'managed_hook',
 				 'alt_overlap_mode',
 			 ], 'string'],
 			[[
 				 'debug',
-				 'passcode',
+				 'permanent_passcode',
 				 'session_duration',
 				 'session_freezing',
 				 'interrelation',
 				 'dynamic_theme',
 				 'tumbler',
 				 'timeout',
-			 ], 'integer']
+			 ], 'integer'],
+			[[
+				 'debug',
+				 'permanent_passcode',
+				 'session_freezing',
+				 'interrelation',
+				 'dynamic_theme',
+				 'tumbler'
+				], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
 		];
 	}
 

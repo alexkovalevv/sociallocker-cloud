@@ -9,14 +9,13 @@ use yii\base\Exception;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
+use common\modules\subscription\classes\SubscriptionServices;
+
 /* @var $model common\base\MultiModel */
 
-// Получаем список сервисов и файла конфигурации
-$services = require(Yii::getAlias('@lockers/subscribe/services.php'));
+$fields->model = $model->getModel('subscribe');
 
-if( empty($services) ) {
-	throw new Exception('Не установлены сервисы подписки.');
-}
+$services = SubscriptionServices::getSerivcesList();
 
 $services_list = [];
 foreach( $services as $name => $service ) {
@@ -28,8 +27,6 @@ foreach( $services as $name => $service ) {
 		'imageHoverSrc' => ArrayHelper::getValue( $service, 'hover' ),
 	];
 }
-
-$fields->model = $model->getModel('subscribe');
 
 $subscribe = $fields->dropdown('ddslick', 'subscription_to_service', $services_list);
 

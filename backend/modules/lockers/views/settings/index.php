@@ -47,7 +47,7 @@ $fields = new CustomFields($form, $model);
 				[
 					'label'  => 'Подписка',
 					'encode' => false,
-					'content' => require(__DIR__ . '/tabs/_subscribe.php'),
+					'content' => require(Yii::getAlias('@subscription/views/setting.php')),
 					'options' => [
 						'id'    => 'tab-subscription'
 					]

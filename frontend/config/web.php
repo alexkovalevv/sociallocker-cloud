@@ -14,7 +14,10 @@ $config = [
             'modules' => [
                 'v1' => 'frontend\modules\api\v1\Module'
             ]
-        ]
+        ],
+       'subscription' => [
+	        'class' => 'common\modules\subscription\Module'
+        ],
     ],
     'components' => [
         'authClientCollection' => [

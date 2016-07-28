@@ -1,13 +1,11 @@
 <?php
-namespace backend\modules\lockers\models\settings\forms;
+namespace common\modules\subscription\models;
 
 use Yii;
-use backend\modules\lockers\models\settings\SettingsForm;
-use yii\base\Exception;
 use yii\base\Model;
 
 
-class Subscribe extends Model {
+class SubscribeSetting extends Model {
 
 	public $subscription_to_service;
 	public $service_sender_email;
@@ -45,43 +43,43 @@ class Subscribe extends Model {
 	 */
 	public function rules() {
 		return [
-			[
-				[
-					'subscription_to_service',
-					'service_sender_name',
-					'service_confirm_email_subject',
-					'service_confirm_email_body',
-					'unisender_api_key',
-					'smartresponder_api_id',
-					'smartresponder_api_secret',
-					'smartresponder_api_key',
-					'pechkinmail_username',
-					'pechkinmail_password',
-					'mailchimp_apikey',
-					'aweber_auth_code',
-					'getresponse_apikey',
-					'acumbamail_customer_id',
-					'acumbamail_api_token',
-					'freshmail_apikey',
-					'freshmail_apisecret',
-					'sendy_apikey',
-					'sendy_url',
-					'smartemailing_username',
-					'smartemailing_apikey',
-					'sendinblue_apikey',
-					'activecampaign_apiurl',
-					'activecampaign_apikey',
-					'sendgrid_apikey',
-					'sg_apikey',
-					'sg_memberid',
-				], 'string'
-			],
-		    [
-			   [
-				   'smartresponder_availible_md5',
-				   'mailchimp_welcome',
-			   ], 'integer'
-		    ],
+			[[
+				'subscription_to_service',
+				'service_sender_name',
+				'service_confirm_email_subject',
+				'service_confirm_email_body',
+				'unisender_api_key',
+				'smartresponder_api_id',
+				'smartresponder_api_secret',
+				'smartresponder_api_key',
+				'pechkinmail_username',
+				'pechkinmail_password',
+				'mailchimp_apikey',
+				'aweber_auth_code',
+				'getresponse_apikey',
+				'acumbamail_customer_id',
+				'acumbamail_api_token',
+				'freshmail_apikey',
+				'freshmail_apisecret',
+				'sendy_apikey',
+				'sendy_url',
+				'smartemailing_username',
+				'smartemailing_apikey',
+				'sendinblue_apikey',
+				'activecampaign_apiurl',
+				'activecampaign_apikey',
+				'sendgrid_apikey',
+				'sg_apikey',
+				'sg_memberid',
+				], 'string'],
+		    [[
+			   'smartresponder_availible_md5',
+			   'mailchimp_welcome',
+			 ], 'integer'],
+			[[
+		       'smartresponder_availible_md5',
+		       'mailchimp_welcome'
+			 ], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}],
 		    ['service_sender_email', 'email']
 		];
 	}
@@ -170,6 +168,28 @@ class Subscribe extends Model {
 	        'service_sender_name'           => 'Социальный замок',
 	        'service_confirm_email_subject' => 'Подтвердите ваш email адрес',
 	        'service_confirm_email_body'    => '<p>Чтобы подтвердить адрес электронной почты и разблокировать содержимое, пожалуйста, нажмите на ссылку ниже:<br />[link]<br /><br />-<br />Социальный Замок</p>',
+		];
+	}
+
+	/**
+	 * Сслыки на инструкцию для получению нужного значения. Если элемента массива не существует,
+	 * то возвращается false или null.
+	 * @return array
+	 */
+	public function attributeInstructions() {
+		return [
+			'unisender_api_key'             => '#',
+			'smartresponder_api_secret'     => '#',
+			'smartresponder_api_key'        => '#',
+			'mailchimp_apikey'              => 'http://kb.mailchimp.com/accounts/management/about-api-keys#Finding-or-generating-your-API-key',
+			'getresponse_apikey'            => 'http://support.getresponse.com/faq/where-i-find-api-key',
+			'acumbamail_customer_id'        => 'https://acumbamail.com/apidoc/',
+			'freshmail_apikey'              => 'https://app.freshmail.com/en/settings/integration/',
+			'smartemailing_apikey'          => 'https://app.smartemailing.cz/userinfo/show/api',
+			'sendinblue_apikey'             => 'https://my.sendinblue.com/advanced/apikey',
+			'activecampaign_apikey'         => 'http://www.activecampaign.com/help/using-the-api/',
+			'sendgrid_apikey'               => 'https://app.sendgrid.com/settings/api_keys',
+			'sg_apikey'                     => 'http://sg-autorepondeur.com/membre_v2/compte-options.php',
 		];
 	}
 }

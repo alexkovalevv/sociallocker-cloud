@@ -1,12 +1,11 @@
 /**
  * Created by Александр on 21.06.2016.
  */
-if ( !window.bizpanda ) window.bizpanda = {};
-if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
+if ( !window.lockerEditor ) window.lockerEditor = {};
 
 (function($){
 
-	window.bizpanda.lockerEditor = {
+	window.lockerEditor = {
 
 		proccess: false,
 		modelFields: [],
@@ -22,9 +21,86 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 			});
 
 			this.initOverlapModeButtons();
+			this.initSubcriptionOptions();
 			this.initSocialTabs();
 			this.recreatePreview();
 			this.trackInputChanges();
+		},
+
+		initOverlapModeButtons: function() {
+			var $overlapControl = $("#lockersform-overlap");
+			var $positionControl = $(".onp-overlap-position-box" );
+
+			var checkPositionControlVisability = function( ){
+				var value = $overlapControl.find('input[type="radio"]:checked').val();
+
+				if ( value === 'full' ) {
+					$positionControl.fadeOut();
+					return;
+				}
+
+				$positionControl.fadeIn();
+			};
+
+			checkPositionControlVisability();
+
+			$overlapControl.find('input[type="radio"]').change(function(){
+				checkPositionControlVisability();
+			});
+		},
+
+		initSubcriptionOptions: function () {
+			var checkSubscribeToServiceAvailable = function() {
+				var isAvailable = $('input[name="Subscribe[subscribe_to_service]"]:checked').val() === "0"
+					? false
+					: true;
+
+				if ( !isAvailable ) {
+					$ (".subscription-available").fadeOut();
+					return;
+				}
+
+				$(".subscription-available").fadeIn();
+			};
+
+			checkSubscribeToServiceAvailable();
+
+			$('input[name="Subscribe[subscribe_to_service]"]' ).change(function(){
+				checkSubscribeToServiceAvailable();
+			});
+		},
+
+		initSocialTabs: function() {
+			var self = this;
+
+			this.updateSocialTabs();
+
+			$(".onp-activate-social-button-switch").change(function(){
+				self.updateSocialTabs();
+			});
+
+			$(".onp-vertical-tabs ul").sortable().bind('sortupdate', function (e) {
+				self.recreatePreview();
+			});
+		},
+
+		updateSocialTabs: function() {
+			var socialTabWrap = $(".onp-vertical-tabs");
+			var socialTabItem = $(".onp-vertical-tabs ul li");
+
+			socialTabItem.each(function(){
+				var tab = $(this),
+					tabId = $(this).attr('id'),
+					buttonId = tabId.replace('tab-', '' ).replace('-', '_'),
+					activateButton = $('input[name="Social[' + buttonId + '_available]"]:checked, ' +
+					'input[name="SigninSocial[' + buttonId + '_available]"]:checked');
+
+				if( activateButton.val() == 1 ) {
+					tab.hasClass('disabled-button') && tab.removeClass('disabled-button');
+				} else {
+					tab.addClass('disabled-button');
+				}
+			});
 		},
 
 		/**
@@ -103,7 +179,7 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 		updatePreviewOptions: function(callback) {
 			var self = this,
 				data = {},
-				setting = JSON.parse(window.bizpanda.lockersSettings ),
+				setting = JSON.parse(window.lockersSettings ),
 				fields = this.getAllFields();
 
 			for( f in fields ) {
@@ -309,10 +385,19 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 
 			self.lockerOptions.demo = true;
 
+			if( window.terms && window.privacy ) {
+				self.lockerOptions.terms = window.terms;
+				self.lockerOptions.termsPopup = {
+					width:  570,
+					height: 400
+				};
+				self.lockerOptions.privacyPolicy = window.privacy;
+			}
+
 			self.lockerOptions.groups = ["social-buttons"];
 
-			if( window.bizpanda.buttonsGroup ) {
-				self.lockerOptions.groups = window.bizpanda.buttonsGroup;
+			if( window.buttonsGroup ) {
+				self.lockerOptions.groups = window.buttonsGroup;
 			}
 
 			self.updateButtonOrder();
@@ -342,165 +427,11 @@ if ( !window.bizpanda.lockerEditor ) window.bizpanda.lockerEditor = {};
 
 			newContent.find(".content-to-lock").pandalocker(self.lockerOptions);
 
-		},
-
-		initOverlapModeButtons: function() {
-			var $overlapControl = $("#lockersform-overlap");
-			var $positionControl = $(".onp-overlap-position-box" );
-
-			var checkPositionControlVisability = function( ){
-				var value = $overlapControl.find('input[type="radio"]:checked').val();
-
-				if ( value === 'full' ) {
-					$positionControl.fadeOut();
-					return;
-				}
-
-				$positionControl.fadeIn();
-			};
-
-			/*var toggleAjaxOption = function() {
-			 var value = $("#opanda_overlap").val();
-
-			 if ( value === 'full' ) {
-			 $("#opanda-ajax-disabled").hide();
-			 } else {
-			 $("#opanda-ajax-disabled").fadeIn();
-			 }
-			 };*/
-
-			checkPositionControlVisability();
-			//toggleAjaxOption();
-
-			$overlapControl.find('input[type="radio"]').change(function(){
-				checkPositionControlVisability()
-				//toggleAjaxOption();
-			});
-		},
-
-		updateSocialTabs: function() {
-			var socialTabWrap = $(".onp-vertical-tabs");
-			var socialTabItem = $(".onp-vertical-tabs ul li");
-
-			socialTabItem.each(function(){
-				var tab = $(this),
-					tabId = $(this).attr('id'),
-					buttonId = tabId.replace('tab-', '' ).replace('-', '_'),
-					activateButton = $('input[name="Social[' + buttonId + '_available]"]:checked, ' +
-					'input[name="SigninSocial[' + buttonId + '_available]"]:checked');
-
-				if( activateButton.val() == 1 ) {
-					tab.hasClass('disabled-button') && tab.removeClass('disabled-button');
-				} else {
-					tab.addClass('disabled-button');
-				}
-			});
-
-			//this.updateButtonOrder();
-		},
-
-		/**
-		 * Inits social tabs.
-		 */
-		initSocialTabs: function() {
-			var self = this;
-
-			this.updateSocialTabs();
-
-			$(".onp-activate-social-button-switch").change(function(){
-				self.updateSocialTabs();
-			});
-
-			$(".onp-vertical-tabs ul").sortable().bind('sortupdate', function (e) {
-				self.recreatePreview();
-			});
-
-
-			/*$(".onp-vertical-tabs ul").sortable({
-				placeholder: "sortable-placeholder",
-				//appendTo: ".onp-vertical-tabs ul",
-				opacity: 0.7,
-				//items: "> li",
-				update: function(event, ui) {
-					//self.updateButtonOrder();
-				}
-			});*/
-
-			/*$(".factory-align-vertical .nav-tabs li").click(function(){
-				$(".opanda-overlay-tumbler-hint").hide().remove();
-			});*/
-
-			// current order
-
-			/*var currentString = $("#opanda_buttons_order").val();
-			if (currentString) {
-
-				var currentSet = currentString.split(',');
-				var originalSet = {};
-
-				socialTabItem.each(function(){
-					var tabId = $(this).data('tab-id');
-					originalSet[tabId] = $(this).detach();
-				});
-
-				for(var index in currentSet) {
-					var currentId = currentSet[index];
-					socialTabWrap.append(originalSet[currentId]);
-					delete originalSet[currentId];
-				}
-
-				for(var index in originalSet) {
-					socialTabWrap.append(originalSet[index]);
-				}
-
-				$(function(){
-					$(socialTabWrap.find("li a").get(0)).tab('show');
-				});
-			}
-
-			// make shortable
-			$(".factory-align-vertical .nav-tabs").addClass("ui-sortable");
-			$(".factory-align-vertical .nav-tabs").sortable({
-				placeholder: "sortable-placeholder",
-				opacity: 0.7,
-				items: "> li",
-				update: function(event, ui) {
-					self.updateButtonOrder();
-				}
-			});
-
-			socialTabWrap.find('li').each(function(){
-				var tabId = $(this).data('tab-id');
-				var item = $(this);
-				var checkbox = $("#opanda_" + tabId + "_available");
-
-				checkbox.change(function(){
-					var isAvailable = checkbox.is(':checked');
-
-					if (!isAvailable) {
-						item.addClass('factory-disabled');
-					} else {
-						item.removeClass('factory-disabled');
-					}
-
-					self.updateButtonOrder();
-				}).change();
-			});
-
-			// hides/shows the option "Message To Share" of the Facebook Share button
-
-			$("#opanda_facebook_share_dialog").change(function(){
-				var checked = $(this).is(":checked");
-				if ( checked ) {
-					$("#factory-form-group-message-to-share").hide();
-				} else {
-					$("#factory-form-group-message-to-share").fadeIn();
-				}
-			}).change();*/
 		}
+
 	};
 
 	$(function(){
-		window.bizpanda.lockerEditor.init();
+		window.lockerEditor.init();
 	});
 })(jQuery);

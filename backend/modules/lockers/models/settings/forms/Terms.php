@@ -22,8 +22,12 @@ class Terms extends Model
 	public function rules()
 	{
 		return [
-			[['terms_of_use_text', 'privacy_policy_text'], 'string'],
-			[['terms_enabled'], 'integer']
+			[[
+				 'terms_of_use_text',
+				 'privacy_policy_text'
+			 ], 'string'],
+			[['terms_enabled'], 'integer'],
+			[['terms_enabled'], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}],
 		];
 	}
 

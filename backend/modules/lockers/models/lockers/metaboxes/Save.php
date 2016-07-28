@@ -18,7 +18,8 @@ class Save extends Model
 	{
 		return [
 			[['status'], 'required'],
-			['status', 'integer']
+			['status', 'integer'],
+			[['status'], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
 		];
 	}
 

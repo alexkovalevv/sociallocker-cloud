@@ -10,7 +10,5 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
-
-	    Yii::setAlias('@lockers', dirname(__FILE__));
     }
 }

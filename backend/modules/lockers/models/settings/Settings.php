@@ -68,7 +68,7 @@ class Settings extends ActiveRecord
 	}
 
 	public function getModelValue() {
-		if( !isset($this->getModel()->value) || empty($this->getModel()->value) )
+		if( empty($this->getModel()->value) )
 			return null;
 		return Json::htmlEncode($this->getModel()->value);
 	}

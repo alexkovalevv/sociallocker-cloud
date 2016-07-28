@@ -22,21 +22,13 @@ class CustomFields {
 	public $form;
 	public $model;
 
-	public function __construct($form, $model)
+	public function __construct(ActiveForm $form, Model $model)
 	{
-		if( !$form instanceof ActiveForm) {
-			throw new Exception('Тип переданного атрибута form не допустим.');
-		}
-
-		if( !$model instanceof Model) {
-			throw new Exception('Тип переданного атрибута model не допустим.');
-		}
-
 		$this->form = $form;
 		$this->model = $model;
 	}
 
-	public function textInput($attribute, $options = [])
+	public function textInput($attribute, array $options = [])
 	{
 
 		if( empty($this->model->$attribute) ) {
@@ -47,7 +39,7 @@ class CustomFields {
 			->textInput($options);
 	}
 
-	public function textarea($attribute, $options = [])
+	public function textarea($attribute, array $options = [])
 	{
 		if( empty($this->model->$attribute) ) {
 			$options['value'] = $this->getFieldValueDefault($attribute);
@@ -57,12 +49,13 @@ class CustomFields {
 			->textarea($options);
 	}
 
-	public function dropdown($type, $attribute, $items)
+	public function dropdown($type, $attribute, $items, $ajax = false)
 	{
 		return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->widget(
 			DropdownControl::classname(), [
 				'type'      => $type,
 				'default'   => $this->getFieldValueDefault($attribute),
+				'ajax'      => $ajax,
 				'items'     => $items
 			]
 		);
@@ -88,7 +81,7 @@ class CustomFields {
 		);
 	}
 
-	public function radio($attribute, $items = [])
+	public function radio($attribute, array $items = [])
 	{
 		if( empty($items) ) {
 			$items = [
@@ -96,12 +89,12 @@ class CustomFields {
 			   ['label' => 'Выкл.', 'value' => 0]
 			];
 		}
-		return SwitchControl::widget([
-			'model'     => $this->model,
+		return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->widget(
+			SwitchControl::classname(), [
 			'default'   => $this->getFieldValueDefault($attribute),
-			'attribute' => $attribute,
 		    'items'     => $items
-		]);
+			]
+		);
 	}
 
 	public function checkbox($attribute) {
@@ -125,7 +118,9 @@ class CustomFields {
 			$data = $this->model->attributeInstructions();
 			if( array_key_exists($attribute, $data) ) {
 				return [
-					'inputTemplate' => '{input}<a href="'. $data[$attribute] .'" class="btn btn-default how-get-this" title="Перейти к инструкции">Как получить?</a>'
+					'inputTemplate' => '{input}
+					 <a href="'. $data[$attribute] .'" class="btn btn-default how-get-this"
+					 title="Перейти к инструкции" target="_blank">Как получить?</a>'
 				];
 			}
 		}

@@ -16,6 +16,18 @@ Yii::setAlias('@storage', realpath(__DIR__.'/../../storage'));
 Yii::setAlias('@tests', realpath(__DIR__.'/../../tests'));
 
 /**
+ * Modules
+ */
+Yii::setAlias('@lockers', realpath(__DIR__ . '/../../backend/modules/lockers'));
+Yii::setAlias('@subscription', realpath(__DIR__ . '/../../common/modules/subscription'));
+
+/**
+ * Modules url
+ */
+Yii::setAlias('@lockersUrl', env('BACKEND_URL') . '/lockers');
+Yii::setAlias('@frontendSubscriptionUrl', env('FRONTEND_URL'). '/subscription');
+Yii::setAlias('@backendSubscriptionUrl', env('BACKEND_URL'). '/subscription');
+/**
  * Setting url aliases
  */
 Yii::setAlias('@frontendUrl', env('FRONTEND_URL'));

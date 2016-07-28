@@ -9,10 +9,10 @@ use backend\modules\lockers\models\settings\SettingsForm;
 
 use backend\modules\lockers\models\settings\forms\Social;
 use backend\modules\lockers\models\settings\forms\Lock;
-use backend\modules\lockers\models\settings\forms\Subscribe;
 use backend\modules\lockers\models\settings\forms\Stat;
 use backend\modules\lockers\models\settings\forms\Localization;
 use backend\modules\lockers\models\settings\forms\Terms;
+use common\modules\subscription\models\SubscribeSetting;
 
 
 class SettingsController extends Controller
@@ -23,7 +23,7 @@ class SettingsController extends Controller
 		    'models' => [
 			    'social'       => new Social(),
 			    'lock'         => new Lock(),
-			    'subscribe'    => new Subscribe(),
+			    'subscribe'    => new SubscribeSetting(),
 			    'stat'         => new Stat(),
 			    'localization' => new Localization(),
 			    'terms'        => new Terms()

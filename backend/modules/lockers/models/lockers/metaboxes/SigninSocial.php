@@ -55,7 +55,19 @@ class SigninSocial extends Model
 				 'linkedin_lead_available',
 				 'vk_available',
 				 'vk_lead_available'
-			 ], 'integer']
+			 ], 'integer'],
+			[[
+				 'facebook_available',
+				 'facebook_lead_available',
+				 'twitter_available',
+				 'twitter_lead_available',
+				 'google_available',
+				 'google_lead_available',
+				 'linkedin_available',
+				 'linkedin_lead_available',
+				 'vk_available',
+				 'vk_lead_available'
+			 ], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
 		];
 	}
 

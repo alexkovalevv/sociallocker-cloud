@@ -31,7 +31,12 @@ class Advanced extends Model
 				 'timer',
 				 'highlight',
 				 'close',
-			 ], 'integer']
+			 ], 'integer'],
+			[[
+				 'highlight',
+				 'close'
+			 ], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
+
 		];
 	}
 

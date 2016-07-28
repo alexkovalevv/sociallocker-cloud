@@ -64,18 +64,6 @@ $form->field($model, 'subscription_to_service')->widget(
 class DropdownControl extends Widget
 {
 	/**
-	 * @var string $type тип выпадающего списка, это может быть default, ddslick
-	 * default обычное выпадающее меню
-	 * ddslic  выпадающий список может содержать иконки и короткое описание
-	 * button  кнопка при нажатии на которую, открывается выдающий список
-	 */
-	public $type = "default";
-
-	public $model;
-
-	public $attribute;
-
-	/**
 	 * @var $name имя поля
 	 */
 	protected $name;
@@ -91,6 +79,28 @@ class DropdownControl extends Widget
 	protected $id;
 
 	/**
+	 * @var string $type тип выпадающего списка, это может быть default, ddslick
+	 * default обычное выпадающее меню
+	 * ddslic  выпадающий список может содержать иконки и короткое описание
+	 * button  кнопка при нажатии на которую, открывается выдающий список
+	 */
+	public $type = "default";
+
+	public $model;
+
+	public $attribute;
+
+	/**
+	 * @var boolean если true, использует ajax для получания $items.
+	 */
+	public $ajax = false;
+
+	/**
+	 * @var array|string элементы массива. Если используется ajax, сюда передается url
+	 */
+	public $items;
+
+	/**
 	 * @var string название поля
 	 */
 	public $label;
@@ -101,18 +111,9 @@ class DropdownControl extends Widget
 	public $hint;
 
 	/**
-	 * @var array элементы массива, где label это текст кнопки, value - значение
-	 * пример использования:
-	 * 'items' => [
-	 * ['label' => 'Скрыть', 'value' => 'none'],
-	 * ['label' => 'Прозрачный слой', 'value' => 'opacity']]
-	 */
-	public $items = [];
-
-	/**
 	 * @var string значение по умолчанию
 	 */
-	public $default;
+	public $default = null;
 
 	/**
 	 * @var boolean $liveSearch поиск по списку
@@ -142,16 +143,16 @@ class DropdownControl extends Widget
 	{
 		parent::init();
 
-		if( empty($this->attribute) || !$this->model instanceof Model ) {
-			throw new Exception('Не передан атрибут model или данный тип атрибута не является моделью.');
+		if( $this->type === "ddslick" && $this->ajax ) {
+			throw new Exception('Параметр ajax не доступен для выпадающего списка с типом ddslick(' . $this->attribute . ').');
 		}
 
-		if( empty($this->attribute) ) {
-			throw new Exception('Не передан атрибут attribute.');
+		if( empty($this->items) && $this->ajax ) {
+			throw new Exception('Не передан атрибут items(' . $this->attribute . ').');
 		}
 
-		if( empty($this->items) || !is_array($this->items) ) {
-			throw new Exception('Не передан атрибут items или переданный атрибут не является массивом.');
+		if( empty($this->items) && !is_array($this->items) && !$this->ajax ) {
+			throw new Exception('Не передан атрибут items или атрибут не является массивом(' . $this->attribute . ').');
 		}
 
 		$this->view = $this->getView();
@@ -160,7 +161,7 @@ class DropdownControl extends Widget
 		$this->id   = Html::getInputId($this->model, $this->attribute);
 		$this->value = Html::getAttributeValue($this->model, $this->attribute);
 
-		if( empty($this->value) && !empty($this->default) )
+		if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) )
 			$this->value = $this->default;
 
 		DropdownControlAssets::register($this->view);
@@ -227,24 +228,36 @@ JS;
 
 	protected function renderDefault()
 	{
+		$items = [];
+
+		if( !$this->ajax ) {
+			$item_hints = [];
+			foreach( $this->items as $item ) {
+				$items[$item['value']] = $item['text'];
+				$item_hints[$item['value']] = ArrayHelper::getValue( $item, 'hint' );
+			}
+			$this->itemOptions['data-item-hints'] = $item_hints;
+		} else {
+			$items['none'] = '--- идет поиск ---';
+			Html::addCssClass($this->itemOptions, 'wt-dropdown-ajax');
+			$this->itemOptions['data-ajax-url'] = $this->items;
+			$this->itemOptions['data-value'] = $this->value;
+		}
+
 		$js = <<<JS
 		(function($){
 			$(function(){
-	            $('.wt-dropdown-select').selectpicker({
+			   $('.wt-dropdown-select').selectpicker({
 				  style: '{$this->style}',
 				  width: {$this->width},
 				  liveSearch: {$this->liveSearch}
-				});
+			   });
 	        })
     	})(jQuery);
 JS;
 
 		$this->view->registerJs($js);
 
-		$items = [];
-		foreach( $this->items as $item ) {
-			$items[$item['value']] = $item['text'];
-		}
 
 		Html::addCssClass($this->itemOptions, 'wt-dropdown-select');
 

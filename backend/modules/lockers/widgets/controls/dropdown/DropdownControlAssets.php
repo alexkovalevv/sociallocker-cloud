@@ -14,7 +14,8 @@ class DropdownControlAssets extends AssetBundle
 
 	public $js = [
 		'js/widget.dropdown.min.js',
-	    'js/widget.ddslick.js'
+	    'js/widget.ddslick.js',
+	    'js/widget.general.js'
 	];
 
 	public $css = [

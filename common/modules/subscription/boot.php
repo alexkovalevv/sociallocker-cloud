@@ -1,14 +1,28 @@
 <?php
+
+use common\modules\subscription\services\activecampaign\ActivecampaignSubscriptionService;
+use common\modules\subscription\services\acumbamail\AcumbamailSubscriptionService;
+use common\modules\subscription\services\database\DatabaseSubscriptionService;
+use common\modules\subscription\services\freshmail\FreshmailSubscriptionService;
+use common\modules\subscription\services\getresponse\GetresponseSubscriptionService;
+use common\modules\subscription\services\mailchimp\MailchimpSubscriptionService;
+use common\modules\subscription\services\pechkinmail\PechkinmailSubscriptionService;
+use common\modules\subscription\services\sendgrid\SendGridSubscriptionService;
+use common\modules\subscription\services\sendinblue\SendinblueSubscriptionService;
+use common\modules\subscription\services\sendy\SendySubscriptionService;
+use common\modules\subscription\services\sgautorepondeur\SGAutorepondeurSubscriptionService;
+use common\modules\subscription\services\smartemailing\SmartemailingSubscriptionService;
+use common\modules\subscription\services\smartresponder\SmartresponderSubscriptionService;
+use common\modules\subscription\services\unisender\UnisenderSubscriptionService;
+
 // ---
 // Subscription Services
 //
-
 $items = array(
-	'default'        => array(
+	'default'         => array(
 		'title'       => 'По умолчанию',
 		'description' => 'Email адреса подписчиков будут сохранены в базе данных WP.',
-		'class'       => 'OPanda_DatabaseSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/database/class.database.php',
+		'class'       => new DatabaseSubscriptionService(),
 		'modes'       => array('quick')
 	),
 	'mailchimp'       => array(
@@ -16,8 +30,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в MailChimp.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/mailchimp.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/mailchimp.png',
-		'class'       => 'OPanda_MailChimpSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/mailchimp/class.mailchimp.php',
+		'class'       => new MailChimpSubscriptionService(),
 		'modes'       => array(
 			'double-optin',
 			'quick-double-optin',
@@ -32,8 +45,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в Aweber.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/aweber.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/aweber.png',
-		'class'       => 'OPanda_AweberSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/aweber/class.aweber.php',
+		'class'       => 'AweberSubscriptionService',
 		'modes'       => array(
 			'double-optin',
 			'quick-double-optin'
@@ -44,8 +56,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в  GetResponse.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/getresponse.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/getresponse.png',
-		'class'       => 'OPanda_GetResponseSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/getresponse/class.getresponse.php',
+		'class'       => new GetResponseSubscriptionService(),
 		'modes'       => array(
 			'double-optin',
 			'quick-double-optin'
@@ -56,8 +67,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в Acumbamail.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/acumbamail.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/acumbamail.png',
-		'class'       => 'OPanda_AcumbamailSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/acumbamail/class.acumbamail.php',
+		'class'       => new AcumbamailSubscriptionService(),
 		'modes'       => array('quick')
 	),
 	'freshmail'       => array(
@@ -65,8 +75,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в FreshMail.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/freshmail.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/freshmail.png',
-		'class'       => 'OPanda_FreshmailSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/freshmail/class.freshmail.php',
+		'class'       => new FreshmailSubscriptionService(),
 		'modes'       => array(
 			'double-optin',
 			'quick-double-optin',
@@ -78,8 +87,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в Sendy.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/sendy.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/sendy.png',
-		'class'       => 'OPanda_SendySubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/sendy/class.sendy.php',
+		'class'       => new SendySubscriptionService(),
 		'modes'       => array(
 			'double-optin',
 			'quick'
@@ -91,8 +99,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в SmartEmailing.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/smartemailing.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/smartemailing.png',
-		'class'       => 'OPanda_SmartemailingSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/smartemailing/class.smartemailing.php',
+		'class'       => new SmartemailingSubscriptionService(),
 		'modes'       => array('quick')
 	),
 	'sendinblue'      => array(
@@ -100,8 +107,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в SendInBlue.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/sendinblue.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/sendinblue.png',
-		'class'       => 'OPanda_SendinblueSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/sendinblue/class.sendinblue.php',
+		'class'       => new SendinblueSubscriptionService(),
 		'modes'       => array('quick')
 	),
 	'activecampaign'  => array(
@@ -109,8 +115,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в ActiveCampaign.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/activecampaign.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/activecampaign.png',
-		'class'       => 'OPanda_ActivecampaignSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/activecampaign/class.activecampaign.php',
+		'class'       => new ActivecampaignSubscriptionService(),
 		'modes'       => array('quick'),
 	),
 	'sendgrid'        => array(
@@ -118,8 +123,7 @@ $items = array(
 		'description'   => 'Добавить подписчиков на ваш аккаунт в SendGrid.',
 		'image'         => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/sendgrid.png',
 		'hover'         => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/sendgrid.png',
-		'class'         => 'OPanda_SendGridSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/sendgrid/class.sendgrid.php',
+		'class'         => new SendGridSubscriptionService(),
 		'modes'         => array('quick'),
 		'transactional' => true
 	),
@@ -128,8 +132,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в SG Autorepondeur.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/sgautorepondeur.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/sgautorepondeur.png',
-		'class'       => 'OPanda_SGAutorepondeurSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/sgautorepondeur/class.sgautorepondeur.php',
+		'class'       => new SGAutorepondeurSubscriptionService(),
 		'modes'       => array('quick'),
 		'manualList'  => true
 	),
@@ -138,8 +141,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в PechkinMail.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/pechkinmail-logo-grey.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/pechkinmail-logo.png',
-		'class'       => 'OPanda_PechkinmailSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/pechkinmail/class.pechkinmail.php',
+		'class'       => new PechkinmailSubscriptionService(),
 		'modes'       => array('quick')
 	),
 	'smartresponder'  => array(
@@ -147,8 +149,7 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в SmartResponder.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/smartresponder-logo-grey.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/smartresponder-logo.png',
-		'class'       => 'OPanda_SmartresponderSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/smartresponder/class.smartresponder.php',
+		'class'       => new SmartresponderSubscriptionService(),
 		'modes'       => array('double-optin')
 	),
 	'unisender'       => array(
@@ -156,13 +157,11 @@ $items = array(
 		'description' => 'Добавить подписчиков на ваш аккаунт в Unisender.',
 		'image'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/unisender-logo-grey.png',
 		'hover'       => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/unisender-logo.png',
-		'class'       => 'OPanda_UnisenderSubscriptionService',
-		//'path' => OPTINPANDA_DIR . '/plugin/includes/subscription/unisender/class.unisender.php',
+		'class'       => new UnisenderSubscriptionService(),
 		'modes'       => array(
 			'double-optin',
 			'quick'
 		)
 	)
 );
-
 return $items;

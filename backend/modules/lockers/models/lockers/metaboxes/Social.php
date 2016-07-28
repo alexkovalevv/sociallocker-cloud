@@ -284,7 +284,26 @@ class Social extends Model
 				 'vk_subscribe_available',
 				 'ok_share_available',
 				 'mail_share_available',
-			 ], 'integer']
+			 ], 'integer'],
+			[[
+				 'counters',
+				 'facebook_like_available',
+				 'facebook_share_available',
+				 'facebook_share_dialog',
+				 'twitter_tweet_available',
+				 'twitter_tweet_auth',
+				 'twitter_folllow_available',
+				 'twitter_follow_auth',
+				 'google_plus_available',
+				 'google_share_available',
+				 'google_youtube_available',
+				 'linkedin_share_available',
+				 'vk_like_available',
+				 'vk_share_available',
+				 'vk_subscribe_available',
+				 'ok_share_available',
+				 'mail_share_available',
+			 ], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
 		];
 	}
 

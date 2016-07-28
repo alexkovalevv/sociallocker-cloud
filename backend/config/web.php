@@ -33,6 +33,9 @@ $config = [
             'enableAutoLogin' => true,
             'as afterLogin' => 'common\behaviors\LoginTimestampBehavior'
         ],
+        'lockersSettings' => [
+	        'class' => 'backend\modules\lockers\components\LockersSettings'
+        ]
         /*'settings' => [
 	        'class' => 'common\components\Settings'
         ]*/
@@ -42,10 +45,12 @@ $config = [
             'class' => 'backend\modules\i18n\Module',
             'defaultRoute'=>'i18n-message/index'
         ],
+        'subscription' => [
+	        'class' => 'common\modules\subscription\Module'
+        ],
         'lockers' => [
 	        'class' => 'backend\modules\lockers\Module'
-	        //'defaultRoute'=>'i18n-message/index'
-        ],
+        ]
     ],
     'as globalAccess'=>[
         'class'=>'\common\behaviors\GlobalAccessBehavior',

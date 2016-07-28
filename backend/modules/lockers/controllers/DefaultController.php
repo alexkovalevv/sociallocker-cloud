@@ -137,6 +137,14 @@ class DefaultController extends Controller
 		return $this->redirect(['index']);
 	}
 
+	public function actionTerms() {
+		echo Yii::$app->lockersSettings->get('terms_of_use_text');
+	}
+
+	public function actionPrivacy() {
+		echo Yii::$app->lockersSettings->get('privacy_policy_text');
+	}
+
 	protected function findModel($id)
 	{
 		if (($model = Lockers::findOne($id)) !== null) {

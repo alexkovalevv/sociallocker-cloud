@@ -10,7 +10,7 @@
 			$('html,body').scrollTop(scrollmem);
 		});
 
-		$('input[name="Subscribe[subscription_to_service]"]').change(
+		$('input[name="SubscribeSetting[subscription_to_service]').change(
 			function() {
 				var serviceName = $(this).val();
 

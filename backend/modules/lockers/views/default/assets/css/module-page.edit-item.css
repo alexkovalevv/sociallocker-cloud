@@ -16,7 +16,18 @@
     padding:20px;
     background-color: #fbfbfb;
 }
+.subscription-available {
+    display: none;
+    background: #fdfbfb;
+    padding: 20px;
+}
 
+/**
+    Опции социальных кнопок
+*/
+.social-options {
+    margin-top: 20px;
+}
 .onp-vertical-tabs,  .onp-vertical-tabs .nav-tabs {
     position:relative;
 }

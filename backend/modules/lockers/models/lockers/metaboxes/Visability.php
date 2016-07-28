@@ -35,7 +35,12 @@ class Visability extends Model
 				 'mobile',
 			     'relock_interval',
 			     'relock_interval_units'
-			 ], 'integer']
+			 ], 'integer'],
+			[[
+				 'relock',
+				 'always',
+				 'mobile'
+			 ], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
 		];
 	}
 

@@ -30,13 +30,22 @@ else if( $type === 'emaillocker') {
 	$buttons_group = '["subscription"]';
 }
 
+$terms_url = \yii\helpers\Url::to(['default/terms']);
+$privacy_url = \yii\helpers\Url::to(['default/privacy']);
+
 // Печать настроек замка для превью
 $output = <<<JS
 	if(!window.bizpanda) window.bizpanda = {};
-	window.bizpanda.lockersSettings = {$settings};
-	window.bizpanda.buttonsGroup = {$buttons_group};
+	window.lockersSettings = {$settings};
+	window.buttonsGroup = {$buttons_group};
 JS;
 
+if( Yii::$app->lockersSettings->get('terms_enabled') ) {
+$output .= <<<JS
+	window.terms = '{$terms_url}';
+	window.privacy = '{$privacy_url}';
+JS;
+}
 $this->registerJs( $output, $this::POS_END );
 
 // Подключение js и css файлов

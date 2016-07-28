@@ -3,9 +3,13 @@
  * Шаблон создания и редактирования замков авторизации.
  */
 
+
 use common\helpers\CustomFields;
 use yii\bootstrap\ActiveForm;
 use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
+use common\modules\subscription\classes\SubscriptionServices;
+use yii\helpers\Url;
+
 ?>
 
 <!-- Общий шаблон создания замков  -->
@@ -42,22 +46,26 @@ use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 
 			<!-- Опции подписки -->
 			<?php $fields->model = $model->getModel('subscribe'); ?>
-			<div class="subscribe-options">
+			<div class="subscription-options">
 				<?=$fields->checkbox('subscribe_to_service');?>
 
-				<div class="subscribe-available">
-					<?=$fields->dropdown('default', 'subscribe_mode', [
-						['value' => 'quick', 'text' => 'Одинарная проверка'],
-						['value' => 'double_optin', 'text' => 'Двойная проверка'],
-						['value' => 'quick_double_optin', 'text' => 'Ленивая проверка']
-					]);?>
+				<div class="subscription-available">
+					<?php if( SubscriptionServices::getCurrentName() == 'none' || SubscriptionServices::getCurrentName() == 'default' ): ?>
+						<p>
+							Собранные email адреса будут сохранены в <a href="#" target="_blank">локальную базу данных</a>, так как вы не выбрали сервисы email рассылки.
+							(<a href="<?=Url::to(['settings/index#tab-subscription']);?>" target="_blank">изменить</a>).
+						</p>
+					<?php else: ?>
+						<p>Вы выбрали <?=SubscriptionServices::getCurrentServiceTitle();?>, как ваш почтовый сервис (<a href="<?=Url::to(['settings/index#tab-subscription']);?>" target="_blank">изменить</a>).</p>
+					<?php endif; ?>
+					<p><?=$fields->dropdown('default', 'subscribe_list', Url::to('@backendSubscriptionUrl/default/subscrtiption-lists', true), true);?></p>
+					<p><?=$fields->dropdown('default', 'subscribe_mode', SubscriptionServices::getCurrentOptinModes());?></p>
 				</div>
 			</div>
 			<!-- /Опции подписки -->
 
 			<!-- Опции социальных кнопок -->
 			<div class="social-options">
-
 				<?php include_once(dirname(__FILE__) . '/metaboxes/_signin-social-options.php'); ?>
 			</div>
 			<!-- /Опции социальных кнопок -->
