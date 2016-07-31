@@ -18,6 +18,10 @@ $config = [
        'subscription' => [
 	        'class' => 'common\modules\subscription\Module'
         ],
+
+       'signin' => [
+	        'class' => 'common\modules\signin\Module'
+       ]
     ],
     'components' => [
         'authClientCollection' => [
@@ -61,6 +65,9 @@ $config = [
             'loginUrl'=>['/user/sign-in/login'],
             'enableAutoLogin' => true,
             'as afterLogin' => 'common\behaviors\LoginTimestampBehavior'
+        ],
+        'lockersSettings' => [
+	        'class' => 'backend\modules\lockers\components\LockersSettings'
         ]
     ]
 ];

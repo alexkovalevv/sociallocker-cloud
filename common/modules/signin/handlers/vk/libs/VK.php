@@ -6,7 +6,7 @@
  * @license https://raw.github.com/vladkens/VK/master/LICENSE MIT
  */
 
-namespace VK;
+namespace common\modules\signin\handlers\vk\libs;
 
 class VK
 {

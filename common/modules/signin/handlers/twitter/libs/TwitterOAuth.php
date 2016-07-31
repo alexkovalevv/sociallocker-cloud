@@ -1,4 +1,5 @@
 <?php
+namespace common\modules\signin\handlers\twitter\libs;
 
 /*
  * Abraham Williams (abraham@abrah.am) http://abrah.am
@@ -7,12 +8,12 @@
  */
 
 /* Load OAuth lib. You can find it at http://oauth.net */
-require_once('OAuth.php');
+//require_once('OAuth.php');
 
 /**
  * Twitter OAuth class
  */
-class OPanda_TwitterOAuth {
+class TwitterOAuth {
   /* Contains the last HTTP status code returned. */
   public $http_code;
   /* Contains the last API call. */
@@ -32,7 +33,7 @@ class OPanda_TwitterOAuth {
   /* Contains the last HTTP headers returned. */
   public $http_info;
   /* Set the useragnet. */
-  public $useragent = 'OPanda_TwitterOAuth v0.2.0-beta2';
+  public $useragent = 'TwitterOAuth v0.2.0-beta2';
   /* Immediately retry the API call if the response was not successful. */
   //public $retry = TRUE;
 
@@ -54,13 +55,13 @@ class OPanda_TwitterOAuth {
   function lastAPICall() { return $this->last_api_call; }
 
   /**
-   * construct OPanda_TwitterOAuth object
+   * construct TwitterOAuth object
    */
   function __construct($consumer_key, $consumer_secret, $oauth_token = NULL, $oauth_token_secret = NULL) {
-    $this->sha1_method = new OPanda_OAuthSignatureMethod_HMAC_SHA1();
-    $this->consumer = new OPanda_OAuthConsumer($consumer_key, $consumer_secret);
+    $this->sha1_method = new OAuthSignatureMethod_HMAC_SHA1();
+    $this->consumer = new OAuthConsumer($consumer_key, $consumer_secret);
     if (!empty($oauth_token) && !empty($oauth_token_secret)) {
-      $this->token = new OPanda_OAuthConsumer($oauth_token, $oauth_token_secret);
+      $this->token = new OAuthConsumer($oauth_token, $oauth_token_secret);
     } else {
       $this->token = NULL;
     }
@@ -77,8 +78,8 @@ class OPanda_TwitterOAuth {
     $parameters['oauth_callback'] = $oauth_callback; 
     $request = $this->oAuthRequest($this->requestTokenURL(), 'GET', $parameters);
 
-    $token = OPanda_OAuthUtil::parse_parameters($request);
-    $this->token = new OPanda_OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
+    $token = OAuthUtil::parse_parameters($request);
+    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
 
@@ -111,8 +112,8 @@ class OPanda_TwitterOAuth {
     $parameters = array();
     $parameters['oauth_verifier'] = $oauth_verifier;
     $request = $this->oAuthRequest($this->accessTokenURL(), 'GET', $parameters);
-    $token = OPanda_OAuthUtil::parse_parameters($request);
-    $this->token = new OPanda_OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
+    $token = OAuthUtil::parse_parameters($request);
+    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
 
@@ -131,8 +132,8 @@ class OPanda_TwitterOAuth {
     $parameters['x_auth_password'] = $password;
     $parameters['x_auth_mode'] = 'client_auth';
     $request = $this->oAuthRequest($this->accessTokenURL(), 'POST', $parameters);
-    $token = OPanda_OAuthUtil::parse_parameters($request);
-    $this->token = new OPanda_OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
+    $token = OAuthUtil::parse_parameters($request);
+    $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
 
@@ -176,7 +177,7 @@ class OPanda_TwitterOAuth {
     if (strrpos($url, 'https://') !== 0 && strrpos($url, 'http://') !== 0) {
       $url = "{$this->host}{$url}.{$this->format}";
     }
-    $request = OPanda_OAuthRequest::from_consumer_and_token($this->consumer, $this->token, $method, $url, $parameters);
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->token, $method, $url, $parameters);
     $request->sign_request($this->sha1_method, $this->consumer, $this->token);
     switch ($method) {
     case 'GET':

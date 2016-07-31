@@ -1,4 +1,10 @@
 <?php
+namespace common\modules\signin;
+
+use common\modules\signin\handlers\twitter\TwitterHandler;
+use yii\base\Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * The base class for all handlers of requests to the proxy.
@@ -210,17 +216,26 @@ class Handler {
                 if ( !isset( $serviceData['authResponse']['accessToken'] ) || empty( $serviceData['authResponse']['accessToken'] ) ) return false;
                 
                 $url = 'https://graph.facebook.com/me?access_token=' . $serviceData['authResponse']['accessToken'];
-                $response = wp_remote_get($url);
-                
-                if ( is_wp_error( $response) || !isset( $response['body'] ) ) return false;
-                
-                $data = json_decode($response['body']);
-                if ( !isset( $data->email ) ) return false;
-                
-                $email = str_replace('\u0040', '@', $data->email);
-                if ( $identityData['email'] !== $email ) return false;
-                
-                return true;
+
+                $client = new Client();
+
+                try {
+                    $result = $client->request('GET', $url);
+                    $body = $result->getBody();
+
+                    if (empty($body)) return false;
+
+                    $data = json_decode($body);
+                    if ( !isset( $data->email ) ) return false;
+
+                    $email = str_replace('\u0040', '@', $data->email);
+                    if ( $identityData['email'] !== $email ) return false;
+
+                    return true;
+
+                } catch (RequestException $e) {
+                    return false;
+                }
 
             case 'twitter':
 
@@ -231,10 +246,9 @@ class Handler {
                         
                 if ( empty( $token ) || empty($secret) ) return false;
 
-                $options = opanda_get_handler_options( 'twitter' );
+                $options = Module::getConnectOptions( 'twitter' );
 
-                require_once OPANDA_BIZPANDA_DIR . "/admin/includes/connect-handlers/handlers/twitter/twitter.php";
-                $handler = new OPanda_TwitterHandler( $options, true );
+                $handler = new TwitterHandler( $options, true );
 
                 $response = $handler->getUserData( $serviceData['visitorId'], true );
 
@@ -248,48 +262,74 @@ class Handler {
                 if ( !isset( $serviceData['accessToken'] ) || empty( $serviceData['accessToken'] ) ) return false;
                 
                 $url = 'https://api.linkedin.com/v1/people/~:(emailAddress)?oauth2_access_token='.$serviceData['accessToken'];
-                $response = wp_remote_get($url, array(
-                    'headers' => 'x-li-format: json'
-                ));
 
-                if ( is_wp_error( $response) || !isset( $response['body'] ) ) return false;
-                
-                $data = json_decode($response['body']);
-                if ( !isset( $data->emailAddress ) ) return false;
+                $client = new Client();
 
-                if ( $identityData['email'] !== $data->emailAddress ) return false;
-                return true;
+                try {
+                    $result = $client->request('GET', $url, array(
+                        'headers' => 'x-li-format: json'
+                    ));
+                    $body = $result->getBody();
 
+                    if ( empty($body) ) return false;
+
+                    $data = json_decode($body);
+                    if ( !isset( $data->emailAddress ) ) return false;
+
+                    if ( $identityData['email'] !== $data->emailAddress ) return false;
+                    return true;
+
+                } catch (RequestException $e) {
+                    return false;
+                }
             case 'google':
                 
                 if ( !isset( $serviceData['access_token'] ) || empty( $serviceData['access_token'] ) ) return false;
                 
                 $url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' . $serviceData['access_token'];
-                $response = wp_remote_get($url);  
-                
-                if ( is_wp_error( $response) || !isset( $response['body'] ) ) return false;
-                
-                $data = json_decode($response['body']);
-                if ( !isset( $data->email ) ) return false;
-                
-                if ( $identityData['email'] !== $data->email ) return false;
-                
-                return true;
+
+                $client = new Client();
+
+                try {
+                    $result = $client->request('GET', $url);
+                    $body = $result->getBody();
+
+                    if ( empty($body) ) return false;
+
+                    $data = json_decode($body);
+                    if ( !isset( $data->email ) ) return false;
+
+                    if ( $identityData['email'] !== $data->email ) return false;
+
+                    return true;
+
+                } catch (RequestException $e) {
+                    return false;
+                }
 
             case 'vk':
 
 				if ( !isset( $serviceData['accessToken'] ) || empty( $serviceData['accessToken'] ) ) return false;
 
 	            $url = 'https://api.vk.com/method/users.get?access_token=' . $serviceData['accessToken'];
-	            $response = wp_remote_get($url);
 
-	            if ( is_wp_error( $response) || !isset( $response['body'] ) ) return false;
+                $client = new Client();
 
-	            $data = json_decode($response['body']);
-	            if ( !isset($serviceData['email']) ) return false;
-	            if ( $identityData['email'] !== $serviceData['email'] ) return false;
+                try {
+                    $result = $client->request('GET', $url);
+                    $body = $result->getBody();
 
-	            return true;
+                    if ( empty($body) ) return false;
+
+                    $data = json_decode($body);
+                    if ( !isset($serviceData['email']) ) return false;
+                    if ( $identityData['email'] !== $serviceData['email'] ) return false;
+
+                    return true;
+
+                } catch (RequestException $e) {
+                    return false;
+                }
         }
         
         return false;

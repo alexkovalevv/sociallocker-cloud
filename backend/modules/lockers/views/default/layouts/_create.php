@@ -40,6 +40,14 @@ $output = <<<JS
 	window.buttonsGroup = {$buttons_group};
 JS;
 
+$proxyUrl = Yii::getAlias('@proxyUrl');
+
+if( $type === 'signinlocker' && !empty($proxyUrl) ) {
+$output .= <<<JS
+	window.proxyUrl = '{$proxyUrl}';
+JS;
+}
+
 if( Yii::$app->lockersSettings->get('terms_enabled') ) {
 $output .= <<<JS
 	window.terms = '{$terms_url}';

@@ -1,9 +1,14 @@
 <?php
+namespace common\modules\signin\handlers\linkedin;
+
+use common\modules\signin\Handler;
+use common\modules\signin\HandlerException;
+use common\modules\signin\handlers\linkedin\libs\LinkedIn_Client;
 
 /**
  * The class to proxy the request to the LinkedIn API.
  */
-class OPanda_LinkedinHandler extends OPanda_Handler {
+class LinkedinHandler extends Handler {
 
     /**
      * Handles the proxy request.
@@ -17,11 +22,9 @@ class OPanda_LinkedinHandler extends OPanda_Handler {
         $allowed = array('init', 'callback', 'user_info', 'follow', 'tweet');
         
         if ( empty( $requestType ) || !in_array($requestType, $allowed) )
-            throw new Opanda_HandlerException('Invalid request type.'); 
+            throw new HandlerException('Invalid request type.'); 
         
         $accessToken = !empty( $_REQUEST['opandaAccessToken'] ) ? $_REQUEST['opandaAccessToken'] : null;
-
-        require_once( dirname(__FILE__) . '/libs/Client.php');
 
         switch( $requestType ) {
             
@@ -51,7 +54,7 @@ class OPanda_LinkedinHandler extends OPanda_Handler {
     public function doInit() {
         $options = $this->options;
 
-        $client = new OPanda_LinkedIn_Client($options['client_id'], $options['client_secret']);
+        $client = new LinkedIn_Client($options['client_id'], $options['client_secret']);
         $authorizeURL = $client->getAuthorizationUrl( $this->getCallbackUrl() );
 
         header("Location: $authorizeURL");
@@ -68,7 +71,7 @@ class OPanda_LinkedinHandler extends OPanda_Handler {
         if ( $denied ) { 
         ?>
             <script>
-                if( window.opener ) window.opener.OPanda_LinkedInOAuthDenied( '<?php echo $visitorId ?>' );                
+                if( window.opener ) window.opener.OPanda_LinkedInOAuthDenied( '<?php echo $visitorId ?>' );
                 window.close();                
             </script>
         <?php
@@ -76,20 +79,20 @@ class OPanda_LinkedinHandler extends OPanda_Handler {
         }
         
         $code = isset( $_REQUEST['code'] ) ? $_REQUEST['code'] : false;
-        if ( empty( $code ) ) throw new Opanda_HandlerException('Invalid code.');
+        if ( empty( $code ) ) throw new HandlerException('Invalid code.');
         
-        $client = new OPanda_LinkedIn_Client($options['client_id'], $options['client_secret']);
+        $client = new LinkedIn_Client($options['client_id'], $options['client_secret']);
         $response = $client->fetchAccessToken($code, $this->getCallbackUrl());
 
         if ( !isset( $response['access_token'] ) ) {
-            throw new Opanda_HandlerException('Invalid request.');
+            throw new HandlerException('Invalid request.');
         }
         
         $accessToken = $response['access_token'];
         
         ?>
             <script>
-                if( window.opener ) window.opener.OPanda_LinkedInOAuthCompleted( '<?php echo $accessToken ?>' );                
+                if( window.opener ) window.opener.OPanda_LinkedInOAuthCompleted( '<?php echo $accessToken ?>' );
                 window.close();                
             </script>
         <?php
@@ -98,11 +101,10 @@ class OPanda_LinkedinHandler extends OPanda_Handler {
     }
     
     public function getUserData( $accessToken  ) {
-        require_once( dirname(__FILE__) . '/libs/Client.php');
-                
+
         $options = $this->options;
         
-        $client = new OPanda_LinkedIn_Client($options['client_id'], $options['client_secret']);
+        $client = new LinkedIn_Client($options['client_id'], $options['client_secret']);
         $client->setAccessToken( $accessToken );
 
         $fields = array("firstName", "lastName", "emailAddress", "publicProfileUrl", "pictureUrls::(original)");

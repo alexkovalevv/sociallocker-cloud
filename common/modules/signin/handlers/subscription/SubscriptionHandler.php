@@ -1,29 +1,36 @@
 <?php
+namespace common\modules\signin\handlers\subscription;
+
+use common\modules\signin\Handler;
+use common\modules\signin\handlers\HandlerInternalException;
+use common\modules\signin\handlers\HandlerException;
+use common\modules\subscription\classes\SubscriptionServices;
+use yii\base\Exception;
+
 /**
  * The class to proxy the request to the Subscription API.
  */
-class OPanda_SubscriptionHandler extends OPanda_Handler {
+class SubscriptionHandler extends Handler {
     /**
      * Handles the proxy request.
      */
     public function handleRequest() {
         
         if( !isset($_POST['opandaRequestType']) || !isset($_POST['opandaService']) ) {
-           throw new Opanda_HandlerInternalException('Invalid request. The "opandaRequestType" or "opandaService" are not defined.');
+           throw new HandlerInternalException('Invalid request. The "opandaRequestType" or "opandaService" are not defined.');
         }
 
-        require_once OPANDA_BIZPANDA_DIR . '/admin/includes/subscriptions.php';
-        $service = OPanda_SubscriptionServices::getCurrentService();
+        $service = SubscriptionServices::getCurrentService();
 
         if ( empty( $service) ) {
-           throw new Opanda_HandlerInternalException( sprintf( 'The subscription service is not set.' )); 
+           throw new HandlerInternalException( sprintf( 'The subscription service is not set.' )); 
         }
 
         // - service name
         
         $serviceName = $this->options['service'];
         if ( $serviceName !== $service->name  ) {
-           throw new Opanda_HandlerInternalException( sprintf( 'Invalid subscription service "%s".', $serviceName ));
+           throw new HandlerInternalException( sprintf( 'Invalid subscription service "%s".', $serviceName ));
         }
         
         // - request type
@@ -32,7 +39,7 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
         $allowed = array('check', 'subscribe');
 
         if ( !in_array( $requestType, $allowed ) ) {
-           throw new Opanda_HandlerInternalException( sprintf( 'Invalid request. The action "%s" not found.', $requestType ));
+           throw new HandlerInternalException( sprintf( 'Invalid request. The action "%s" not found.', $requestType ));
         }
         
         // - identity data
@@ -41,7 +48,7 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
         $identityData = $this->normilizeValues( $identityData );
         
         if ( empty( $identityData['email'] )) {
-           throw new Opanda_HandlerException( 'Unable to subscribe. The email is not specified.' );
+           throw new HandlerException( 'Unable to subscribe. The email is not specified.' );
         }
         
         // - service data
@@ -58,7 +65,7 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
         
         $listId = isset( $_POST['opandaListId'] ) ? $_POST['opandaListId'] : null;
         if ( empty( $listId ) ) {
-           throw new Opanda_HandlerException( 'Unable to subscribe. The list ID is not specified.' );
+           throw new HandlerException( 'Unable to subscribe. The list ID is not specified.' );
         }
         
         // - double opt-in
@@ -75,7 +82,7 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
         // works for social subscription
         
         $verified = false; 
-        $mailServiceInfo = OPanda_SubscriptionServices::getServiceInfo();
+        $mailServiceInfo = SubscriptionServices::getServiceInfo();
         $modes = $mailServiceInfo['modes'];
             
         if ( 'subscribe' === $requestType ) {
@@ -95,8 +102,8 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
         
         // checks if the subscription has to be procces via WP
         
-        $subscribeMode = get_post_meta($itemId, 'opanda_subscribe_mode', true);
-        $subscribeDelivery = get_post_meta($itemId, 'opanda_subscribe_delivery', true);
+        $subscribeMode = get_post_meta($itemId, 'subscribe_mode', true);
+        $subscribeDelivery = get_post_meta($itemId, 'subscribe_delivery', true);
         
         $isWpSubscription = false;
         
@@ -121,7 +128,7 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
                     // then we can skip the confirmation process
                     
                     if ( $verified ) {
-                        OPanda_Leads::add( $identityData, $contextData, true, true );
+                        //Leads::add( $identityData, $contextData, true, true );
                         return $service->subscribe( $serviceReadyData, $listId, false, $contextData, $verified );
                     } else {
                         $result = $service->wpSubscribe( $identityData, $serviceReadyData, $contextData, $listId, $verified );    
@@ -131,7 +138,7 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
                     $result = $service->subscribe( $serviceReadyData, $listId, $doubleOptin, $contextData, $verified );         
                 }
 
-                do_action('opanda_subscribe', 
+                do_action('subscribe', 
                     ( $result && isset( $result['status'] ) ) ? $result['status'] : 'error', 
                     $identityData, $contextData, $isWpSubscription
                 );
@@ -144,14 +151,14 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
                     $result = $service->check( $serviceReadyData, $listId, $contextData );   
                 }
                 
-                do_action('opanda_check', 
+                do_action('check', 
                     ( $result && isset( $result['status'] ) ) ? $result['status'] : 'error', 
                     $identityData, $contextData, $isWpSubscription
                 );
             }
             
-            $result = apply_filters('opanda_subscription_result', $result, $identityData);
-            if ( !defined( 'OPANDA_WORDPRESS' ) ) return $result;
+            $result = apply_filters('subscription_result', $result, $identityData);
+            if ( !defined( 'WORDPRESS' ) ) return $result;
             
             // calls the hook to save the lead in the database
             if ( $result && isset( $result['status'] ) ) {
@@ -167,16 +174,16 @@ class OPanda_SubscriptionHandler extends OPanda_Handler {
                 );
                 
                 if ( 'subscribed' === $result['status'] ) {
-                    do_action('opanda_subscribed', $actionData);
+                    do_action('subscribed', $actionData);
                 } else {
-                    do_action('opanda_pending', $actionData); 
+                    do_action('pending', $actionData); 
                 }
             }
             
             return $result;
             
         } catch(Exception $ex) {
-            throw new Opanda_HandlerException( $ex->getMessage() );
+            throw new HandlerException( $ex->getMessage() );
         }
     }
 }

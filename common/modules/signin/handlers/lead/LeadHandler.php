@@ -1,8 +1,12 @@
 <?php
+namespace common\modules\signin\handlers\lead;
+
+use common\modules\signin\Handler;
+
 /**
  * The class to proxy the request to the Twitter API.
  */
-class OPanda_LeadHandler extends OPanda_Handler {
+class LeadHandler extends Handler {
 
     /**
      * Handles the proxy request.
@@ -22,9 +26,8 @@ class OPanda_LeadHandler extends OPanda_Handler {
         // prepares data received from custom fields to be transferred to the mailing service
         
         $identityData = $this->prepareDataToSave( null, null, $identityData );
-        
-        require_once OPANDA_BIZPANDA_DIR . '/admin/includes/leads.php';
-        OPanda_Leads::add( $identityData, $contextData );
+
+        //OPanda_Leads::add( $identityData, $contextData );
     }
 }
 

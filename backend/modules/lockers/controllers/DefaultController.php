@@ -7,6 +7,7 @@
 namespace backend\modules\lockers\controllers;
 
 use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -26,7 +27,10 @@ use backend\modules\lockers\models\lockers\metaboxes\SigninSocial;
 
 class DefaultController extends Controller
 {
-    public function actionIndex()
+	/**
+	 * @return mixed
+	 */
+	public function actionIndex()
     {
 	    $searchModel = new LockersSearch();
 	    $dataProvider = $searchModel->search(Yii::$app->request->queryParams);

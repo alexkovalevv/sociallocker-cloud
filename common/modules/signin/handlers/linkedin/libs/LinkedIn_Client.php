@@ -1,6 +1,7 @@
 <?php
+namespace common\modules\signin\handlers\linkedin\libs;
 
-class OPanda_LinkedIn_Client {
+class LinkedIn_Client {
     public $domain = "https://api.linkedin.com";
     /**
      * Authorization and AccessToken api endpoints are special in that they live on www.linkedin.com not api.linkedin.com
@@ -171,19 +172,19 @@ class OPanda_LinkedIn_Client {
         
         $errno = curl_errno($ch);
         if ($errno !== 0) {
-            throw new OPanda_LinkedIn_Exception(sprintf("Error connecting to LinkedIn: [%s] %s", $errno, curl_error($ch)), $errno);
+            throw new LinkedIn_Exception(sprintf("Error connecting to LinkedIn: [%s] %s", $errno, curl_error($ch)), $errno);
         }
 
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if ($code >= 400) {
-            throw new OPanda_LinkedIn_Exception(trim(strip_tags($body)), $code);
+            throw new LinkedIn_Exception(trim(strip_tags($body)), $code);
         }
 
         $response = json_decode($body, true);
 
         if (isset($response['error'])) {
-            throw new OPanda_LinkedIn_Exception(sprintf("%s: %s", $response['error'], $response['error_description']), $code);
+            throw new LinkedIn_Exception(sprintf("%s: %s", $response['error'], $response['error_description']), $code);
         }
 
         return $response;
@@ -261,4 +262,3 @@ class OPanda_LinkedIn_Client {
     }
 }
 
-class OPanda_LinkedIn_Exception extends Exception {}

@@ -27,6 +27,9 @@ Yii::setAlias('@subscription', realpath(__DIR__ . '/../../common/modules/subscri
 Yii::setAlias('@lockersUrl', env('BACKEND_URL') . '/lockers');
 Yii::setAlias('@frontendSubscriptionUrl', env('FRONTEND_URL'). '/subscription');
 Yii::setAlias('@backendSubscriptionUrl', env('BACKEND_URL'). '/subscription');
+
+Yii::setAlias('@proxyUrl', env('FRONTEND_URL') . '/signin/connect/index' );
+
 /**
  * Setting url aliases
  */

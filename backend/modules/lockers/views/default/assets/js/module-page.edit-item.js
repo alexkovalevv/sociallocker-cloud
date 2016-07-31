@@ -75,10 +75,6 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 			this.updateSocialTabs();
 
-			$(".onp-activate-social-button-switch").change(function(){
-				self.updateSocialTabs();
-			});
-
 			$(".onp-vertical-tabs ul").sortable().bind('sortupdate', function (e) {
 				self.recreatePreview();
 			});
@@ -136,6 +132,7 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			for( f in fields ) {
 				$( '[name^="' + fields[f] + '"]').bind('change keyup',
 					function(){
+                        self.updateSocialTabs();
 						self.refreshPreview();
 					}
 				);
@@ -385,6 +382,10 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 			self.lockerOptions.demo = true;
 
+            if( window.proxyUrl ) {
+                self.lockerOptions.proxy = window.proxyUrl;
+            }
+
 			if( window.terms && window.privacy ) {
 				self.lockerOptions.terms = window.terms;
 				self.lockerOptions.termsPopup = {
@@ -408,7 +409,6 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 				'google-plus'
 			];
 
-			self.lockerOptions.proxy = 'http://opanda-develope.js/plugin/php/proxy.php';
 			self.lockerOptions.connectButtons.order = [
 				'vk',
 				'twitter',
