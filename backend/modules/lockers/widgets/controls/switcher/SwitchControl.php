@@ -44,13 +44,15 @@ class SwitchControl extends InputWidget
     /**
      * @var string события, выполняются во время переключения кнопок
      * Доступные события:
-     * 'class-name' => ['1' =>'show', '0' => 'hide']
+     * ['class-name' => ['1' =>'show', '0' => 'hide']]
      * Если значения 1 или 0 указанные в примере, совпадают со значением value кнопок,
      * то выполнитеся действие для указанного класса
      */
     public $events = [];
 
     public $itemsOptions = ['class' => 'btn btn-default'];
+
+    public $contanierOptions = [];
 
     /**
      * @inheritdoc
@@ -70,7 +72,7 @@ class SwitchControl extends InputWidget
     {
         parent::run();
         echo $this->renderInput();
-        SwitchControlAssets::register($this->view);
+        SwitchControlAssets::register( $this->view );
     }
 
     protected function renderInput()
@@ -100,12 +102,16 @@ class SwitchControl extends InputWidget
             }
 
             $output .= Html::tag( 'div', $input . $label, $itemsOptions );
+
+            $this->contanierOptions = ArrayHelper::merge( [
+                'role'        => "group",
+                'data-toggle' => 'buttons'
+            ], $this->contanierOptions );
+
+            Html::addCssClass($this->contanierOptions, 'btn-group wt-switch');
         }
 
-        return Html::tag( 'div', $output, ArrayHelper::merge( [
-            'class'       => 'btn-group wt-switch',
-            'role'        => "group",
-            'data-toggle' => 'buttons'
-        ], empty( $this->events ) ? [] : ['data-events' => $this->events] ) );
+        return Html::tag( 'div', $output, ArrayHelper::merge( $this->contanierOptions,
+            empty( $this->events ) ? [] : ['data-events' => $this->events] ) );
     }
 }

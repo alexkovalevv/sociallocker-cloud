@@ -48,7 +48,10 @@
 								 self.append(output);
 
 								 self.selectpicker('refresh');
-						 }
+						 },
+                         error: function(m) {
+                            console.log(m);
+                         }
 					 });
 				 }
 			 }

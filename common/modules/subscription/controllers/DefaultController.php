@@ -6,9 +6,11 @@
 
 namespace common\modules\subscription\controllers;
 
+
 use Yii;
 use yii\base\Exception;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\Response;
 
 use common\modules\subscription\classes\SubscriptionServices;
@@ -21,6 +23,10 @@ class DefaultController extends Controller
 	 */
 	public function actionSubscrtiptionLists()
     {
+        if(!Yii::$app->request->isAjax) {
+            throw new HttpException('403');
+        }
+
 	    Yii::$app->response->format = Response::FORMAT_JSON;
 
 	    try {
@@ -36,4 +42,8 @@ class DefaultController extends Controller
 	    }
     }
 
+    public function beforeAction($action) {
+        $this->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
 }

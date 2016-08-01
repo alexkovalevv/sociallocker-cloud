@@ -1,9 +1,14 @@
 /**
- * Created by ПКПК on 01.08.2016.
+ * Кнопка переключатель
+ * @author Alex Kovalevv <alex.kovalevv@gmail.com>
  */
 
 (function($){
     $(function(){
+        /**
+         * Обработка событий заданных для виджета
+         * Поддерживает два события(show|hide)
+         */
         $('.wt-switch').each(function() {
             if( $(this).data('events') ) {
                 var self = $(this),

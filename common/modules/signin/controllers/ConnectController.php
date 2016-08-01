@@ -86,5 +86,10 @@ class ConnectController extends Controller
 		} catch(Exception $ex) {
 			return ['error' => $ex->getMessage()];
 		}
-	}	
+	}
+
+    public function beforeAction($action) {
+        $this->enableCsrfValidation = false;
+        return parent::beforeAction($action);
+    }
 }

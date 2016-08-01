@@ -114,6 +114,11 @@ class CustomFields
         return $this->radio( $attribute, [], $options );
     }
 
+    public function hidden( $attribute, array $options = [] ) {
+        return $this->form->field( $this->model, $attribute)
+            ->hiddenInput($options)->label(false);
+    }
+
     public function getFieldValueDefault( $attribute )
     {
         if (method_exists( $this->model, 'attributeDefaults' )) {

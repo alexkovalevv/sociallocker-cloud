@@ -17,6 +17,9 @@ class SigninSocial extends Model
     // Активация режима email подписки через кнопку facebook
 	public $facebook_lead_available;
 
+    // Действия кнопки twitter
+    public $facebook_actions;
+
 	// Активации кнопки twitter
 	public $twitter_available;
 
@@ -38,6 +41,9 @@ class SigninSocial extends Model
     // Сообщение
     public $twitter_tweet_message;
 
+    // Действия кнопки twitter
+    public $twitter_actions;
+
 	// Активации кнопки google
 	public $google_available;
 
@@ -48,7 +54,10 @@ class SigninSocial extends Model
     public $google_youtube_subscribe_available;
 
     // ID youtube канала
-    public $google_youtube_channel_id;
+    public $google_youtube_subscribe_channel_id;
+
+    // Действия кнопки google
+    public $google_actions;
 
 	// Активации кнопки linkedin
 	public $linkedin_available;
@@ -56,19 +65,34 @@ class SigninSocial extends Model
     // Активация режима email подписки через кнопку linkedin
 	public $linkedin_lead_available;
 
+    // Действия кнопки linkedin
+    public $linkedin_actions;
+
 	// Активация кнопки вконтакте
 	public $vk_available;
 
     // Активация режима email подписки через кнопку вконтакте
 	public $vk_lead_available;
 
+    // Действия кнопки vkontakte
+    public $vk_actions;
+
+    // Сортировка кнопок
+    public $buttons_order;
+
 	public function rules()
 	{
 		return [
             [[
-                 'google_youtube_channel_id',
+                 'google_youtube_subscribe_channel_id',
                  'twitter_follow_user',
                  'twitter_tweet_message',
+                 'twitter_actions',
+                 'facebook_actions',
+                 'google_actions',
+                 'linkedin_actions',
+                 'vk_actions',
+                 'buttons_order'
              ], 'string'],
 			[[
                  'facebook_available',
@@ -120,7 +144,7 @@ class SigninSocial extends Model
             'google_available'                   => 'Активна',
             'google_lead_available'              => 'Сохранять email адрес',
             'google_youtube_subscribe_available' => 'Подписка на канал youtube',
-            'google_youtube_channel_id'          => 'ID канала',
+            'google_youtube_subscribe_channel_id'          => 'ID канала',
             'linkedin_available'                 => 'Активна',
             'linkedin_lead_available'            => 'Сохранять email адрес',
             'vk_available'                       => 'Активна',
@@ -143,7 +167,7 @@ class SigninSocial extends Model
             'google_available'                   => 'Нажмите Вкл, чтобы активировать кнопку.',
             'google_lead_available'              => 'Это действие получает электронную почту и некоторые другие личные данные пользователя и сохраняет их в базе данных.',
             'google_youtube_subscribe_available' => 'Это действие подписывает пользователя на указанный канал в YouTube.',
-            'google_youtube_channel_id'          => 'Установите ID канала на Youtube (пример, UCANLZYMidaCbLQFWXBC95Jg).',
+            'google_youtube_subscribe_channel_id'          => 'Установите ID канала на Youtube (пример, UCANLZYMidaCbLQFWXBC95Jg).',
             'linkedin_available'                 => 'Нажмите Вкл, чтобы активировать кнопку.',
             'linkedin_lead_available'            => 'Это действие получает электронную почту и некоторые другие личные данные пользователя и сохраняет их в базе данных.',
             'vk_available'                       => 'Нажмите Вкл, чтобы активировать кнопку.',

@@ -5,6 +5,7 @@
  */
 
 use backend\modules\lockers\assets\ItemEditAsset;
+use common\modules\subscription\classes\SubscriptionServices;
 
 /* @var $this yii\web\View */
 
@@ -37,18 +38,27 @@ $privacy_url = \yii\helpers\Url::to(['default/privacy']);
 $output = <<<JS
 	if(!window.bizpanda) window.bizpanda = {};
 	window.lockersSettings = {$settings};
+	window.lockerType = '{$type}';
 	window.buttonsGroup = {$buttons_group};
 JS;
 
 $proxyUrl = Yii::getAlias('@proxyUrl');
 
-if( $type === 'signinlocker' && !empty($proxyUrl) ) {
-$output .= <<<JS
+if( in_array($type, ['signinlocker', 'emaillocker']) && !empty($proxyUrl) ) {
+    $output .= <<<JS
 	window.proxyUrl = '{$proxyUrl}';
 JS;
 }
 
-if( Yii::$app->lockersSettings->get('terms_enabled') ) {
+$subscription_service = SubscriptionServices::getCurrentName();
+
+if( !in_array($subscription_service, ['none', 'default']) && in_array($type, ['signinlocker', 'emaillocker'])) {
+    $output .= <<<JS
+	window.subscriptionService = '{$subscription_service}';
+JS;
+}
+
+if( Yii::$app->lockersSettings->get('terms_enabled') && in_array($type, ['signinlocker', 'emaillocker'])  ) {
 $output .= <<<JS
 	window.terms = '{$terms_url}';
 	window.privacy = '{$privacy_url}';

@@ -11,8 +11,13 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 		modelFields: [],
 		lockerOptions: null,
 		buttonOrder: [],
+        lockerType: 'sociallocker',
 
 		init: function() {
+            if( window.lockerType ) {
+                this.lockerType = window.lockerType;
+            }
+
 			this.toLockContent = $('#opanda-preview' ).clone();
 
 			$.pandalocker.hooks.add( 'opanda-lock', function(e, locker, sender){
@@ -20,6 +25,7 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			});
 
 			this.initSocialTabs();
+            this.setButtonsOrder();
 			this.recreatePreview();
 			this.trackInputChanges();
 		},
@@ -93,13 +99,61 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			}
 		},
 
-		updateButtonOrder: function() {
+        setButtonsOrder: function() {
+            var buttonsOrder =  $('input[name*="buttons_order"]', '.social-options').val().split(',');
+
+            if( buttonsOrder[0] === "" )
+                return;
+
+            var newOrder = [];
+
+            for (var b in buttonsOrder) {
+                if( !buttonsOrder.hasOwnProperty(b) )
+                    continue;
+                newOrder.push($("#tab-" + buttonsOrder[b]).detach());
+            }
+
+            for (var n in newOrder) {
+                if( !buttonsOrder.hasOwnProperty(b) )
+                    continue;
+                $(".onp-vertical-tabs ul").prepend(newOrder[n]);
+            }
+        },
+
+		updateButtonsOrder: function() {
 			var self = this;
 			self.buttonOrder = [];
 			$(".onp-vertical-tabs ul li").not('.disabled-button').each(function(){
 				self.buttonOrder.push( $(this).attr('id' ).replace('tab-', '') );
 			});
+            $('input[name*="buttons_order"]', '.social-options').val(self.buttonOrder.join(','));
 		},
+
+        updateButtonActions: function() {
+            var actions = {};
+
+            $('.action-activate-button').each(function() {
+
+                var isAvailableAction = $(this).find('input[type="radio"]:checked').val() !== "0",
+                    button = $(this).data('button'),
+                    action = $(this).data('action');
+
+                if( !action || !button ) return;
+
+                $('input[name*="' + button + '_actions"]', $(this).closest('.tab-pane')).val('');
+
+                if( isAvailableAction ) {
+                    if( !$.isArray(actions[button]) ) actions[button] = [];
+                    actions[button].push(action);
+                }
+            });
+
+            for (var a in actions) {
+                if( !actions.hasOwnProperty(a) )
+                    continue;
+                $('input[name*="' + a + '_actions"]', $(this).closest('.tab-pane')).val(actions[a].join(','));
+            }
+        },
 
 		/**
 		 * Refreshes the preview after short delay.
@@ -182,17 +236,30 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 					mobile: null
 				},
 
+                subscribeActionOptions:{
+                    listId: 'subscribe_list',
+                    //service:"database",
+                    doubleOptin: 'subscribe_mode'
+                    //confirm:false
+                },
+
 				connectButtons: {
 					facebook: {
 						appId: 'facebook_app_id',
 						version: 'facebook_version'
 					},
 					twitter: {
-
+                        follow: {
+                            user: 'twitter_follow_user',
+                            notifications: 'twitter_follow_notifications'
+                        },
+                        tweet: {
+                            message: 'twitter_tweet_message'
+                        }
 					},
 					google: {
-						clientId: 'google_client_id'
-						//channelId: ''
+						clientId: 'google_client_id',
+						channelId: 'google_youtube_subscribe_channel_id'
 					},
 					linkedin: {
 						clientId: 'linkedin_client_id',
@@ -326,6 +393,10 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 		 */
 		recreatePreview: function() {
 			var self = this;
+
+            if( this.lockerType == 'signinlocker' ) {
+                this.updateButtonActions();
+            }
 			this.updatePreviewOptions();
 
 			var newContent = self.toLockContent.clone(),
@@ -336,18 +407,27 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 			self.lockerOptions.demo = true;
 
-            if( window.proxyUrl ) {
-                self.lockerOptions.proxy = window.proxyUrl;
-            }
+            if( this.lockerType == 'signinlocker' || this.lockerType == 'emaillocker' ) {
+                if( window.proxyUrl ) {
+                    self.lockerOptions.proxy = window.proxyUrl;
+                }
 
-			if( window.terms && window.privacy ) {
-				self.lockerOptions.terms = window.terms;
-				self.lockerOptions.termsPopup = {
-					width:  570,
-					height: 400
-				};
-				self.lockerOptions.privacyPolicy = window.privacy;
-			}
+                if( window.subscriptionService ) {
+                    if (!self.lockerOptions.subscribeActionOptions)
+                        self.lockerOptions.subscribeActionOptions = {};
+
+                    self.lockerOptions.subscribeActionOptions['service'] = window.subscriptionService;
+                }
+
+                if( window.terms && window.privacy ) {
+                    self.lockerOptions.terms = window.terms;
+                    self.lockerOptions.termsPopup = {
+                        width:  570,
+                        height: 400
+                    };
+                    self.lockerOptions.privacyPolicy = window.privacy;
+                }
+            }
 
 			self.lockerOptions.groups = ["social-buttons"];
 
@@ -355,29 +435,33 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 				self.lockerOptions.groups = window.buttonsGroup;
 			}
 
-			self.updateButtonOrder();
+			self.updateButtonsOrder();
 
-			self.lockerOptions.socialButtons.order = [
-				'facebook-like',
-				'twitter-tweet',
-				'google-plus'
-			];
+            if( this.lockerType == 'sociallocker' ) {
+                self.lockerOptions.socialButtons.order = [
+                    'facebook-like',
+                    'twitter-tweet',
+                    'google-plus'
+                ];
+            }
 
-			self.lockerOptions.connectButtons.order = [
-				'vk',
-				'twitter',
-				'google'
-			];
+            if( this.lockerType == 'signinlocker' ) {
+                self.lockerOptions.connectButtons.order = [
+                    'vk',
+                    'twitter',
+                    'google'
+                ];
+            }
 
 			if( self.buttonOrder.length ) {
-				if( $.inArray('connect-buttons', self.lockerOptions.groups) === -1 ) {
+				if( this.lockerType == 'sociallocker' ) {
 					self.lockerOptions.socialButtons.order = self.buttonOrder;
-				} else {
+				} else if( this.lockerType == 'signinlocker' ) {
 					self.lockerOptions.connectButtons.order = self.buttonOrder;
 				}
 			}
 
-			//console.log(self.lockerOptions);
+            console.log(self.lockerOptions);
 
 			newContent.find(".content-to-lock").pandalocker(self.lockerOptions);
 
