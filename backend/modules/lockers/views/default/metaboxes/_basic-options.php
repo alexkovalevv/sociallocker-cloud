@@ -5,8 +5,6 @@
  * @package sociallocker-create, signlocker-create, emaillocker-create
  */
 
-use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
-
 /* @var $model common\base\MultiModel */
 /* @var string $type */
 
@@ -36,14 +34,23 @@ echo $fields->dropdown('default', 'style', $styles);
 ?>
 <div class="row">
 	<div class="col-sm-6">
-		<?= $fields->radio('overlap', [
-			['label' => '<i class="fa fa-lock"></i> Скрыть', 'value' => 'full'],
-			['label' => '<i class="fa fa-adjust"></i> Прозрачный слой', 'value' => 'opacity'],
-			['label' => '<i class="fa fa-bullseye"></i> Размытый слой', 'value' => 'blurring'],
-		]);?>
+		<?= $fields->radio( 'overlap', [
+            ['label' => '<i class="fa fa-lock"></i> Скрыть', 'value' => 'full'],
+            ['label' => '<i class="fa fa-adjust"></i> Прозрачный слой', 'value' => 'opacity'],
+            ['label' => '<i class="fa fa-bullseye"></i> Размытый слой', 'value' => 'blurring'],
+        ], [
+            'events' => [
+                '.overlap-position-box' => [
+                    'opacity'  => 'show',
+                    'blurring' => 'show',
+                    'full'     => 'hide'
+                ]
+            ]
+        ] );
+        ?>
 	</div>
 	<div class="col-sm-3" style="padding:5px 0 0;">
-		<div class="onp-overlap-position-box" style="display: none;">
+		<div class="overlap-position-box" style="display: none;">
 			<?= $fields->dropdown('default', 'overlap_position', [
 				['value' => 'top', 'text' => 'Сверху'],
 				['value' => 'middle', 'text' => 'По середине'],

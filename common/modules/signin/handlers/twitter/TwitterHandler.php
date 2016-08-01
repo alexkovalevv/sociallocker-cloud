@@ -1,6 +1,7 @@
 <?php
 namespace common\modules\signin\handlers\twitter;
 
+use yii;
 use common\modules\signin\Handler;
 use common\modules\signin\HandlerException;
 use common\modules\signin\handlers\twitter\libs\TwitterOAuth;
@@ -16,8 +17,8 @@ class TwitterHandler extends Handler {
     public function handleRequest() {
         
         // the request type is to determine which action we should to run
-        $requestType = !empty( $_REQUEST['opandaRequestType'] ) ? $_REQUEST['opandaRequestType'] : null;
-        
+        $requestType = Yii::$app->request->getQueryParam('opandaRequestType');
+
         // allowed request types, others will trigger an error
         $allowed = array('init', 'callback', 'user_info', 'follow', 'tweet', 'get_tweets', 'get_followers');
         
@@ -25,9 +26,9 @@ class TwitterHandler extends Handler {
             throw new HandlerException('Invalid request type.');
         
         // the visitor id is used as a key for the storage where all the tokens are saved
-        $visitorId = !empty( $_REQUEST['opandaVisitorId'] ) ? $_REQUEST['opandaVisitorId'] : null;
-        
-        $readOnly = !empty( $_REQUEST['opandaReadOnly'] ) ? (bool)$_REQUEST['opandaReadOnly'] : null;   
+        $visitorId = Yii::$app->request->getQueryParam('opandaVisitorId');
+        $readOnly = Yii::$app->request->getQueryParam('opandaReadOnly');
+
         if ( $readOnly ) {
             $this->options['consumer_key'] = 'BGzwxomRvrJce8jQr2ajg5LBj';
             $this->options['consumer_secret'] = 'bYCm0HawRTVCYARtJD6tLLkyccq9YRrmtU41QLrcuLEXR7CD9r';
@@ -74,8 +75,8 @@ class TwitterHandler extends Handler {
         $options = $this->options;
 
         if ( empty( $visitorId ) ) $visitorId = $this->getGuid();
-        $keepOpen = !empty( $_REQUEST['opandaKeepOpen'] ) ? (bool)$_REQUEST['opandaKeepOpen'] : null; 
-        $readOnly = !empty( $_REQUEST['opandaReadOnly'] ) ? (bool)$_REQUEST['opandaReadOnly'] : null; 
+        $keepOpen = Yii::$app->request->getQueryParam('opandaKeepOpen');
+        $readOnly = Yii::$app->request->getQueryParam('opandaReadOnly');
         
         $oauth = new TwitterOAuth( $options['consumer_key'], $options['consumer_secret'] );
         $requestToken = $oauth->getRequestToken( $this->getCallbackUrl( $visitorId, $keepOpen ) ); 
@@ -97,7 +98,7 @@ class TwitterHandler extends Handler {
      */
     public function doCallback( $visitorId ) {
         $options = $this->options;
-        $keepOpen = !empty( $_REQUEST['opandaKeepOpen'] ) ? (bool)$_REQUEST['opandaKeepOpen'] : null; 
+        $keepOpen = Yii::$app->request->getQueryParam('opandaKeepOpen');
 
         if ( empty( $visitorId ) )
             throw new HandlerException('Invalid visitor ID.');
@@ -113,8 +114,8 @@ class TwitterHandler extends Handler {
         exit;
         }
         
-        $token = !empty( $_REQUEST['oauth_token']) ? $_REQUEST['oauth_token'] : null;
-        $verifier = !empty( $_REQUEST['oauth_verifier']) ? $_REQUEST['oauth_verifier'] : null;
+        $token = Yii::$app->request->getQueryParam('oauth_token');
+        $verifier = Yii::$app->request->getQueryParam('oauth_verifier');
 
         if ( empty( $token ) || empty( $verifier ) ) {
             throw new HandlerException('The verifier value is invalid.');
@@ -190,7 +191,7 @@ class TwitterHandler extends Handler {
     
     public function getFollowers( $visitorId ) {
         $oauth = $this->getTwitterOAuth( $visitorId );
-        $sceenName = !empty( $_REQUEST['opandaSceenName']) ? $_REQUEST['opandaSceenName'] : null;
+        $sceenName = Yii::$app->request->getQueryParam('opandaSceenName');
 
         $response = $oauth->get('friendships/lookup', array('screen_name' => $sceenName));
         echo json_encode($response);
@@ -201,13 +202,13 @@ class TwitterHandler extends Handler {
     protected function follow( $visitorId ) {
         $oauth = $this->getTwitterOAuth( $visitorId );
         
-        $contextData = isset( $_POST['opandaContextData'] ) ? $_POST['opandaContextData'] : array();
+        $contextData = Yii::$app->request->getQueryParam('opandaContextData', array());
         $contextData = $this->normilizeValues( $contextData );
         
-        $followTo = isset( $_REQUEST['opandaFollowTo'] ) ? $_REQUEST['opandaFollowTo'] : null;
+        $followTo = Yii::$app->request->getQueryParam('opandaFollowTo');
         if ( empty( $followTo) ) throw new HandlerException( "The user name to follow is not specified" );
         
-        $notifications = isset( $_REQUEST['opandaNotifications'] ) ? $_REQUEST['opandaNotifications'] : false;
+        $notifications = Yii::$app->request->getQueryParam('opandaNotifications', false);
         $notifications = $this->normilizeValue( $notifications );
 
         $response = $oauth->get('friendships/lookup', array(
@@ -241,10 +242,10 @@ class TwitterHandler extends Handler {
     protected function tweet( $visitorId ) {
         $oauth = $this->getTwitterOAuth( $visitorId );
         
-        $contextData = isset( $_POST['opandaContextData'] ) ? $_POST['opandaContextData'] : array();
+        $contextData = Yii::$app->request->getQueryParam('opandaContextData', array());
         $contextData = $this->normilizeValues( $contextData );
         
-        $message = !empty( $_REQUEST['opandaTweetMessage'] ) ? $_REQUEST['opandaTweetMessage'] : null;
+        $message = Yii::$app->request->getQueryParam('opandaTweetMessage');
         if ( empty( $message) ) throw new HandlerException( "The tweet text is not specified." );
         
         $response = $oauth->post('statuses/update', array(

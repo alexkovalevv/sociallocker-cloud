@@ -16,58 +16,12 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			this.toLockContent = $('#opanda-preview' ).clone();
 
 			$.pandalocker.hooks.add( 'opanda-lock', function(e, locker, sender){
-				console.log('unlock');
 				$('.onp-preview-loader').fadeOut();
 			});
 
-			this.initOverlapModeButtons();
-			this.initSubcriptionOptions();
 			this.initSocialTabs();
 			this.recreatePreview();
 			this.trackInputChanges();
-		},
-
-		initOverlapModeButtons: function() {
-			var $overlapControl = $("#lockersform-overlap");
-			var $positionControl = $(".onp-overlap-position-box" );
-
-			var checkPositionControlVisability = function( ){
-				var value = $overlapControl.find('input[type="radio"]:checked').val();
-
-				if ( value === 'full' ) {
-					$positionControl.fadeOut();
-					return;
-				}
-
-				$positionControl.fadeIn();
-			};
-
-			checkPositionControlVisability();
-
-			$overlapControl.find('input[type="radio"]').change(function(){
-				checkPositionControlVisability();
-			});
-		},
-
-		initSubcriptionOptions: function () {
-			var checkSubscribeToServiceAvailable = function() {
-				var isAvailable = $('input[name="Subscribe[subscribe_to_service]"]:checked').val() === "0"
-					? false
-					: true;
-
-				if ( !isAvailable ) {
-					$ (".subscription-available").fadeOut();
-					return;
-				}
-
-				$(".subscription-available").fadeIn();
-			};
-
-			checkSubscribeToServiceAvailable();
-
-			$('input[name="Subscribe[subscribe_to_service]"]' ).change(function(){
-				checkSubscribeToServiceAvailable();
-			});
 		},
 
 		initSocialTabs: function() {

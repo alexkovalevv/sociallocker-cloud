@@ -10,9 +10,10 @@ use yii\web\AssetBundle;
 
 class SwitchControlAssets extends AssetBundle
 {
-	public $sourcePath = '@backend/modules/lockers/widgets/switch/assets/';
+	public $sourcePath = '@backend/modules/lockers/widgets/controls/switcher/views/assets/';
 
 	public $js = [
+        'js/widget.general.js'
 	];
 
 	public $css = [

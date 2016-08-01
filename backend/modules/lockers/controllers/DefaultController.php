@@ -76,8 +76,15 @@ class DefaultController extends Controller
 
 		$model = new LockersForm($model_list);
 
-		if ( $model->load(Yii::$app->request->post()) && $model->saveMultiModel($type) ) {
-			return $this->redirect(['index']);
+		if ( $model->load(Yii::$app->request->post()) ) {
+            if( $model->saveMultiModel($type) ) {
+                return $this->redirect(['index']);
+            } else {
+                Yii::$app->session->setFlash( 'alert', [
+                    'body'    => 'Возникли ошибки при заполнении формы! Пожалуйста, проверьте внимательно неправильно заполненные поля.',
+                    'options' => ['class' => 'alert alert-danger']
+                ] );
+            }
 		}
 
 		return $this->render( $type . '-create', [
@@ -115,12 +122,20 @@ class DefaultController extends Controller
 		if( (!isset($type) && empty($type)) || (!isset($id) && empty($id)) )
 			return $this->redirect(['index']);
 
-		if ($model->load(Yii::$app->request->post()) && $model->saveMultiModel( $type, $this->findModel($id) )) {
-			Yii::$app->session->setFlash('alert', [
-				'body' => 'Настройки успешно обновлены!',
-				'options' => ['class' => 'alert alert-success']
-			]);
-			return $this->refresh();
+		if ( $model->load(Yii::$app->request->post()) ) {
+            if( $model->saveMultiModel( $type, $this->findModel($id) )) {
+                Yii::$app->session->setFlash( 'alert', [
+                    'body'    => 'Настройки успешно обновлены!',
+                    'options' => ['class' => 'alert alert-success']
+                ] );
+
+                return $this->refresh();
+            } else {
+                Yii::$app->session->setFlash( 'alert', [
+                    'body'    => 'Возникли ошибки при заполнении формы! Пожалуйста, проверьте внимательно неправильно заполненные поля.' ,
+                    'options' => ['class' => 'alert alert-danger']
+                ] );
+            }
 		}
 
 		return $this->render( $type . '-create', [

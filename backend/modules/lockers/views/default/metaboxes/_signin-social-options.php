@@ -6,6 +6,7 @@
  */
 
 use backend\modules\lockers\widgets\vtabs\VerticalTabs;
+use yii\bootstrap\Html;
 
 /* @var $model common\base\MultiModel */
 /* @var string $type */
@@ -16,58 +17,63 @@ $social_buttons = [];
 
 // Facebook кнопки
 // ========================================================================================
-$facebook = $fields->checkbox('facebook_available', [
-	'containerOptions' => [],
-]);
+$facebook = $fields->checkbox('facebook_available');
 
-$facebook .= $fields->checkbox('facebook_lead_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
-]);
+$facebook .= $fields->checkbox('facebook_lead_available');
 // ========================================================================================
 
 // Twitter кнопки
 // ========================================================================================
-$twitter = $fields->checkbox('twitter_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
+$twitter = $fields->checkbox('twitter_available');
+
+$twitter .= $fields->checkbox('twitter_lead_available');
+
+$twitter .= $fields->checkbox('twitter_tweet_available', [
+    'events' => ['.twitter-tweet-action-settings-hidden']
+]);
+$twitter_tweet_action = $fields->textarea('twitter_tweet_message');
+$twitter .= Html::tag('div', $twitter_tweet_action, [
+    'class' => 'twitter-tweet-action-settings-hidden'
 ]);
 
-$twitter .= $fields->checkbox('twitter_lead_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
+$twitter .= $fields->checkbox('twitter_follow_available', [
+    'events' => ['.twitter-follow-action-settings-hidden']
+]);
+$twitter_follow_action = $fields->textInput('twitter_follow_user');
+$twitter_follow_action .= $fields->checkbox('twitter_follow_notifications');
+$twitter .= Html::tag('div', $twitter_follow_action, [
+    'class' => 'twitter-follow-action-settings-hidden'
 ]);
 // ========================================================================================
 
 // Google кнопки
 // ========================================================================================
-$google = $fields->checkbox('google_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
+$google = $fields->checkbox('google_available');
+
+$google .= $fields->checkbox('google_lead_available');
+
+$google .= $fields->checkbox('google_youtube_subscribe_available', [
+    'events' => ['.google-ysubscribe-action-settings-hidden']
 ]);
 
-$google .= $fields->checkbox('google_lead_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
+$google_youtube_subscribe = $fields->textInput('google_youtube_channel_id');
+$google .= Html::tag('div', $google_youtube_subscribe, [
+    'class' => 'google-ysubscribe-action-settings-hidden'
 ]);
 // ========================================================================================
-
 
 // LinkedIn кнопки
 // ========================================================================================
-$linkedin = $fields->checkbox('linkedin_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
-]);
+$linkedin = $fields->checkbox('linkedin_available');
 
-$linkedin .= $fields->checkbox('linkedin_lead_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
-]);
+$linkedin .= $fields->checkbox('linkedin_lead_available');
 // ========================================================================================
 
 // Кнопки Вконтакте
 // ========================================================================================
-$vk = $fields->checkbox('vk_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
-]);
+$vk = $fields->checkbox('vk_available');
 
-$vk .= $fields->checkbox('vk_lead_available', [
-	'containerOptions' => ['class' =>'onp-activate-social-button-switch'],
-]);
+$vk .= $fields->checkbox('vk_lead_available');
 // ========================================================================================
 
 ?>

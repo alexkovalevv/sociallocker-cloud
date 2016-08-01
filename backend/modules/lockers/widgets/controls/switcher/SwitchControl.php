@@ -1,10 +1,10 @@
 <?php
 /**
  * Кнопка переключатель
- * @author Alex Kovalevv <alex.kovalevv@gmail.com>
+ * @author    Alex Kovalevv <alex.kovalevv@gmail.com>
  * @copyright Copyright &copy; Alex Kovalev, sociallocker.ru, 2016
- * @package yii2-widgets
- * @version 1.0.0
+ * @package   yii2-widgets
+ * @version   1.0.0
  */
 namespace backend\modules\lockers\widgets\controls\switcher;
 
@@ -16,81 +16,96 @@ use yii\bootstrap\InputWidget;
 
 class SwitchControl extends InputWidget
 {
-	public $model;
+    public $model;
 
-	public $attribute;
-	/**
-	 * @var array элементы массива, где label это текст кнопки, value - значение
-	 * пример использования:
-	 * 'items' => [['label' => 'Скрыть', 'value' => 'none'],['label' => 'Прозрачный слой', 'value' => 'opacity']]
-	 */
-	public $items = [
-		['label' => 'Вкл.', 'value' => 1],
-		['label' => 'Выкл.', 'value' => 0]
-	];
+    public $attribute;
+    /**
+     * @var array элементы массива, где label это текст кнопки, value - значение
+     * пример использования:
+     * 'items' => [['label' => 'Скрыть', 'value' => 'none'],['label' => 'Прозрачный слой', 'value' => 'opacity']]
+     */
+    public $items = [
+        ['label' => 'Вкл.', 'value' => 1],
+        ['label' => 'Выкл.', 'value' => 0]
+    ];
 
-	/**
-	 * @var $value значение поля
-	 */
-	public $value;
+    /**
+     * @var $value значение поля
+     */
+    public $value;
 
-	/**
-	 * @var string значение по умолчанию
-	 */
-	public $default = false;
+    /**
+     * @var string значение по умолчанию
+     */
+    public $default = false;
 
-	public $options = [];
+    public $options = [];
 
-	public $itemsOptions = ['class' => 'btn btn-default'];
+    /**
+     * @var string события, выполняются во время переключения кнопок
+     * Доступные события:
+     * 'class-name' => ['1' =>'show', '0' => 'hide']
+     * Если значения 1 или 0 указанные в примере, совпадают со значением value кнопок,
+     * то выполнитеся действие для указанного класса
+     */
+    public $events = [];
 
-	/**
-	 * @inheritdoc
-	 */
-	public function init()
-	{
-		parent::init();
+    public $itemsOptions = ['class' => 'btn btn-default'];
 
-		$this->value = Html::getAttributeValue($this->model, $this->attribute);
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
 
-		if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) )
-			$this->value = $this->default;
+        $this->value = Html::getAttributeValue( $this->model, $this->attribute );
 
-	}
+        if (( $this->value === '' || is_null( $this->value ) ) && !is_null( $this->default )) {
+            $this->value = $this->default;
+        }
+    }
 
-	public function run()
-	{
-		parent::run();
-		echo $this->renderInput();
-	}
+    public function run()
+    {
+        parent::run();
+        echo $this->renderInput();
+        SwitchControlAssets::register($this->view);
+    }
 
-	protected function renderInput()
-	{
-		$output = '';
-		foreach ($this->items as $item) {
+    protected function renderInput()
+    {
+        $output = '';
+        foreach ($this->items as $item) {
 
-			if (!is_array($item)) continue;
+            if (!is_array( $item )) {
+                continue;
+            }
 
-			$value = ArrayHelper::getValue($item, 'value', null);
+            $value = ArrayHelper::getValue( $item, 'value', null );
 
-			$this->options['value'] = $value;
+            $this->options['value'] = $value;
 
-			$checked = $value == $this->value;
+            $checked = $value == $this->value;
 
-			$input_name = Html::getInputName($this->model, $this->attribute);
-			$input = Html::radio($input_name, $checked, $this->options);
+            $input_name = Html::getInputName( $this->model, $this->attribute );
+            $input = Html::radio( $input_name, $checked, $this->options );
 
 
-			$label = ArrayHelper::getValue($item, 'label');
-			$itemsOptions = ArrayHelper::merge($this->itemsOptions, []);
+            $label = ArrayHelper::getValue( $item, 'label' );
+            $itemsOptions = ArrayHelper::merge( $this->itemsOptions, [] );
 
-			if( $checked ) {
-				Html::addCssClass($itemsOptions, 'active');
-			}
+            if ($checked) {
+                Html::addCssClass( $itemsOptions, 'active' );
+            }
 
-			$output .= Html::tag('div', $input . $label, $itemsOptions);
+            $output .= Html::tag( 'div', $input . $label, $itemsOptions );
+        }
 
-		}
-		return Html::tag('div', $output, ['class' => 'btn-group', 'role' => "group", 'data-toggle' => 'buttons']);
-	}
-
+        return Html::tag( 'div', $output, ArrayHelper::merge( [
+            'class'       => 'btn-group wt-switch',
+            'role'        => "group",
+            'data-toggle' => 'buttons'
+        ], empty( $this->events ) ? [] : ['data-events' => $this->events] ) );
+    }
 }

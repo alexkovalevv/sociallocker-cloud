@@ -70,6 +70,56 @@ class Lockers extends ActiveRecord
         ];
     }
 
+    public static function getSigninLockerActions($lockerId, $json = false) {
+
+        $locker = self::findOne($lockerId);
+        $options = json_decode($locker->options);
+
+        if( empty($options) ) return [];
+
+        $predefined_actions = [
+            [
+                'facebook' => [
+                    'facebook_lead_available' => 'lead',
+                    'facebook_subscribe_available' => 'subscribe'
+                ],
+                'twitter'  => [
+                    'twitter_lead_available' => 'lead',
+                    'twitter_follow_available' => 'follow',
+                    'twitter_teet_available' => 'tweet',
+                    'twitter_subscribe_available' => 'subscribe'
+                ],
+                'google'   => [
+                    'google_lead_available' => 'lead',
+                    'google_youtube_subscribe_available' => 'youtube-subscribe',
+                    'google_subscribe_available' => 'subscribe'
+                ],
+                'linkedin' => [
+                    'linkedin_lead_available' => 'lead',
+                    'linkedin_subscribe_available' => 'subscribe'
+                ],
+                'vk'       => [
+                    'vk_lead_available' => 'lead',
+                    'vk_subscribe_available' => 'subscribe'
+                ],
+            ]
+        ];
+
+        $actions = [];
+        foreach( $predefined_actions as $button_name => $group ) {
+            if( isset($options[$button_name . '_available']) && $options[$button_name . '_available'] ) {
+                foreach ($group as $key => $action) {
+                    if( isset($options[$key]) && $options[$key] ) {
+                        $actions[$button_name]['actions'][] = $action;
+                    }
+                }
+            }
+        }
+
+        if( $json ) return json_encode($actions);
+        return $actions;
+    }
+
 	/*public function addLocker($attributes, $type) {
 		$this->attributes = $attributes;
 		$this->type = $type;

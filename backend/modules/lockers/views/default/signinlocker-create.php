@@ -21,9 +21,9 @@ use yii\helpers\Url;
 		<?php
 		$form = ActiveForm::begin(
 			[
-				'action' => [$form_action]
-				/*'enableClientValidation' => false,
-				'enableAjaxValidation' => false*/
+				'action' => [$form_action],
+				'enableClientValidation' => false
+				/*'enableAjaxValidation' => false*/
 			]
 		);
 
@@ -47,9 +47,14 @@ use yii\helpers\Url;
 			<!-- Опции подписки -->
 			<?php $fields->model = $model->getModel('subscribe'); ?>
 			<div class="subscription-options">
-				<?=$fields->checkbox('subscribe_to_service');?>
+				<?=$fields->checkbox('subscribe_to_service',[
+                    'events' => [
+                        '.subscription-available-hidden'
+                    ]
+                ]);
+                ?>
 
-				<div class="subscription-available">
+				<div class="subscription-available-hidden">
 					<?php if( SubscriptionServices::getCurrentName() == 'none' || SubscriptionServices::getCurrentName() == 'default' ): ?>
 						<p>
 							Собранные email адреса будут сохранены в <a href="#" target="_blank">локальную базу данных</a>, так как вы не выбрали сервисы email рассылки.

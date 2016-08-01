@@ -16,10 +16,26 @@
     padding:20px;
     background-color: #fbfbfb;
 }
-.subscription-available {
+.subscription-available-hidden {
     display: none;
     background: #fdfbfb;
     padding: 20px;
+}
+
+.help-block {
+    color: #737373 !important;
+}
+.help-block-error {
+    color: #dd4b39 !important;
+}
+
+/**
+    Опции кнопок авторизации
+*/
+.twitter-tweet-action-settings-hidden,
+.twitter-follow-action-settings-hidden,
+.google-ysubscribe-action-settings-hidden {
+    display:none;
 }
 
 /**
