@@ -1,47 +1,25 @@
-# Yii 2 Starter Kit
+# Сервис социальный замок
 
-<!-- BADGES/ -->
+Построен на основе стартового набора Yii2 start app.
+Сервис является копией плагина "Социальный замок" и создан для мультиплатформенного использования, а так же более удобной пользовательской установки.
 
-[![Packagist](https://img.shields.io/packagist/v/trntv/yii2-starter-kit.svg)](https://packagist.org/packages/trntv/yii2-starter-kit)
-[![Packagist](https://img.shields.io/packagist/dt/trntv/yii2-starter-kit.svg)](https://packagist.org/packages/trntv/yii2-starter-kit)
-[![PayPal donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X7UFA3F3ALPM8 "Donate once-off to this project using Paypal")
-[![Dependency Status](https://www.versioneye.com/php/trntv:yii2-starter-kit/badge.svg)](https://www.versioneye.com/php/trntv:yii2-starter-kit)
-[![Build Status](https://travis-ci.org/trntv/yii2-starter-kit.svg?branch=master)](https://travis-ci.org/trntv/yii2-starter-kit)
-
-<!-- /BADGES -->
-
-This is Yii2 start application template.
-
-It was created and developing as a fast start for building an advanced sites based on Yii2. 
-
-It covers typical use cases for a new project and will help you not to waste your time doing the same work in every project
-
-## Before you start
-Please, consider helping project via [contributions](https://github.com/trntv/yii2-starter-kit/issues) or [donations](#donations). 
-
-## TABLE OF CONTENTS
-- [Demo](#demo)
-- [Features](#features)
-- [Installation](docs/installation.md)
-    - [Manual installation](docs/installation.md#manual-installation)
-    - [Docker installation](docs/installation.md#docker-installation)
-    - [Vagrant installation](docs/installation.md#vagrant-installation)
-- [Application components](#application-components)
-- [Console commands](docs/console.md)
-- [Testing](docs/testing.md)
-- [FAQ](docs/faq.md)
-- [How to contribute?](#how-to-contribute)
-- [Donations](#donations)
-- [Have any questions](#have-any-questions)
-
-##DEMO
-Demo is hosted by awesome [Digital Ocean](https://m.do.co/c/d7f000191ea8)
+## Доступные возможности
+- Система авторизации, аккаунты и группы пользователей(80%)
+- Создание 3х видов замков (email замок, замок авторизации, социальный замок)(80%)
+- Возможность синхронизации с сервисами подписки(80%)
+- Гибкие настройки плагина (100%)
+- Настройки отображения замков с помощью правил(в разработке)
+- Статистика (в разработке)
+- Лист подписчиков (в разработке)
+- Настройки стилей замков(в разработке)
+- Оплата и выбор тарифного плана(в разработке)
+- Генерация финишной библиотеки(в разработке)
 
 Frontend:
-http://yii2-starter-kit.terentev.net
+http://test.sociallocker.ru
 
 Backend:
-http://backend.yii2-starter-kit.terentev.net
+http://test.sociallocker.ru/admin
 
 `administrator` role account
 ```
@@ -61,45 +39,7 @@ Login: user
 Password: user
 ```
 
-## FEATURES
-- Beautiful and open source dashboard theme for backend [AdminLTE 2](http://almsaeedstudio.com/AdminLTE)
-- Translations: English, Spanish, Russian, Ukrainian, Chinese
-- Translations Editor
-- Language change action + behavior to choose locale based on browser preferred language 
-- Sign in, Sign up, profile(avatar, locale, personal data), email activation etc
-- OAuth authorization
-- User management
-- RBAC with predefined `guest`, `user`, `manager` and `administrator` roles
-- RBAC migrations support
-- Content management components: articles, categories, static pages, editable menu, editable carousels, text blocks
-- Key-value storage component
-- Application settings form (based on KeyStorage component)
-- Ready-to-go RESTful API module
-- [File storage component + file upload widget](https://github.com/trntv/yii2-file-kit)
-- On-demand thumbnail creation [trntv/yii2-glide](https://github.com/trntv/yii2-glide)
-- Command Bus with queued and async tasks support [trntv/yii2-command-bus](https://github.com/trntv/yii2-command-bus)
-- Useful behaviors (GlobalAccessBehavior, CacheInvalidateBehavior, MaintenanceBehavior)
-- Yii2 log web interface
-- Application timeline component
-- Cache web controller
-- Maintenance mode component ([more](#maintenance-mode))
-- System information web interface
-- dotenv support
-- `ExtendedMessageController` with ability to replace source code language and migrate messages between message sources
-- [Aceeditor widget](https://github.com/trntv/yii2-aceeditor)
-- [Datetimepicker widget](https://github.com/trntv/yii2-bootstrap-datetimepicker), 
-- [Imperavi Reactor Widget](https://github.com/asofter/yii2-imperavi-redactor), 
-- [Elfinder Extension](https://github.com/MihailDev/yii2-elfinder)
-- [Xhprof Debug panel](https://github.com/trntv/yii2-debug-xhprof)
-- Extended IDE autocompletion
-- Nginx config example
-- Test-ready
-- Docker support and Vagrant support
-- Built-in [mailcatcher](http://mailcatcher.me/)
-- Assets compression and concatenation
-- [Some useful shortcuts](https://github.com/trntv/yii2-starter-kit/blob/master/common/helpers.php)
-- many other features i'm lazy to write about :-)
-
+==============================================================================================================================
 
 # Application Components
 
@@ -319,24 +259,8 @@ public function behaviors()
     }
 ```
 
-##How to contribute?
-You can contribute in any way you want. Any help appreciated, but most of all i need help with docs (^_^)
-
-##Donations
-- [Paypal] (https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X7UFA3F3ALPM8)
-- [Bitcoin] (https://www.coinbase.com/checkouts/2f1c1cb31c395e5aaafa1ba70003552e)
-- [WebMoney] (Z110052695454)
-- Other way: [eugene@terentev.net](mailto:eugene@terentev.net)
-
-##Have any questions?
-mail to [eugene@terentev.net](mailto:eugene@terentev.net)
 
 ##READ MORE
 https://github.com/yiisoft/yii2/blob/master/apps/advanced/README.md
 https://github.com/yiisoft/yii2/tree/master/docs
-
-###NOTE
-This template was created mostly for developers NOT for end users.
-This is a point where you can begin your application, rather than creating it from scratch.
-Good luck!
 
