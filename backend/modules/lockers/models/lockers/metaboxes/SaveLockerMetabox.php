@@ -9,7 +9,7 @@ namespace backend\modules\lockers\models\lockers\metaboxes;
 use Yii;
 use yii\base\Model;
 
-class Save extends Model
+class SaveLockerMetabox extends Model
 {
 	//Статус
 	public $status = 1;

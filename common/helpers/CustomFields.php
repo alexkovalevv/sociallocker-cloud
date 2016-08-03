@@ -51,14 +51,15 @@ class CustomFields
             $this->getTemplateActiveField( $attribute ) )->textarea( $options );
     }
 
-    public function dropdown( $type, $attribute, $items, $ajax = false )
+    public function dropdown( $type, $attribute, $items, $ajax = false, $callback = '' )
     {
         return $this->form->field( $this->model, $attribute,
             $this->getTemplateActiveField( $attribute ) )->widget( DropdownControl::classname(), [
-                'type'    => $type,
-                'default' => $this->getFieldValueDefault( $attribute ),
-                'ajax'    => $ajax,
-                'items'   => $items
+                'type'     => $type,
+                'default'  => $this->getFieldValueDefault( $attribute ),
+                'ajax'     => $ajax,
+                'callback' => $callback,
+                'items'    => $items
             ] );
     }
 

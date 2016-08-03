@@ -127,7 +127,7 @@ class PechkinmailSubscriptionService extends Subscription {
 
 
 		for( $i = 0; $i <= 5; $i++ ) {
-			if( !sizeof($response['row']['merge_' . $i]) )
+			if( !isset($response['row']['merge_' . $i]) || ( isset($response['row']['merge_' . $i]) && !sizeof($response['row']['merge_' . $i]) ) )
 				continue;
 
 			$field = unserialize($response['row']['merge_' . $i]);

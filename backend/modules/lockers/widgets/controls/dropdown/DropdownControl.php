@@ -95,6 +95,12 @@ class DropdownControl extends Widget
 	 */
 	public $ajax = false;
 
+    /**
+     * @var string если ajax true, можно задать callback.
+     * В параметр callback нужно передать событие для тригера, например: fileEditor.load
+     */
+    public $callback;
+
 	/**
 	 * @var array|string элементы массива. Если используется ajax, сюда передается url
 	 */
@@ -152,8 +158,12 @@ class DropdownControl extends Widget
 		}
 
 		if( empty($this->items) && !is_array($this->items) && !$this->ajax ) {
-			throw new Exception('Не передан атрибут items или атрибут не является массивом(' . $this->attribute . ').');
+			throw new Exception('Не передан атрибут items или атрибут не является массивом (' . $this->attribute . ').');
 		}
+
+        if( !is_string($this->callback) ) {
+            throw new Exception('Атрибут callback должен быть строкой (' . $this->attribute . ').');
+        }
 
 		$this->view = $this->getView();
 		$this->liveSearch = $this->liveSearch ? 1 : 0;
@@ -241,6 +251,7 @@ JS;
 			$items['none'] = '--- идет поиск ---';
 			Html::addCssClass($this->itemOptions, 'wt-dropdown-ajax');
 			$this->itemOptions['data-ajax-url'] = $this->items;
+            $this->itemOptions['data-ajax-callback'] = $this->callback;
 			$this->itemOptions['data-value'] = $this->value;
 		}
 

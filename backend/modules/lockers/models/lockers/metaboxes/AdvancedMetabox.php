@@ -9,7 +9,7 @@ namespace backend\modules\lockers\models\lockers\metaboxes;
 use Yii;
 use yii\base\Model;
 
-class Advanced extends Model
+class AdvancedMetabox extends Model
 {
 	//Показывает кнопку "Закрыть" в углу.
 	public $close;

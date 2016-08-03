@@ -9,7 +9,7 @@ namespace backend\modules\lockers\models\lockers\metaboxes;
 use Yii;
 use yii\base\Model;
 
-class SigninSocial extends Model
+class SigninButtonsSettings extends Model
 {
 	// Активации кнопки facebook
 	public $facebook_available;

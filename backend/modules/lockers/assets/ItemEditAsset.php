@@ -9,7 +9,7 @@ class ItemEditAsset extends AssetBundle
 
     public $css = [
         'css/module-page.edit-item.css',
-        'css/module.lockers-ru_RU.010008.min.css',
+        'css/module.lockers-ru_RU.010008.min.css'
     ];
     public $js = [
         'js/module-page.edit-item.js',

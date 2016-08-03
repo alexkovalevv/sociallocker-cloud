@@ -6,6 +6,7 @@
 
 namespace backend\modules\lockers\controllers;
 
+use backend\modules\lockers\models\lockers\metaboxes\EmailFormSettings;
 use Yii;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -16,13 +17,13 @@ use backend\modules\lockers\models\lockers\Lockers;
 use backend\modules\lockers\models\search\LockersSearch;
 use backend\modules\lockers\models\settings\Settings;
 
-use backend\modules\lockers\models\lockers\metaboxes\Advanced;
-use backend\modules\lockers\models\lockers\metaboxes\Basic;
-use backend\modules\lockers\models\lockers\metaboxes\Save;
-use backend\modules\lockers\models\lockers\metaboxes\Social;
-use backend\modules\lockers\models\lockers\metaboxes\Subscribe;
-use backend\modules\lockers\models\lockers\metaboxes\Visability;
-use backend\modules\lockers\models\lockers\metaboxes\SigninSocial;
+use backend\modules\lockers\models\lockers\metaboxes\AdvancedMetabox;
+use backend\modules\lockers\models\lockers\metaboxes\BasicMetabox;
+use backend\modules\lockers\models\lockers\metaboxes\SaveLockerMetabox;
+use backend\modules\lockers\models\lockers\metaboxes\SocialButtonsSettings;
+use backend\modules\lockers\models\lockers\metaboxes\SubscribeMetabox;
+use backend\modules\lockers\models\lockers\metaboxes\VisabilityMetabox;
+use backend\modules\lockers\models\lockers\metaboxes\SigninButtonsSettings;
 
 
 class DefaultController extends Controller
@@ -48,33 +49,13 @@ class DefaultController extends Controller
 
 	public function actionCreate($type)
 	{
-		if( !isset($type) || empty($type) )
-			return $this->redirect(['index']);
+		if( empty($type) ) return $this->redirect(['index']);
 
 		if( !in_array($type, array('sociallocker', 'signinlocker', 'emaillocker')) )
 			return $this->redirect(['index']);
 
 		$settings = new Settings();
-
-		$model_list = [
-			'models' => [
-				'basic'      => new Basic(),
-				'advanced'   => new Advanced(),
-				'save'       => new Save(),
-				'subscribe'  => new Subscribe(),
-				'visability' => new Visability()
-			]
-		];
-
-		if( $type == 'signinlocker' ) {
-			$model_list['models']['signin_social'] = new SigninSocial();
-		}
-
-		if( $type == 'sociallocker' ) {
-			$model_list['models']['social'] = new Social();
-		}
-
-		$model = new LockersForm($model_list);
+        $model = $this->initMultimodel($type);
 
 		if ( $model->load(Yii::$app->request->post()) ) {
             if( $model->saveMultiModel($type) ) {
@@ -98,25 +79,7 @@ class DefaultController extends Controller
 	{
 		$settings = new Settings();
 
-		$model_list = [
-			'models' => [
-				'basic'      => new Basic(),
-				'advanced'   => new Advanced(),
-				'save'       => new Save(),
-				'subscribe'  => new Subscribe(),
-				'visability' => new Visability()
-			]
-		];
-
-		if( $type == 'signinlocker' ) {
-			$model_list['models']['signin_social'] = new SigninSocial();
-		}
-
-		if( $type == 'sociallocker' ) {
-			$model_list['models']['social'] = new Social();
-		}
-
-		$model = new LockersForm($model_list);
+        $model = $this->initMultimodel($type);
 		$model->setMultiModel($this->findModel($id));
 
 		if( (!isset($type) && empty($type)) || (!isset($id) && empty($id)) )
@@ -163,6 +126,37 @@ class DefaultController extends Controller
 	public function actionPrivacy() {
 		echo Yii::$app->lockersSettings->get('privacy_policy_text');
 	}
+
+    protected function initMultimodel($type) {
+        $model_list = [
+            'models' => [
+                'basic'      => new BasicMetabox(),
+                'advanced'   => new AdvancedMetabox(),
+                'save'       => new SaveLockerMetabox(),
+                'visability' => new VisabilityMetabox()
+            ]
+        ];
+
+
+        if( $type == 'signinlocker' || $type == 'emaillocker' ) {
+            $model_list['models']['subscribe'] = new SubscribeMetabox();
+        }
+
+
+        if( $type == 'emaillocker' ) {
+            $model_list['models']['email_form_settings'] = new EmailFormSettings();
+        }
+
+        if( $type == 'signinlocker' ) {
+            $model_list['models']['signin_social'] = new SigninButtonsSettings();
+        }
+
+        if( $type == 'sociallocker' ) {
+            $model_list['models']['social'] = new SocialButtonsSettings();
+        }
+
+        return new LockersForm($model_list);
+    }
 
 	protected function findModel($id)
 	{

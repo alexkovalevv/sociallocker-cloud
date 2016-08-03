@@ -7,12 +7,30 @@
 
 /* @var $model common\base\MultiModel */
 /* @var string $type */
+?>
 
+<?php
 $fields->model = $model->getModel('basic');
 
 echo $fields->textInput('title');
 echo $fields->textInput('header');
 echo $fields->editor('message');
+?>
+
+<?php if( $type == 'emaillocker' ): ?>
+    <?php $fields->model = $model->getModel('email_form_settings'); ?>
+    <div class="row">
+        <div class="col-sm-5">
+            <?=$fields->textInput('form_button_text');?>
+        </div>
+        <div class="col-sm-5">
+            <?=$fields->textInput('form_after_button_text');?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php
+$fields->model = $model->getModel('basic');
 
 $styles = [
 	['value' => 'dandyish', 'text' => 'Dandyish'],
@@ -22,7 +40,7 @@ $styles = [
 	['value' => 'secrets', 'text' => 'Secrets']
 ];
 
-if( $type === 'signinlocker' ) {
+if( $type === 'signinlocker' || $type === 'emaillocker' ) {
 	$styles = [
 		['value' => 'great-attractor', 'text' => 'Great attractor'],
 	    ['value' => 'friendly-giant', 'text' => 'Friendly giant'],

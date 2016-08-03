@@ -9,7 +9,7 @@ namespace backend\modules\lockers\models\lockers\metaboxes;
 use Yii;
 use yii\base\Model;
 
-class Subscribe extends Model
+class SubscribeMetabox extends Model
 {
 
 	public $subscribe_to_service;

@@ -9,7 +9,7 @@ namespace backend\modules\lockers\models\lockers\metaboxes;
 use Yii;
 use yii\base\Model;
 
-class Basic extends Model
+class BasicMetabox extends Model
 {
 	//Название замка
 	public $title;

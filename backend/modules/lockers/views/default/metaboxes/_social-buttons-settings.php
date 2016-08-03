@@ -17,7 +17,7 @@ $social_buttons = [];
 // Facebook мне нравится
 // ========================================================================================
 $facebook_like = $fields->checkbox('facebook_like_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $facebook_like .= $fields->textInput( 'facebook_like_url');
@@ -28,7 +28,7 @@ $facebook_like .= $fields->textInput( 'facebook_like_title');
 // Facebook поделиться
 // ========================================================================================
 $facebook_share = $fields->checkbox('facebook_share_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $facebook_share .= $fields->textInput( 'facebook_share_url');
@@ -49,7 +49,7 @@ $facebook_share .= $fields->textInput( 'facebook_share_message_image');
 // Twitter твитнуть
 // ========================================================================================
 $twitter_tweet = $fields->checkbox('twitter_tweet_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $twitter_tweet .= $fields->textInput( 'twitter_tweet_url');
@@ -63,7 +63,7 @@ $twitter_tweet .= $fields->textInput( 'twitter_tweet_title');
 //Twitter подписаться
 // ========================================================================================
 $twitter_follow = $fields->checkbox('twitter_follow_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $twitter_follow .= $fields->textInput( 'twitter_follow_url');
@@ -78,7 +78,7 @@ $twitter_follow .= $fields->textInput( 'twitter_follow_title');
 // Google плюс
 // ========================================================================================
 $google_plus = $fields->checkbox('google_plus_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $google_plus .= $fields->textInput( 'google_plus_url');
@@ -89,7 +89,7 @@ $google_plus .= $fields->textInput( 'google_plus_title');
 // Google поделиться
 // ========================================================================================
 $google_share = $fields->checkbox('google_share_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $google_share .= $fields->textInput( 'google_share_url');
@@ -100,7 +100,7 @@ $google_share .= $fields->textInput( 'google_share_title');
 // Google youtube
 // ========================================================================================
 $google_youtube = $fields->checkbox('google_youtube_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $google_youtube .= $fields->textInput( 'google_youtube_channel_id');
@@ -111,7 +111,7 @@ $google_youtube .= $fields->textInput( 'google_youtube_title');
 // Linkedin поделиться
 // ========================================================================================
 $linkedin_share = $fields->checkbox('linkedin_share_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $linkedin_share .= $fields->textInput( 'linkedin_share_url');
@@ -122,7 +122,7 @@ $linkedin_share .= $fields->textInput( 'linkedin_share_title');
 // Vkontakte мне нравится
 // ========================================================================================
 $vk_like = $fields->checkbox('vk_like_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $vk_like .= $fields->checkbox('vk_like_require_sharing');
@@ -141,7 +141,7 @@ $vk_like .= $fields->textInput( 'vk_like_message_image');
 // Vkontakete поделиться
 // ========================================================================================
 $vk_share = $fields->checkbox('vk_share_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $vk_share .= $fields->textInput( 'vk_share_url');
@@ -158,7 +158,7 @@ $vk_share .= $fields->textInput( 'vk_like_message_image');
 // Vkontakete подписаться
 // ========================================================================================
 $vk_subscribe = $fields->checkbox('vk_subscribe_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $vk_subscribe .= $fields->textInput( 'vk_subscribe_group_id');
@@ -169,7 +169,7 @@ $vk_subscribe .= $fields->textInput( 'vk_subscribe_title');
 // Odnoklassniki поделиться
 // ========================================================================================
 $ok_share = $fields->checkbox('ok_share_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $ok_share .= $fields->textInput( 'ok_share_url');
@@ -180,7 +180,7 @@ $ok_share .= $fields->textInput( 'ok_share_title');
 // Mail поделиться
 // ========================================================================================
 $mail_share = $fields->checkbox('mail_share_available', [
-	'containerOptions' => ['class' => 'onp-activate-social-button-switch']
+	'contanierOptions' => ['class' => 'onp-activate-social-button-switch']
 ]);
 
 $mail_share .= $fields->textInput( 'mail_share_url');
@@ -192,6 +192,11 @@ $mail_share .= $fields->textInput( 'mail_share_message_title');
 $mail_share .= $fields->textInput( 'mail_share_message_description');
 
 $mail_share .= $fields->textInput( 'mail_share_message_image');
+// ========================================================================================
+
+// Сортировка кнопок
+// ========================================================================================
+echo $fields->hidden('buttons_order');
 // ========================================================================================
 
 ?>

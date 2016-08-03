@@ -48,6 +48,10 @@
 								 self.append(output);
 
 								 self.selectpicker('refresh');
+
+                                 if( self.data('ajax-callback') ) {
+                                     $(document).trigger(self.data('ajax-callback'));
+                                 }
 						 },
                          error: function(m) {
                             console.log(m);

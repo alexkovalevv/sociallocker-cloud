@@ -29,15 +29,17 @@ use yii\bootstrap\ActiveForm;
 
 		<div class="col-sm-9">
 			<!-- Базовые опции -->
-			<?php include_once(dirname(__FILE__) . '/metaboxes/_basic-options.php'); ?>
+			<?php include_once( dirname( __FILE__ ) . '/metaboxes/_basic-metabox.php' ); ?>
 			<!-- /Базовые опции -->
 
 			<!-- Первью -->
-			<?php include_once(dirname(__FILE__) . '/metaboxes/_preview.php'); ?>
+			<?php include_once( dirname( __FILE__ ) . '/metaboxes/_preview-metabox.php' ); ?>
 			<!-- /Первью -->
 
 			<!-- Опции социальных кнопок -->
-			<?php include_once(dirname(__FILE__) . '/metaboxes/_social-options.php'); ?>
+			<div class="social-options">
+			    <?php include_once( dirname( __FILE__ ) . '/metaboxes/_social-buttons-settings.php' ); ?>
+            </div>
 			<!-- /Опции социальных кнопок -->
 		</div>
 
@@ -45,12 +47,12 @@ use yii\bootstrap\ActiveForm;
 		<div class="col-sm-3">
 			<!-- Опции создания/сохранения замков -->
 			<div class="right-box">
-				<?php include_once(dirname(__FILE__) . '/metaboxes/_save-options.php'); ?>
+				<?php include_once( dirname( __FILE__ ) . '/metaboxes/_save-locker-metabox.php' ); ?>
 			</div>
 			<!-- /Опции создания/сохранения замков -->
 			<!-- Опции видимости -->
 			<div class="right-box">
-				<?php include_once(dirname(__FILE__) . '/metaboxes/_visability-options.php'); ?>
+				<?php include_once( dirname( __FILE__ ) . '/metaboxes/_visability-metabox.php' ); ?>
 			</div>
 			<!-- /Опции видимости -->
 			<!-- Дополнительные опции -->

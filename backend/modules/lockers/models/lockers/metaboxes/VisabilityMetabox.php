@@ -9,7 +9,7 @@ namespace backend\modules\lockers\models\lockers\metaboxes;
 use Yii;
 use yii\base\Model;
 
-class Visability extends Model
+class VisabilityMetabox extends Model
 {
 	//Если Вкл, будучи ранее открыт, Замок появится снова через указанный интервал.
 	public $relock;

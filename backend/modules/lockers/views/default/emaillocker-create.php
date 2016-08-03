@@ -1,15 +1,12 @@
 <?php
 /**
- * Шаблон создания и редактирования замков авторизации.
+ * Шаблон создания и редактирования email замков.
  */
-
 
 use common\helpers\CustomFields;
 use yii\bootstrap\ActiveForm;
-use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
 use common\modules\subscription\classes\SubscriptionServices;
 use yii\helpers\Url;
-
 ?>
 
 <!-- Общий шаблон создания замков  -->
@@ -32,6 +29,7 @@ use yii\helpers\Url;
 		?>
 
 		<div class="col-sm-9">
+
 			<!-- Базовые опции -->
 			<div class="basic-options">
 				<?php include_once( dirname( __FILE__ ) . '/metaboxes/_basic-metabox.php' ); ?>
@@ -50,30 +48,35 @@ use yii\helpers\Url;
             </div>
 			<!-- /Опции подписки -->
 
-			<!-- Опции социальных кнопок -->
-			<div class="social-options">
-				<?php include_once( dirname( __FILE__ ) . '/metaboxes/_signin-buttons-settings.php' ); ?>
-			</div>
-			<!-- /Опции социальных кнопок -->
+            <!-- Настройки email формы -->
+            <div class="email-form-settings">
+                <?php include_once( dirname( __FILE__ ) . '/metaboxes/_email-form-settings.php' ); ?>
+            </div>
+            <!-- /Настройки email формы -->
+
 		</div>
 
 
 		<div class="col-sm-3">
+
 			<!-- Опции создания/сохранения замков -->
 			<div class="right-box">
 				<?php include_once( dirname( __FILE__ ) . '/metaboxes/_save-locker-metabox.php' ); ?>
 			</div>
 			<!-- /Опции создания/сохранения замков -->
+
 			<!-- Опции видимости -->
 			<div class="right-box">
 				<?php include_once( dirname( __FILE__ ) . '/metaboxes/_visability-metabox.php' ); ?>
 			</div>
 			<!-- /Опции видимости -->
+
 			<!-- Дополнительные опции -->
 			<div class="right-box">
 				<?php include_once(dirname(__FILE__) . '/metaboxes/_advanced-options.php'); ?>
 			</div>
 			<!-- /Дополнительные опции -->
+
 			<?php ActiveForm::end(); ?>
 		</div>
 	</div>

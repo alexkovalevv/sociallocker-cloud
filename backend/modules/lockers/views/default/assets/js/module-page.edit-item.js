@@ -7,11 +7,20 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 	window.lockerEditor = {
 
-		proccess: false,
+        presetModels: [
+            'BasicMetabox',
+            'VisabilityMetabox',
+            'SaveLockerMetabox',
+            'AdvancedMetabox',
+            'SubscribeMetabox',
+            'EmailFormSettings',
+            'SocialButtonsSettings',
+            'SigninButtonsSettings'
+        ],
 		modelFields: [],
-		lockerOptions: null,
-		buttonOrder: [],
         lockerType: 'sociallocker',
+        lockerOptions: null,
+        buttonOrder: [],
 
 		init: function() {
             if( window.lockerType ) {
@@ -48,8 +57,7 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 				var tab = $(this),
 					tabId = $(this).attr('id'),
 					buttonId = tabId.replace('tab-', '' ).replace('-', '_'),
-					activateButton = $('input[name="Social[' + buttonId + '_available]"]:checked, ' +
-					'input[name="SigninSocial[' + buttonId + '_available]"]:checked');
+					activateButton = $('input[name*="[' + buttonId + '_available]"]:checked');
 
 				if( activateButton.val() == 1 ) {
 					tab.hasClass('disabled-button') && tab.removeClass('disabled-button');
@@ -64,20 +72,10 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 		 */
 		getAllFields: function() {
 			var self = this,
-				models = [
-					'Basic',
-					'Social',
-					'Visability',
-					'Save',
-					'Advanced',
-					'Subscribe',
-					'Social',
-					'SigninSocial'
-				],
 				fields = [];
 
-			for( m in models ) {
-				$('[name^="' + models[m] + '"]').each(function () {
+			for( m in this.presetModels ) {
+				$('[name^="' + this.presetModels[m] + '"]').each(function () {
 					fields.push($(this ).attr('name'));
 				});
 			}
@@ -100,9 +98,11 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 		},
 
         setButtonsOrder: function() {
-            var buttonsOrder =  $('input[name*="buttons_order"]', '.social-options').val().split(',');
+            var buttonsOrder =  $('input[name*="buttons_order"]', '.social-options').val()
+                    ? $('input[name*="buttons_order"]', '.social-options').val().split(',')
+                    : null;
 
-            if( buttonsOrder[0] === "" )
+            if( !buttonsOrder || buttonsOrder[0] === "" )
                 return;
 
             var newOrder = [];
@@ -126,6 +126,7 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			$(".onp-vertical-tabs ul li").not('.disabled-button').each(function(){
 				self.buttonOrder.push( $(this).attr('id' ).replace('tab-', '') );
 			});
+
             $('input[name*="buttons_order"]', '.social-options').val(self.buttonOrder.join(','));
 		},
 
@@ -241,6 +242,14 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
                     //service:"database",
                     doubleOptin: 'subscribe_mode'
                     //confirm:false
+                },
+
+                subscription: {
+                    form:{
+                        buttonText: 'form_button_text',
+                        noSpamText: 'form_after_button_text',
+                        type: 'form_type'
+                    }
                 },
 
 				connectButtons: {
@@ -451,6 +460,10 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
                     'twitter',
                     'google'
                 ];
+            }
+
+            if( this.lockerType == 'emaillocker' ) {
+                self.lockerOptions.subscription.order = ['form'];
             }
 
 			if( self.buttonOrder.length ) {
