@@ -139,7 +139,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки/a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
@@ -150,15 +150,15 @@
             <div class="opanda-options opanda-integer-options">
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Icon Position</label>
+                    <label class="col-sm-2 control-label">Позиция иконки</label>
                     <div class="control-group col-sm-10">
                         <select class='form-control opanda-icon-position-input'>
-                            <option value="right">Right</option>
-                            <option value="left">Left</option>
-                            <option value="none">None</option>
+                            <option value="right">Справа</option>
+                            <option value="left">Слева</option>
+                            <option value="none">По умолчанию</option>
                         <select>
                         <div class='help-block'>
-                            The position of the icon.
+                            Выберите положение иконки
                         </div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-title-input' />
                         <div class='help-block'>
-                            Optional. The title appears above the field.
+                            Необязательный. Название отображается над полем.
                         </div>
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-placeholder-input' />
                         <div class='help-block'>
-                            Optional. The placeholder appears in the textbox when it's empty.
+                           Необязательно. Заглушка в текстовом поле появляется, когда оно не заполнено.
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-min-input' />
                         <div class='help-block'>
-                            Optional. The minimum allowed value.
+                            Необязательно. Минимальное допустимое значение.
                         </div>
                     </div>
                 </div>
@@ -200,7 +200,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-max-input' />
                         <div class='help-block'>
-                            Optional. The maximum allowed value.
+                            Необязательно. Максимально допустимое значение.
                         </div>
                     </div>
                 </div>
@@ -210,7 +210,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Hide Options</a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
@@ -225,7 +225,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-title-input' />
                         <div class='help-block'>
-                            Optional. The title appears above the field.
+                            Необязательно. Название отображается над полем.
                         </div>
                     </div>
                 </div>
@@ -238,7 +238,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Choices</label>
+                    <label class="col-sm-2 control-label">Выбрать</label>
                     <div class="control-group col-sm-10 opanda-choices-editor">
                         <div class="opanda-choices-holder">
 
@@ -252,7 +252,7 @@
                         <div class="opanda-choices-controls">
                             <a href="#" class="btn btn-default opanda-add-choice">
                                 <i class="fa fa-plus"></i>
-                                Add Choice
+                                Добавить пункт
                             </a>
                         </div>
                     </div>
@@ -264,7 +264,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Hide Options</a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
@@ -279,7 +279,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-value-input' />
                         <div class='help-block'>
-                            This value will be saved when submitting the form.
+                            Это значение будет сохраняться при отправке формы.
                         </div>
                     </div>
                 </div>
@@ -289,7 +289,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Hide Options</a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
@@ -304,7 +304,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-description-input' />
                         <div class='help-block'>
-                            The description appears next to the checkbox.
+                            Описание отображается рядом с флажком.
                         </div>
                     </div>
                 </div>
@@ -315,7 +315,7 @@
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" class='opanda-marked-by-default-input'>
-                                Check to make this checkbox marked by default.
+                                Сделать этот флажок отмеченным по умолчанию
                             </label>
                         </div>
                     </div>
@@ -328,7 +328,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-marked-value-input' />
                         <div class='help-block'>
-                            This value will be saved if the checkbox is marked.
+                            Это значение будет сохранено, если флажок отмечен.
                         </div>
                     </div>
                 </div>
@@ -338,7 +338,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-unmarked-value-input' />
                         <div class='help-block'>
-                            This value will be saved if the checkbox is not marked.
+                            Это значение будет сохранено, если флажок не отмечен.
                         </div>
                     </div>
                 </div>
@@ -348,7 +348,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Hide Options</a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
@@ -357,11 +357,10 @@
             <!-- Seprator Options -->
 
             <div class="opanda-options opanda-separator-options">
-                The separator does not have any options to configure.
+                Разделитель не имеет настроек.
             </div>
 
             <!-- Label Options -->
-
             <div class="opanda-options opanda-label-options">
 
                 <div class="form-group">
@@ -369,7 +368,7 @@
                     <div class="control-group col-sm-10">
                         <input type='text' class='form-control opanda-text-input' />
                         <div class='help-block'>
-                            Enter text for the label to display.
+                            Введите текст метки для отображения.
                         </div>
                     </div>
                 </div>
@@ -379,14 +378,13 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Hide Options</a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
             </div>
 
             <!-- Html Options -->
-
             <div class="opanda-options opanda-html-options">
 
                 <div class="form-group">
@@ -394,7 +392,7 @@
                     <div class="control-group col-sm-10">
                         <textarea class='form-control opanda-html-input'></textarea>
                         <div class='help-block'>
-                            Paste here html code to display.
+                            Вставьте html-код для отображения.
                         </div>
                     </div>
                 </div>
@@ -404,16 +402,15 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"> </label>
                     <div class="control-group col-sm-10">
-                        <a href='#' class='btn btn-default opanda-hide'>Hide Options</a>
+                        <a href='#' class='btn btn-default opanda-hide'>Скрыть настройки</a>
                     </div>
                 </div>
 
             </div>
 
             <!-- Unsupported Options -->
-
             <div class="opanda-options opanda-unsupported-options">
-                Sorry, it seems we plugin does not support this field type.
+                К сожалению, плагин не поддерживает этот тип поля.
             </div>
 
         </div>
@@ -421,7 +418,7 @@
         <div class="opanda-controls">
             <a href="#" class="btn btn-default opanda-add-field">
                 <i class="fa fa-plus"></i>
-                Add Field
+                Добавить поле
             </a>
         </div>
       </div>

@@ -61,7 +61,9 @@ class SwitchControl extends InputWidget
     {
         parent::init();
 
-        $this->value = Html::getAttributeValue( $this->model, $this->attribute );
+        if( is_null($this->value) ) {
+            $this->value = Html::getAttributeValue( $this->model, $this->attribute );
+        }
 
         if (( $this->value === '' || is_null( $this->value ) ) && !is_null( $this->default )) {
             $this->value = $this->default;

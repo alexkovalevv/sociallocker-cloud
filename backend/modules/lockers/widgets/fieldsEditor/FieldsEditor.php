@@ -8,10 +8,10 @@
 namespace backend\modules\lockers\widgets\fieldsEditor;
 
 use Yii;
-
 use yii\base\Widget;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use yii\base\InvalidValueException;
 use backend\modules\lockers\widgets\fieldsEditor\FieldsEditorAssets;
 
 
@@ -20,13 +20,40 @@ class FieldsEditor extends Widget
     public $model;
     public $attribute;
 
+    /**
+     * @var string имя поля из которого будет браться текущий лист подписки
+     */
     public $listIdFieldName;
+
+    /**
+     * @var string имя скрытого поля
+     */
+    public $resultFieldName;
+
+    /**
+     * @var string ссылка на действие, которые возвращает массив доступных полей
+     * в выбранном сервисе подписки
+     */
     public $ajaxUrl;
+
+
     public $res = [];
 
 	public function init()
 	{
 		parent::init();
+
+        switch(false) {
+            case !empty($this->listIdFieldName) || is_string($this->listIdFieldName):
+                throw new InvalidValueException('Атрибут listIdFieldName является обязательным и должен быть строкой.');
+                break;
+            case !empty($this->resultFieldName) || is_string($this->resultFieldName):
+                throw new InvalidValueException('Атрибут resultFieldName является обязательным и должен быть строкой.');
+                break;
+            case !empty($this->ajaxUrl) || is_string($this->ajaxUrl):
+                throw new InvalidValueException('Атрибут ajaxUrl является обязательным и должен быть строкой.');
+                break;
+        }
 
         $resDefault = [
             'service-title' => '',
@@ -83,6 +110,14 @@ class FieldsEditor extends Widget
         window.fieldsEditor.res['label-default-text'] = "{$this->res['label-default-text']}";
         window.fieldsEditor.res['unsupported'] = "{$this->res['unsupported']}";
         window.fieldsEditor.res['unsupported-type'] = "{$this->res['unsupported-type']}";
+
+        jQuery(function() {
+            var element = '#' + jQuery('[name*="{$this->resultFieldName}"]').attr('id');
+
+            jQuery("#opanda-fields-editor").fieldsEditor({
+                result: element
+            });
+        });
 JS;
 
         $view->registerJs($js, $view::POS_END);

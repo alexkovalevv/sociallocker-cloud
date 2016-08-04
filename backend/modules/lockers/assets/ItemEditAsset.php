@@ -14,7 +14,7 @@ class ItemEditAsset extends AssetBundle
     public $js = [
         'js/module-page.edit-item.js',
         'js/libs/jquery.sortable.min.js',
-        'js/module.lockers-ru_RU.010008.min.js'
+        'js/module.pandalocker.2.1.0.js'
     ];
 
     public $depends = [

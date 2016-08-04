@@ -1597,12 +1597,6 @@ if ( !window.fieldsEditor ) window.fieldsEditor = {};
                 return choices;
             }
         });
-
-        //$(document).on('fileEditor.load', function(){
-            $("#opanda-fields-editor").fieldsEditor({
-                result: '#opanda_fields'
-            });
-        //});
     });
 })(jQuery);
 

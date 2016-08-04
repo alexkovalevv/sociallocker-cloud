@@ -13,22 +13,18 @@ use yii\helpers\Url;
 
 <?php
     $fields->model = $model->getModel('subscribe');
-    $contanier_class = "subscription-available";
 ?>
 
 <?php
- if( $type == 'signinlocker' ) {
-     echo $fields->checkbox( 'subscribe_to_service', [
-         'value'  => true,
-         'events' => [
-             '.subscription-available-hidden'
-         ]
-     ] );
-     $contanier_class = "subscription-available-hidden";
- };
+ echo $fields->checkbox( 'subscribe_to_service', [
+     'value'  => 1,
+     'events' => [
+         '.subscription-available-hidden'
+     ]
+ ]);
 ?>
 
-<div class="<?=$contanier_class?>">
+<div class="subscription-available-hidden">
     <?php if( SubscriptionServices::getCurrentName() == 'none' || SubscriptionServices::getCurrentName() == 'default' ): ?>
         <p>
             Собранные email адреса будут сохранены в <a href="#" target="_blank">локальную базу данных</a>, так как вы не выбрали сервисы email рассылки.
@@ -36,7 +32,11 @@ use yii\helpers\Url;
         </p>
     <?php else: ?>
         <p>Вы выбрали <?=SubscriptionServices::getCurrentServiceTitle();?>, как ваш почтовый сервис (<a href="<?=Url::to(['settings/index#tab-subscription']);?>" target="_blank">изменить</a>).</p>
-        <p><?=$fields->dropdown('default', 'subscribe_list', Url::to('@backendSubscriptionUrl/default/subscrtiption-lists', true), true, 'fieldsEditor.load');?></p>
+        <p><?=$fields->dropdown('default', 'subscribe_list', Url::to('@backendSubscriptionUrl/default/subscrtiption-lists', true), [
+                'ajax' => true,
+                'callback' => 'fieldsEditor.load',
+                'cacheKey' => SubscriptionServices::getCurrentName()
+            ]);?></p>
     <?php endif; ?>
     <p><?=$fields->dropdown('default', 'subscribe_mode', SubscriptionServices::getCurrentOptinModes());?></p>
 </div>

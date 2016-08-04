@@ -95,9 +95,11 @@ class DefaultController extends Controller
                 return $this->refresh();
             } else {
                 Yii::$app->session->setFlash( 'alert', [
-                    'body'    => 'Возникли ошибки при заполнении формы! Пожалуйста, проверьте внимательно неправильно заполненные поля.' ,
+                    'body'    => 'Возникли ошибки при заполнении формы! Пожалуйста, проверьте внимательно неправильно заполненные поля.',
                     'options' => ['class' => 'alert alert-danger']
                 ] );
+
+                var_dump($model->getErrors());
             }
 		}
 

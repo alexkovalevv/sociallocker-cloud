@@ -15,6 +15,7 @@ class EmailFormSettings extends Model
     public $form_button_text;
     public $form_after_button_text;
     public $form_type;
+    public $custom_fields;
 
     public function rules()
     {
@@ -23,7 +24,8 @@ class EmailFormSettings extends Model
                 [
                     'form_button_text',
                     'form_after_button_text',
-                    'form_type'
+                    'form_type',
+                    'custom_fields'
                 ],
                 'string'
             ]
