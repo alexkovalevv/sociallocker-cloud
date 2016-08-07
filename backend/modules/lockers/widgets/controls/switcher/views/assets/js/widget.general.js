@@ -10,6 +10,7 @@
          * Поддерживает два события(show|hide)
          */
         $('.wt-switch').each(function() {
+
             if( $(this).data('events') ) {
                 var self = $(this),
                     events = $(this).data('events');

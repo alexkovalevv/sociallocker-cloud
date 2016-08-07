@@ -5,6 +5,7 @@
  */
 
 namespace common\helpers;
+use dosamigos\tinymce\TinyMce;
 
 use yii;
 use yii\base\Exception;
@@ -63,7 +64,23 @@ class CustomFields
 
     public function editor( $attribute )
     {
-        return $this->form->field( $this->model, $attribute,
+         // TinyMce
+         return $this->form->field($this->model, $attribute,
+             $this->getTemplateActiveField( $attribute ))->widget(TinyMce::className(), [
+            'options' => ['rows' => 6],
+            'language' => 'ru',
+            'clientOptions' => [
+                'content_style' =>'body {color:#555 !important;font-size:14px !important;}',
+                'menubar' => false,
+                'plugins' => [
+                    "textcolor lists link anchor fullscreen emoticons template textpattern"
+                ],
+                'toolbar' => "bold italic underline strikethrough | blockquoute | textcolor textpattern emoticons | bullist numlist outdent indent | undo redo | alignleft aligncenter alignright alignjustify | link image fullscreen"
+            ]
+        ]);
+
+        // Старый редактор
+        /*return $this->form->field( $this->model, $attribute,
             $this->getTemplateActiveField( $attribute ) )->widget( Widget::className(), [
             'plugins'     => ['fullscreen', 'fontcolor', 'video'],
             'htmlOptions' => empty( $this->model->$attribute ) ? [
@@ -77,7 +94,7 @@ class CustomFields
                 'removeEmptyTags' => false,
                 'imageUpload'     => Yii::$app->urlManager->createUrl( ['/file-storage/upload-imperavi'] )
             ]
-        ] );
+        ] );*/
     }
 
     public function radio( $attribute, array $items = [], array $options = [] )
@@ -113,6 +130,23 @@ class CustomFields
         return $this->radio( $attribute, [], $options );
     }
 
+    /**
+     * @param $attribute
+     * @param array $items
+     * @param array $options
+     * @see yii\helpers\Html::activeCheckboxList()
+     * @return $this
+     */
+    public function checkboxList($attribute, array $items, array $options = []) {
+
+        if (empty( $this->model->$attribute )) {
+            $this->model->$attribute = $this->getFieldValueDefault( $attribute );
+        }
+
+        return $this->form->field($this->model, $attribute,
+            $this->getTemplateActiveField( $attribute ))->checkboxlist($items, $options);
+    }
+
     public function hidden( $attribute, array $options = [] ) {
         return $this->form->field( $this->model, $attribute)
             ->hiddenInput($options)->label(false);
@@ -132,17 +166,19 @@ class CustomFields
 
     public function getTemplateActiveField( $attribute )
     {
+        $template_data = [];
         if (method_exists( $this->model, 'attributeInstructions' )) {
             $data = $this->model->attributeInstructions();
+
             if (array_key_exists( $attribute, $data )) {
-                return [
-                    'inputTemplate' => '{input}
-					 <a href="' . $data[$attribute] . '" class="btn btn-default how-get-this"
-					 title="Перейти к инструкции" target="_blank">Как получить?</a>'
-                ];
+                $template_data['inputTemplate'] = '{input}<a href="' . $data[$attribute] . '" class="btn btn-default how-get-this"
+					 title="Перейти к инструкции" target="_blank">Как получить?</a>';
             }
         }
 
-        return [];
+        $template_data['template'] = '{beginLabel}{labelTitle}{endLabel} <div class="control-group controls col-sm-10">{input}{hint}{error}</div>';
+        $template_data['labelOptions'] = ['class' => 'col-sm-2 control-label'];
+
+        return $template_data;
     }
 }

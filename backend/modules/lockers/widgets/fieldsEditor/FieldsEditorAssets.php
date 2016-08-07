@@ -14,6 +14,7 @@ class FieldsEditorAssets extends AssetBundle
 	public $sourcePath = '@backend/modules/lockers/widgets/fieldsEditor/views/assets/';
 
 	public $js = [
+        'js/libs/jquery-ui-sortable.min.js',
         'js/widget.widgets-factory.js',
         'js/widget.general.js'
 	];

@@ -214,10 +214,11 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 			self.lockerOptions = self.mapLockerOptions(data);
 
-            self.filterOptions();
+            self.prepareOptions();
 		},
 
-        filterOptions: function () {
+        prepareOptions: function () {
+            var self = this;
             this.lockerOptions.demo = true;
 
             if( this.lockerType == 'signinlocker' || this.lockerType == 'emaillocker' ) {
@@ -248,39 +249,79 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
                 this.lockerOptions.groups = window.buttonsGroup;
             }
 
-            this.updateButtonsOrder();
-
+            this.updateButtonsOrder();                      
+            
+            // Сортировка по умолчанию
             if( this.lockerType == 'sociallocker' ) {
                 this.lockerOptions.socialButtons.order = [
                     'facebook-like',
                     'twitter-tweet',
                     'google-plus'
                 ];
+                if( this.buttonOrder.length ) {
+                    this.lockerOptions.socialButtons.order = this.buttonOrder;
+                }
             }
 
+            // Сортировка по умолчанию
             if( this.lockerType == 'signinlocker' ) {
                 this.lockerOptions.connectButtons.order = [
                     'vk',
                     'twitter',
                     'google'
                 ];
-            }
-
-            if( this.lockerType == 'emaillocker' ) {
-                this.lockerOptions.subscription.order = ['form'];
-
-                if( $('[name*="custom_fields"]').data('fields') ) {
-                    this.lockerOptions.subscription.form.fields = $('[name*="custom_fields"]').data('fields');
-                }
-            }
-
-            if( this.buttonOrder.length ) {
-                if( this.lockerType == 'sociallocker' ) {
-                    this.lockerOptions.socialButtons.order = this.buttonOrder;
-                } else if( this.lockerType == 'signinlocker' ) {
+                
+                if( this.buttonOrder.length ) {
                     this.lockerOptions.connectButtons.order = this.buttonOrder;
                 }
+                
             }
+
+            /** =================== Email замок =================== */
+
+            if( this.lockerType == 'emaillocker' ) {
+                var cfField = $('input[name*="custom_fields"]'),
+                    subscribeSbAvailable = $('input[name*="subscribe_allow_social"]:checked'),
+                    subscribeSbuttons = $('input[name*="subscribe_social_buttons"]:checked');
+
+                if( subscribeSbAvailable.val() == "1" ) {
+
+                    console.log(subscribeSbuttons.length);
+
+                    if( subscribeSbuttons.length ) {
+                        this.lockerOptions.connectButtons.order = [];
+                        this.lockerOptions.groups = [
+                            "subscription",
+                            "connect-buttons"
+                        ];
+
+                        subscribeSbuttons.each(function() {
+                            var socialNetwork = $(this).val();
+                            self.lockerOptions.connectButtons[socialNetwork].action = 'subscribe';
+                            self.lockerOptions.connectButtons.order.push(socialNetwork);
+                        });
+                    }
+                }
+
+                this.lockerOptions.subscription.order = ['form'];
+
+                if( cfField.data('fields') ) {
+                    this.lockerOptions.subscription.form.fields = cfField.data('fields');
+                } else if( cfField.val() ) {
+                    var customFieldsData = JSON.parse(cfField.val()),
+                        customFields = [];
+
+                    for( cf in customFieldsData ) {
+                        if( !customFieldsData.hasOwnProperty(cf) )
+                            continue;
+                        customFields[cf] = customFieldsData[cf].fieldOptions;
+                    }
+
+                    this.lockerOptions.subscription.form.fields = customFields;
+                }
+            }
+
+            console.log(this.lockerOptions);
         },
 
 		recreatePreview: function() {

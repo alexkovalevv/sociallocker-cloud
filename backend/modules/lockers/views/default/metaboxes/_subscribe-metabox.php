@@ -26,17 +26,20 @@ use yii\helpers\Url;
 
 <div class="subscription-available-hidden">
     <?php if( SubscriptionServices::getCurrentName() == 'none' || SubscriptionServices::getCurrentName() == 'default' ): ?>
-        <p>
+        <div class="current-service-alert">
             Собранные email адреса будут сохранены в <a href="#" target="_blank">локальную базу данных</a>, так как вы не выбрали сервисы email рассылки.
             (<a href="<?=Url::to(['settings/index#tab-subscription']);?>" target="_blank">изменить</a>).
-        </p>
+        </div>
     <?php else: ?>
-        <p>Вы выбрали <?=SubscriptionServices::getCurrentServiceTitle();?>, как ваш почтовый сервис (<a href="<?=Url::to(['settings/index#tab-subscription']);?>" target="_blank">изменить</a>).</p>
+        <div class="current-service-alert">
+            Вы выбрали <?=SubscriptionServices::getCurrentServiceTitle();?>, как ваш почтовый сервис (<a href="<?=Url::to(['settings/index#tab-subscription']);?>" target="_blank">изменить</a>).</p>
+        </div>
         <p><?=$fields->dropdown('default', 'subscribe_list', Url::to('@backendSubscriptionUrl/default/subscrtiption-lists', true), [
                 'ajax' => true,
-                'callback' => 'fieldsEditor.load',
-                'cacheKey' => SubscriptionServices::getCurrentName()
-            ]);?></p>
+                'callback' => 'fieldsEditor.load'
+            ]);
+            ?>
+        </p>
     <?php endif; ?>
     <p><?=$fields->dropdown('default', 'subscribe_mode', SubscriptionServices::getCurrentOptinModes());?></p>
 </div>

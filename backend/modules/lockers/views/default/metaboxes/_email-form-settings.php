@@ -37,3 +37,18 @@ $fields->model = $model->getModel('email_form_settings');
 ?>
 
 <?=$fields->hidden('custom_fields');?>
+
+<?=$fields->checkbox('subscribe_allow_social', [
+    'events' => ['.social-buttons-options']
+]);?>
+<div class="social-buttons-options">
+<?=$fields->textInput('subscribe_social_text');?>
+
+<?=$fields->checkboxList('subscribe_social_buttons', [
+    'facebook' => 'Facebook',
+    'google'   => 'Google',
+    'twitter'  => 'Twitter',
+    'linkedin' => 'LinkedIn',
+    'vk'       => 'Вконтакте'
+]);?>
+</div>

@@ -14,7 +14,7 @@ $fields->model = $model->getModel('save');
 
 echo $fields->checkbox('status');
 ?>
-<p>
+<div class="save-locker-buttons">
 	<?php
 		if( $controller == 'edit' ) {
 			echo Html::submitButton( 'Обновить', ['class' => 'btn btn-success'] ) . " ";
@@ -24,4 +24,4 @@ echo $fields->checkbox('status');
 			echo Html::a( 'Отменить', ['/lockers/default/index'], ['class' => 'btn btn-warning'] );
 		}
 	?>
-</p>
+</div>

@@ -101,14 +101,6 @@ class DropdownControl extends Widget
      */
     public $callback;
 
-    public $cachePrefix = '_wt_dropdown_';
-
-    /**
-     * @var string предназначен для кеширования ajax запросов по ключу. Поможет избежать лишних ajax запросов.
-     * В случае если нужно сбросить кеш, мы просто меняем ключ.
-     */
-    public $cacheKey;
-
 	/**
 	 * @var array|string элементы массива. Если используется ajax, сюда передается url
 	 */
@@ -181,9 +173,6 @@ class DropdownControl extends Widget
 
 		if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) )
 			$this->value = $this->default;
-
-        if( is_null($this->cacheKey) )
-            $this->cacheKey = $this->attribute;
 
 		DropdownControlAssets::register($this->view);
 	}
@@ -260,7 +249,6 @@ JS;
 			$this->itemOptions['data-item-hints'] = $item_hints;
 		} else {
             $ajaxUrl = $this->items;
-            //$cacheKey = $this->getCacheKey();
 
             $items['none'] = '--- идет поиск ---';
             Html::addCssClass($this->itemOptions, 'wt-dropdown-ajax');
@@ -289,17 +277,4 @@ JS;
 
 		return Html::dropDownList($this->name, $this->value, $items, $this->itemOptions);
 	}
-
-    /**
-     * @param $key
-     * @return array
-     */
-    protected function getCacheKey()
-    {
-        return [
-            __CLASS__,
-            $this->cachePrefix,
-            $this->cacheKey
-        ];
-    }
 }

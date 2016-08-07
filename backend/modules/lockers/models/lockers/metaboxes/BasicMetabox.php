@@ -72,6 +72,7 @@ class BasicMetabox extends Model
 	 */
 	public function attributeDefaults() {
 		return [
+            'title'            => 'Новый замок(#'. rand(1,999) .')',
 			'header'           => 'Этот контент заблокирован!',
 			'message'          => 'Пожалуйста, поддержите нас, нажмите на одну из социальных кнопок ниже, чтобы открыть контент.',
 			'overlap'          => 'full',

@@ -447,6 +447,7 @@ if ( !window.fieldsEditor ) window.fieldsEditor = {};
                         self.saveFields();
                     }
                 });
+
                 // fills up font awesome icons
                 var iconOptions = [];
                 iconOptions.push({value: '', title: ' '});
@@ -521,6 +522,7 @@ if ( !window.fieldsEditor ) window.fieldsEditor = {};
                         ? window.fieldsEditor.listIdFieldName
                         : 'subscribe_mode',
                     $list = $('[name*="' + listIdFieldName + '"]');
+
                 // refresh mapping fields on initing or chaning the list
                 if ($list.length > 0 && $list.is("select")) {
                     $(document).on("fieldsEditor.load fieldsEditor.update", function () {
@@ -532,6 +534,7 @@ if ( !window.fieldsEditor ) window.fieldsEditor = {};
                 } else {
                     self.refreshMappingSelectors();
                 }
+
                 // updates other fields in the row on selecting another custom field to map
                 $(this._$fieldsEditor).on("fieldEditor.change change", ".opanda-mapping-input", function () {
                     var $fieldRow = $(this).parents(".opanda-item");
@@ -734,8 +737,7 @@ if ( !window.fieldsEditor ) window.fieldsEditor = {};
                 var listIdFieldName = window.fieldsEditor.listIdFieldName
                     ? window.fieldsEditor.listIdFieldName
                     : 'subscribe_mode',
-
-                listId = listId || $('[name*="' + listIdFieldName + '"]').val();
+                    listId = listId || $('[name*="' + listIdFieldName + '"]').val();
 
                 var self = this;
                 var $selectors = this.getMappingSelectors();
@@ -1425,6 +1427,8 @@ if ( !window.fieldsEditor ) window.fieldsEditor = {};
                         mapOptions: mapOptions,
                         permissions: permissions
                     });
+
+                    $fieldRow.attr('draggable', 'true');
                 });
                 var strjson = JSON.stringify(allData);
                 this._$result.val(strjson).data('fields', fields);

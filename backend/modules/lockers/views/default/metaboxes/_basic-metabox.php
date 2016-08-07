@@ -19,14 +19,11 @@ echo $fields->editor('message');
 
 <?php if( $type == 'emaillocker' ): ?>
     <?php $fields->model = $model->getModel('email_form_settings'); ?>
-    <div class="row">
-        <div class="col-sm-5">
-            <?=$fields->textInput('form_button_text');?>
-        </div>
-        <div class="col-sm-5">
-            <?=$fields->textInput('form_after_button_text');?>
-        </div>
-    </div>
+
+    <?=$fields->textInput('form_button_text');?>
+
+    <?=$fields->textInput('form_after_button_text');?>
+
 <?php endif; ?>
 
 <?php
@@ -50,30 +47,26 @@ if( $type === 'signinlocker' || $type === 'emaillocker' ) {
 
 echo $fields->dropdown('default', 'style', $styles);
 ?>
-<div class="row">
-	<div class="col-sm-6">
-		<?= $fields->radio( 'overlap', [
-            ['label' => '<i class="fa fa-lock"></i> Скрыть', 'value' => 'full'],
-            ['label' => '<i class="fa fa-adjust"></i> Прозрачный слой', 'value' => 'opacity'],
-            ['label' => '<i class="fa fa-bullseye"></i> Размытый слой', 'value' => 'blurring'],
-        ], [
-            'events' => [
-                '.overlap-position-box' => [
-                    'opacity'  => 'show',
-                    'blurring' => 'show',
-                    'full'     => 'hide'
-                ]
-            ]
-        ] );
-        ?>
-	</div>
-	<div class="col-sm-3" style="padding:5px 0 0;">
-		<div class="overlap-position-box" style="display: none;">
-			<?= $fields->dropdown('default', 'overlap_position', [
-				['value' => 'top', 'text' => 'Сверху'],
-				['value' => 'middle', 'text' => 'По середине'],
-				['value' => 'scroll', 'text' => 'Прокручивается']
-			]);?>
-		</div>
-	</div>
+
+<?= $fields->radio( 'overlap', [
+    ['label' => '<i class="fa fa-lock"></i> Скрыть', 'value' => 'full'],
+    ['label' => '<i class="fa fa-adjust"></i> Прозрачный слой', 'value' => 'opacity'],
+    ['label' => '<i class="fa fa-bullseye"></i> Размытый слой', 'value' => 'blurring'],
+], [
+    'events' => [
+        '.overlap-position-box' => [
+            'opacity'  => 'show',
+            'blurring' => 'show',
+            'full'     => 'hide'
+        ]
+    ]
+] );
+?>
+
+<div class="overlap-position-box" style="display: none;">
+    <?= $fields->dropdown('default', 'overlap_position', [
+        ['value' => 'top', 'text' => 'Сверху'],
+        ['value' => 'middle', 'text' => 'По середине'],
+        ['value' => 'scroll', 'text' => 'Прокручивается']
+    ]);?>
 </div>

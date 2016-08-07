@@ -9,7 +9,7 @@
 
 			 if(self.data('item-hints') && self.data('item-hints')[self.val()]) {
 				 self.closest('.form-group').find('.help-block')
-					 .text(self.data('item-hints')[self.val()]);
+					 .text(self.data('item-hints')[self.val()]).removeClass('help-block-error');
 			 }
 
 			 if( self.hasClass('wt-dropdown-ajax') ) {
@@ -65,7 +65,7 @@
 			  var el = $(e.target);
 			  if(el.data('item-hints') && el.data('item-hints')[el.val()]) {
 				  el.closest('.form-group').find('.help-block')
-					  .text(el.data('item-hints')[el.val()]);
+					  .text(el.data('item-hints')[el.val()]).removeClass('help-block-error');
 			  }
 		  });
   });

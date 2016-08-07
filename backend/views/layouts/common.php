@@ -164,7 +164,7 @@ $bundle = BackendAsset::register($this);
 
                         [
 	                        'label' => 'Подписчики',
-	                        'url'=>['/lockers/default/index'],
+	                        'url'=>['/subscription/leads/index'],
 	                        'badge' => 0,
 	                        'badgeBgClass'=>'label-warning',
 	                        'icon' => '<i class="fa fa-envelope-o" aria-hidden="true"></i>'

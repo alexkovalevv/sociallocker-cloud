@@ -23,7 +23,11 @@ $items = array(
 		'title'       => 'По умолчанию',
 		'description' => 'Email адреса подписчиков будут сохранены в базе данных WP.',
 		'class'       => new DatabaseSubscriptionService(),
-		'modes'       => array('quick')
+		'modes'       => array(
+            'double-optin',
+            'quick-double-optin',
+            'quick'
+        ),
 	),
 	'mailchimp'       => array(
 		'title'       => 'MailChimp',

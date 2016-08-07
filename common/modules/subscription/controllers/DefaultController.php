@@ -59,12 +59,14 @@ class DefaultController extends Controller
      * @since 1.0.0
      * @return array
      */
-    public function actionGetCustomFields( $list_id )
+    public function actionGetCustomFields()
     {
 
         if (!Yii::$app->request->isAjax) {
             throw new HttpException( '403' );
         }
+
+        $list_id = Yii::$app->request->getQueryParam('list_id', 'none');
 
         Yii::$app->response->format = Response::FORMAT_JSON;
         $cacheKey = $this->getCacheKey( $list_id );
