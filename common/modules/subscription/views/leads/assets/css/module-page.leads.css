@@ -1,0 +1,28 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&subset=latin,cyrillic,cyrillic-ext);
+
+body {
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+.leads-index .table tr > th:first-child {
+    width:30px;
+}
+
+.leads-index .lead-avatar-column {
+    width:60px;
+}
+
+.leads-index .lead-avatar {
+    display: block;
+    padding: 2px;
+    border: 1px solid #D3D6DB;
+    background-color: #FFF;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 40px 40px;
+    margin-bottom: 4px;
+}
+
+.leads-index .lead-user-display-name {
+    font-weight: bold;
+}

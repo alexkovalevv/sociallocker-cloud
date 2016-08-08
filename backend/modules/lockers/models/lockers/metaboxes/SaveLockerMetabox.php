@@ -12,14 +12,12 @@ use yii\base\Model;
 class SaveLockerMetabox extends Model
 {
 	//Статус
-	public $status = 1;
+	public $status;
 
 	public function rules()
 	{
 		return [
-			[['status'], 'required'],
-			['status', 'integer'],
-			[['status'], 'filter', 'filter' => function($value) {return empty($value) ? false : true;}]
+			[['status'], 'string']
 		];
 	}
 
@@ -31,7 +29,7 @@ class SaveLockerMetabox extends Model
 
 	public function attributeHints() {
 		return [
-			'status' => 'В состоянии отключен, замок не будет отображаться на вашем сайте.'
+			'status' => 'Выберите текущее состояние замка.'
 		];
 	}
 
@@ -41,7 +39,7 @@ class SaveLockerMetabox extends Model
 	 */
 	public function attributeDefaults() {
 		return [
-			'status' => true
+			'status' => 'draft'
 		];
 	}
 }

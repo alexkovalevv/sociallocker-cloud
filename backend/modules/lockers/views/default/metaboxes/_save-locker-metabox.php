@@ -12,7 +12,11 @@ use yii\helpers\Html;
 
 $fields->model = $model->getModel('save');
 
-echo $fields->checkbox('status');
+echo $fields->radio( 'status', [
+    ['value' => 'draft',  'label' => 'Черновик'],
+    ['value' => 'public', 'label' => 'Публичный'],
+    ['value' => 'trash',  'label' => 'В корзине']
+]);
 ?>
 <div class="save-locker-buttons">
 	<?php

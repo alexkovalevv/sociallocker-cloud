@@ -27,9 +27,9 @@ class ConnectController extends Controller
 {
 
     public function actionIndex() {
-        $handler = Yii::$app->request->getQueryParam('opandaHandler');
-        if( $handler == 'index' ) return;
-        $this->runAction($handler, Yii::$app->request->getQueryParams());
+        $handler = isset($_REQUEST['opandaHandler']) ? $_REQUEST['opandaHandler'] : null;
+        if( is_null($handler) || $handler == 'index' ) return;
+        $this->runAction($handler, $_REQUEST);
     }
 
 	public function actionVk()
@@ -63,7 +63,7 @@ class ConnectController extends Controller
 	public function actionLead()
 	{
 		$options = Module::getConnectOptions('subscription');
-		$handler = new SubscriptionHandler( $options );
+		$handler = new LeadHandler( $options );
 		return $this->response($handler);
 	}
 

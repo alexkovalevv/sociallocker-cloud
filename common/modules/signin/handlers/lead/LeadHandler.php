@@ -2,6 +2,7 @@
 namespace common\modules\signin\handlers\lead;
 
 use common\modules\signin\Handler;
+use common\modules\subscription\classes\LeadsHelper;
 
 /**
  * The class to proxy the request to the Twitter API.
@@ -27,7 +28,7 @@ class LeadHandler extends Handler {
         
         $identityData = $this->prepareDataToSave( null, null, $identityData );
 
-        //OPanda_Leads::add( $identityData, $contextData );
+        LeadsHelper::add( $identityData, $contextData );
     }
 }
 

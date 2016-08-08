@@ -71,8 +71,25 @@ class BasicMetabox extends Model
 	 * @return array
 	 */
 	public function attributeDefaults() {
+        $locker_type = Yii::$app->request->getQueryParam('type', 'sociallocker');
+        $locker_title = 'Новый черновик ';
+
+        switch($locker_type) {
+            case 'sociallocker':
+                $locker_title .= 'социального замка';
+                break;
+            case 'signinlocker':
+                $locker_title .= 'замка авторизации';
+                break;
+            case 'emaillocker':
+                $locker_title .= 'email замка';
+                break;
+        }
+
+        $locker_title .= ' (#'. rand(1,999) .')';
+
 		return [
-            'title'            => 'Новый замок(#'. rand(1,999) .')',
+            'title'            => $locker_title,
 			'header'           => 'Этот контент заблокирован!',
 			'message'          => 'Пожалуйста, поддержите нас, нажмите на одну из социальных кнопок ниже, чтобы открыть контент.',
 			'overlap'          => 'full',

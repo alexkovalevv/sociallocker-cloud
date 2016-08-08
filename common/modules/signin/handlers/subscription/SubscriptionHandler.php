@@ -1,10 +1,13 @@
 <?php
 namespace common\modules\signin\handlers\subscription;
 
+
+use yii;
 use common\modules\signin\Handler;
-use common\modules\signin\handlers\HandlerInternalException;
-use common\modules\signin\handlers\HandlerException;
+use common\modules\signin\HandlerInternalException;
+use common\modules\signin\HandlerException;
 use common\modules\subscription\classes\SubscriptionServices;
+use common\modules\subscription\classes\LeadsHelper;
 use yii\base\Exception;
 
 /**
@@ -16,7 +19,7 @@ class SubscriptionHandler extends Handler {
      */
     public function handleRequest() {
         
-        if( !isset($_POST['opandaRequestType']) || !isset($_POST['opandaService']) ) {
+        if( !Yii::$app->request->getQueryParam('opandaRequestType') || !Yii::$app->request->getQueryParam('opandaService') ) {
            throw new HandlerInternalException('Invalid request. The "opandaRequestType" or "opandaService" are not defined.');
         }
 
@@ -35,7 +38,7 @@ class SubscriptionHandler extends Handler {
         
         // - request type
         
-        $requestType = strtolower( $_POST['opandaRequestType'] );
+        $requestType = strtolower( Yii::$app->request->getQueryParam('opandaRequestType') );
         $allowed = array('check', 'subscribe');
 
         if ( !in_array( $requestType, $allowed ) ) {
@@ -44,7 +47,7 @@ class SubscriptionHandler extends Handler {
         
         // - identity data
         
-        $identityData = isset( $_POST['opandaIdentityData'] ) ? $_POST['opandaIdentityData'] : array();
+        $identityData = Yii::$app->request->getQueryParam('opandaIdentityData', array());
         $identityData = $this->normilizeValues( $identityData );
         
         if ( empty( $identityData['email'] )) {
@@ -53,24 +56,24 @@ class SubscriptionHandler extends Handler {
         
         // - service data
         
-        $serviceData = isset( $_POST['opandaServiceData'] ) ? $_POST['opandaServiceData'] : array();
+        $serviceData = Yii::$app->request->getQueryParam('opandaServiceData', array());
         $serviceData = $this->normilizeValues( $serviceData );
         
         // - context data
         
-        $contextData = isset( $_POST['opandaContextData'] ) ? $_POST['opandaContextData'] : array();
+        $contextData = Yii::$app->request->getQueryParam('opandaContextData', array());
         $contextData = $this->normilizeValues( $contextData );
 
         // - list id
         
-        $listId = isset( $_POST['opandaListId'] ) ? $_POST['opandaListId'] : null;
+        $listId = Yii::$app->request->getQueryParam('opandaListId');
         if ( empty( $listId ) ) {
            throw new HandlerException( 'Unable to subscribe. The list ID is not specified.' );
         }
         
         // - double opt-in
         
-        $doubleOptin =  isset( $_POST['opandaDoubleOptin'] ) ? $_POST['opandaDoubleOptin'] : true;
+        $doubleOptin =  Yii::$app->request->getQueryParam('opandaDoubleOptin', true);
         $doubleOptin = $this->normilizeValue( $doubleOptin );
         
         // - confirmation
@@ -102,8 +105,10 @@ class SubscriptionHandler extends Handler {
         
         // checks if the subscription has to be procces via WP
         
-        $subscribeMode = get_post_meta($itemId, 'subscribe_mode', true);
-        $subscribeDelivery = get_post_meta($itemId, 'subscribe_delivery', true);
+        $subscribeMode = Yii::$app->lockerMeta($itemId, 'subscribe_mode', true);
+
+        //$subscribeDelivery = get_post_meta($itemId, 'subscribe_delivery', true);
+        $subscribeDelivery = false;
         
         $isWpSubscription = false;
         
@@ -131,37 +136,32 @@ class SubscriptionHandler extends Handler {
                         //Leads::add( $identityData, $contextData, true, true );
                         return $service->subscribe( $serviceReadyData, $listId, false, $contextData, $verified );
                     } else {
-                        $result = $service->wpSubscribe( $identityData, $serviceReadyData, $contextData, $listId, $verified );    
+                        //$result = $service->wpSubscribe( $identityData, $serviceReadyData, $contextData, $listId, $verified );
                     }
       
                 } else {
                     $result = $service->subscribe( $serviceReadyData, $listId, $doubleOptin, $contextData, $verified );         
                 }
 
-                do_action('subscribe', 
-                    ( $result && isset( $result['status'] ) ) ? $result['status'] : 'error', 
-                    $identityData, $contextData, $isWpSubscription
-                );
+                LeadsHelper::subscribe(( $result && isset( $result['status'] ) ) ? $result['status'] : 'error',
+                    $identityData, $contextData, $isWpSubscription);
                 
             } elseif ( 'check' === $requestType ) {
                 
                 if ( $isWpSubscription ) {
-                    $result = $service->wpCheck( $identityData, $serviceReadyData, $contextData, $listId, $verified );   
+                    //$result = $service->wpCheck( $identityData, $serviceReadyData, $contextData, $listId, $verified );
                 } else {
                     $result = $service->check( $serviceReadyData, $listId, $contextData );   
                 }
-                
-                do_action('check', 
-                    ( $result && isset( $result['status'] ) ) ? $result['status'] : 'error', 
-                    $identityData, $contextData, $isWpSubscription
-                );
+
+                LeadsHelper::subscribe(( $result && isset( $result['status'] ) ) ? $result['status'] : 'error',
+                    $identityData, $contextData, $isWpSubscription);
             }
-            
-            $result = apply_filters('subscription_result', $result, $identityData);
-            if ( !defined( 'WORDPRESS' ) ) return $result;
+
+            //if ( !defined( 'WORDPRESS' ) ) return $result;
             
             // calls the hook to save the lead in the database
-            if ( $result && isset( $result['status'] ) ) {
+            /*if ( $result && isset( $result['status'] ) ) {
 
                 $actionData = array(
                     'identity' => $identityData,
@@ -178,7 +178,7 @@ class SubscriptionHandler extends Handler {
                 } else {
                     do_action('pending', $actionData); 
                 }
-            }
+            }*/
             
             return $result;
             

@@ -194,14 +194,14 @@ class LockersForm extends MultiModel
 
 
 	/**
-	 * Сохраянет данные текущей модели
+	 * Сохраняет данные текущей модели
 	 * @param $type - передается тип замка в формате string
 	 *
 	 * @return bool|Exception
 	 */
-	public function saveMultiModel($type, $model = null, $runValidation = true) {
+	public function saveMultiModel($type, $model = null, $draft = false, $runValidation = true) {
 
-		if ($runValidation && !$this->validate()) {
+		if ( !$draft && $runValidation && !$this->validate()) {
 			return false;
 		}
 
@@ -211,6 +211,11 @@ class LockersForm extends MultiModel
 
 		$data = [];
 		foreach ($this->models as $k => $m ) {
+
+            if ( $draft && method_exists( $m, 'attributeDefaults' ) ) {
+                $m->attributes = array_merge($m->attributes, $m->attributeDefaults());
+            }
+
 			$data = array_merge($data, $m->attributes);
 		}
 
@@ -218,6 +223,7 @@ class LockersForm extends MultiModel
 		$model->header = $data['header'];
 		$model->message = $data['message'];
 		$model->type = $type;
+        $model->status = $data['status'];
 		$model->user_id = Yii::$app->user->identity->id;
 
 		$locker_options = [];
@@ -229,10 +235,8 @@ class LockersForm extends MultiModel
 
 		$model->options = json_encode( $locker_options );
 
-		if( !$model->save() ) {
-			return new Exception( "Возникла ошибка при создание замка!" );
-		}
+        if( $draft ) return $model->save(true);
 
-		return true;
+        return $model->save();
 	}
 }

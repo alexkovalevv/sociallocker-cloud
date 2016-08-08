@@ -42,6 +42,28 @@ class DefaultController extends Controller
 	    ]);
     }
 
+    public function actionDraft()
+    {
+        $searchModel = new LockersSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'draft');
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionTrash()
+    {
+        $searchModel = new LockersSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'trash');
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
 	public function actionChangeLocker()
 	{
 		return $this->render('change');
@@ -57,22 +79,17 @@ class DefaultController extends Controller
 		$settings = new Settings();
         $model = $this->initMultimodel($type);
 
-		if ( $model->load(Yii::$app->request->post()) ) {
-            if( $model->saveMultiModel($type) ) {
-                return $this->redirect(['index']);
-            } else {
-                Yii::$app->session->setFlash( 'alert', [
-                    'body'    => 'Возникли ошибки при заполнении формы! Пожалуйста, проверьте внимательно неправильно заполненные поля.',
-                    'options' => ['class' => 'alert alert-danger']
-                ] );
-            }
-		}
-
-		return $this->render( $type . '-create', [
-			'model' => $model,
-		    'type'  => $type,
-			'settings' => $settings->getModelValue()
-		]);
+        // Создаем черновик
+        if( $model->saveMultiModel($type, null, true) ) {
+            $locker_id = Yii::$app->db->getLastInsertID();
+            return $this->redirect(['default/edit?type=' . $type . '&id=' . $locker_id]);
+        } else {
+            Yii::$app->session->setFlash( 'alert', [
+                'body'    => 'Возникла не известная ошибка при создании замка!',
+                'options' => ['class' => 'alert alert-danger']
+            ] );
+            return $this->redirect(['index']);
+        }
 	}
 
 	public function actionEdit($id, $type)
@@ -84,6 +101,7 @@ class DefaultController extends Controller
 
 		if( (!isset($type) && empty($type)) || (!isset($id) && empty($id)) )
 			return $this->redirect(['index']);
+
 
 		if ( $model->load(Yii::$app->request->post()) ) {
             if( $model->saveMultiModel( $type, $this->findModel($id) )) {
@@ -111,12 +129,25 @@ class DefaultController extends Controller
 	}
 
 	public function actionDelete($id) {
-		$this->findModel($id)->delete();
+		//$this->findModel($id)->delete();
 
-		Yii::$app->session->setFlash('alert', [
-			'body' => 'Замок успешно удален!',
-			'options' => ['class' => 'alert alert-danger']
-		]);
+        $model = new Lockers();
+        $locker = $model->findOne($id);
+
+        if( $locker ) {
+            $locker->status = 'trash';
+            $locker->save(true);
+
+            Yii::$app->session->setFlash('alert', [
+                'body' => 'Внимание! Замок перенесен в корзину, если вы хотите удалить его насовсем, очистите корзину.',
+                'options' => ['class' => 'alert alert-warning']
+            ]);
+        } else {
+            Yii::$app->session->setFlash('alert', [
+                'body' => 'Ошибка! Замок не найдет в базе данных.',
+                'options' => ['class' => 'alert alert-danger']
+            ]);
+        }
 
 		return $this->redirect(['index']);
 	}

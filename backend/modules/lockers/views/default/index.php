@@ -1,16 +1,20 @@
 <?php
 
+
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
 use backend\modules\lockers\models\Lockers;
+use backend\modules\lockers\assets\ItemsListAsset;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\search\LockersSearch */
+/* @var $searchModel backend\modules\lockers\models\search\LockersSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = "Социальные замки";
 $this->params['breadcrumbs'][] = $this->title;
+
+ItemsListAsset::register($this);
 ?>
 <div class="lockers-index">
 
@@ -19,7 +23,25 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?php echo Html::a('Создать замок', ['change-locker'], ['class' => 'btn btn-success']) ?>
     </p>
-
+    <ul class="locker-status-tabs">
+        <li>
+            <a href="<?= Url::to(['default/index']); ?>" class="tab-public">
+                <i class="fa fa-check-square-o" aria-hidden="true"></i> Опубликованные (<?=$searchModel->getCount();?>)
+            </a>
+        </li>
+        <li>|</li>
+        <li>
+            <a href="<?= Url::to(['default/draft']); ?>" class="tab-draft">
+                <i class="fa fa-sticky-note-o" aria-hidden="true"></i> Черновики (<?=$searchModel->getCount('draft');?>)
+            </a>
+        </li>
+        <li>|</li>
+        <li>
+            <a href="<?= Url::to(['default/trash']); ?>" class="tab-trash">
+                <i class="fa fa-trash" aria-hidden="true"></i> Корзина (<?=$searchModel->getCount('trash');?>)
+            </a>
+        </li>
+    </ul>
     <?php echo GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,

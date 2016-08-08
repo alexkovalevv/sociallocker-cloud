@@ -33,6 +33,24 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 				$('.onp-preview-loader').fadeOut();
 			});
 
+            /*$.pandalocker.filters.add( lockId + '.ajax-data', function( dataToPass ){
+                dataToPass.opandaContextData = function() {
+
+                    var context = {};
+                    context.postId = data.postId;
+
+                    context.postTitle = ( document.getElementsByTagName("title")[0] )
+                        ? document.getElementsByTagName("title")[0].innerHTML
+                        : "(no title)";
+
+                    context.postUrl = window.location.href;
+                    context.itemId = data.lockerId;
+
+                    return context;
+                };
+                return dataToPass;
+            });*/
+
 			this.initSocialTabs();
             this.setButtonsOrder();
 			this.recreatePreview();
@@ -152,7 +170,8 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
             for (var a in actions) {
                 if( !actions.hasOwnProperty(a) )
                     continue;
-                $('input[name*="' + a + '_actions"]', $(this).closest('.tab-pane')).val(actions[a].join(','));
+
+                $('input[name*="' + a + '_actions"]', '.tab-pane').val(actions[a].join(','));
             }
         },
 
@@ -380,10 +399,12 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
                 connectButtons: {
                     facebook: {
+                        actions: 'facebook_actions:array',
                         appId: 'facebook_app_id',
                         version: 'facebook_version'
                     },
                     twitter: {
+                        actions: 'twitter_actions:array',
                         follow: {
                             user: 'twitter_follow_user',
                             notifications: 'twitter_follow_notifications'
@@ -393,14 +414,17 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
                         }
                     },
                     google: {
+                        actions: 'google_actions:array',
                         clientId: 'google_client_id',
                         channelId: 'google_youtube_subscribe_channel_id'
                     },
                     linkedin: {
+                        actions: 'linkedin_actions:array',
                         clientId: 'linkedin_client_id',
                         apiKey: 'linkedin_client_secret'
                     },
                     vk: {
+                        actions: 'vk_actions:array',
                         appId: 'vk_app_id'
                     }
                 },
@@ -512,9 +536,13 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
             for( key in map ) {
                 if( $.type(map[key]) !== 'object' ) {
                     if(map[key] !== null) {
-                        map[key] = data[map[key]] || null;
+                        if( map[key].indexOf(':array') != -1 ) {
+                            map[key] = data[map[key].replace(':array', '')] ? data[map[key].replace(':array', '')].split(',') : null;
+                        } else {
+                            map[key] = data[map[key]] || null;
+                        }
                     } else {
-                        map[key] = data[key] || null;
+                       map[key] = data[key] || null;
                     }
                 } else {
                     map[key] = this.pushOptionsToMap(map[key], data);

@@ -1,6 +1,7 @@
 <?php
 namespace common\modules\signin;
 
+use yii;
 use common\modules\signin\handlers\twitter\TwitterHandler;
 use yii\base\Exception;
 use GuzzleHttp\Client;
@@ -57,14 +58,14 @@ class Handler {
     /**
      * Process names of the identity data.
      */
-    /*public function prepareDataToSave( $service, $itemId, $identityData ) {
+    public function prepareDataToSave( $service, $itemId, $identityData ) {
         
         // move the values from the custom fields like FNAME, LNAME
         
         if ( !empty( $service ) ) {
-        
-            $formType = get_post_meta( $itemId, 'opanda_form_type', true );
-            $strFieldsJson = get_post_meta( $itemId, 'opanda_fields', true );
+
+            $formType = Yii::$app->lockerMeta->get($itemId, 'opanda_form_type', true);
+            $strFieldsJson = Yii::$app->lockerMeta->get( $itemId, 'opanda_fields', true );
 
             if ( 'custom-form' == $formType && !empty( $strFieldsJson ) ) {
 
@@ -126,15 +127,15 @@ class Handler {
         }
 
         return $identityData;
-    }*/
+    }
     
     /**
      * Replaces keys of identity data of the view 'cf3' with the ids of custom fields in the mailing services.
      */
-    /*public function mapToServiceIds( $service, $itemId, $identityData ) {
+    public function mapToServiceIds( $service, $itemId, $identityData ) {
 
-        $formType = get_post_meta( $itemId, 'opanda_form_type', true );
-        $strFieldsJson = get_post_meta( $itemId, 'opanda_fields', true );
+        $formType = Yii::$app->lockerMeta->get($itemId, 'opanda_form_type', true);
+        $strFieldsJson = Yii::$app->lockerMeta->get( $itemId, 'opanda_fields', true );
         
         if ( 'custom-form' !== $formType || empty( $strFieldsJson ) ) {
             
@@ -165,15 +166,15 @@ class Handler {
         }
         
         return $data;
-    }*/
+    }
     
     /**
      * Replaces keys of identity data of the view 'cf3' with the labels the user enteres in the locker settings.
      */
-    /*public function mapToCustomLabels( $service, $itemId, $identityData ) {
-        
-        $formType = get_post_meta( $itemId, 'opanda_form_type', true );
-        $strFieldsJson = get_post_meta( $itemId, 'opanda_fields', true );
+    public function mapToCustomLabels( $service, $itemId, $identityData ) {
+
+        $formType = Yii::$app->lockerMeta->get($itemId, 'opanda_form_type', true);
+        $strFieldsJson = Yii::$app->lockerMeta->get( $itemId, 'opanda_fields', true );
         
         if ( 'custom-form' !== $formType || empty( $strFieldsJson ) ) return $identityData;
         
@@ -201,7 +202,7 @@ class Handler {
         }
         
         return $data;
-    }*/
+    }
     
     /**
      * Returns true if the user identity data is verified.

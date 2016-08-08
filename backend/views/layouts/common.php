@@ -165,7 +165,7 @@ $bundle = BackendAsset::register($this);
                         [
 	                        'label' => 'Подписчики',
 	                        'url'=>['/subscription/leads/index'],
-	                        'badge' => 0,
+	                        'badge' => \common\modules\subscription\models\Leads::getCount(),
 	                        'badgeBgClass'=>'label-warning',
 	                        'icon' => '<i class="fa fa-envelope-o" aria-hidden="true"></i>'
                         ],

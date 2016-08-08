@@ -25,9 +25,9 @@ class LockersSearch extends Lockers
         return Model::scenarios();
     }
 
-    public function search($params)
+    public function search($params, $status = 'public')
     {
-        $query = Lockers::find();
+        $query = Lockers::find()->where(['status' => $status]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -53,5 +53,9 @@ class LockersSearch extends Lockers
             ->andFilterWhere(['like', 'email', $this->email]);*/
 
         return $dataProvider;
+    }
+
+    public function getCount($status = 'public') {
+        return Lockers::find()->where(['status' => $status])->count();
     }
 }
