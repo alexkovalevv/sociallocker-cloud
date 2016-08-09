@@ -11,15 +11,10 @@ use common\modules\subscription\classes\SubscriptionServices;
 
 $controller = Yii::$app->controller->action->id;
 
-if( $controller == 'edit' ) {
-	$this->title = "Редактирование замка";
-	$type = $model_active_query->type;
-	$form_action = 'default/edit?id=' . $model_active_query->id .
-		'&type=' . $type;
-} else {
-	$this->title = "Создание замка";
-	$form_action = 'default/create?type='. $type;
-}
+$this->title = "Редактирование замка";
+$type = Yii::$app->request->getQueryParam('type');
+$locker_id = Yii::$app->request->getQueryParam('id');
+
 $this->params['breadcrumbs'][] = ['label' => 'Все замки', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -37,6 +32,8 @@ $privacy_url = \yii\helpers\Url::to(['default/privacy']);
 // Печать настроек замка для превью
 $output = <<<JS
 	if(!window.bizpanda) window.bizpanda = {};
+	window.lockerId = {$locker_id};
+	window.lockerTitle = '{$model->getModel('basic')->title}';
 	window.lockersSettings = {$settings};
 	window.lockerType = '{$type}';
 	window.buttonsGroup = {$buttons_group};

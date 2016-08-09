@@ -17,7 +17,6 @@ use yii\bootstrap\ActiveForm;
 		<?php
 			$form = ActiveForm::begin(
 					[
-						'action' => [$form_action],
 						/*'enableClientValidation' => false,*/
 				        /*'enableAjaxValidation' => false*/
 					]

@@ -188,7 +188,7 @@ $bundle = BackendAsset::register($this);
 
 	                        ]
                         ],
-                       /* [
+                        [
                             'label'=>Yii::t('backend', 'Other'),
                             'url' => '#',
                             'icon'=>'<i class="fa fa-cogs"></i>',
@@ -221,7 +221,7 @@ $bundle = BackendAsset::register($this);
                                     'badgeBgClass'=>'label-danger',
                                 ],
                             ]
-                        ]*/
+                        ]
                     ]
                 ]) ?>
             </section>

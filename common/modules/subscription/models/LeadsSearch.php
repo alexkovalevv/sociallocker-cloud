@@ -19,7 +19,7 @@ class LeadsSearch extends Leads
     {
         return [
             [['id', 'user_id', 'lead_email_confirmed', 'lead_subscription_confirmed', 'lead_item_id'], 'integer'],
-            [['user_id', 'lead_display_name', 'lead_name', 'lead_family', 'lead_email', 'lead_date', 'lead_item_title', 'lead_referer', 'lead_confirmation_code', 'lead_temp'], 'safe'],
+            [['user_id', 'lead_display_name', 'lead_name', 'lead_family', 'lead_email', 'lead_item_title', 'lead_referer', 'lead_confirmation_code', 'lead_temp'], 'safe'],
         ];
     }
 
@@ -60,7 +60,7 @@ class LeadsSearch extends Leads
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'lead_date' => $this->lead_date,
+            'created_at' => $this->created_at,
             'lead_email_confirmed' => $this->lead_email_confirmed,
             'lead_subscription_confirmed' => $this->lead_subscription_confirmed,
             'lead_item_id' => $this->lead_item_id,

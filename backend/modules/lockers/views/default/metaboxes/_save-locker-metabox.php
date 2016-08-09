@@ -20,12 +20,13 @@ echo $fields->radio( 'status', [
 ?>
 <div class="save-locker-buttons">
 	<?php
-		if( $controller == 'edit' ) {
-			echo Html::submitButton( 'Обновить', ['class' => 'btn btn-success'] ) . " ";
-			echo Html::a( 'Удалить', ['/lockers/default/delete?id=' . $model_active_query->id], ['class' => 'btn btn-danger'] );
-		} else {
-			echo Html::submitButton( 'Создать замок', ['class' => 'btn btn-primary'] ) . " ";
-			echo Html::a( 'Отменить', ['/lockers/default/index'], ['class' => 'btn btn-warning'] );
-		}
+		if( $fields->model->status == 'public' ) {
+			echo Html::submitButton( 'Обновить', ['class' => 'btn btn-default'] ) . " ";
+			echo Html::a( 'Удалить', ['/lockers/default/delete?id=' . $locker_id], ['class' => 'btn btn-danger'] );
+		} else if( $fields->model->status == 'draft' )  {
+			echo Html::submitButton( 'Опубликовать', ['class' => 'btn btn-primary locker-public-button'] ) . " ";
+		} else if( $fields->model->status == 'trash' ) {
+            echo Html::a( 'Восстановить', ['/lockers/default/recover?id=' . $locker_id], ['class' => 'btn btn-success'] );
+        }
 	?>
 </div>

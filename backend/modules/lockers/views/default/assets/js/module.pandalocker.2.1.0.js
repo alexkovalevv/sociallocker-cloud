@@ -4548,7 +4548,7 @@
                 dataType: "json",
                 url: self.lockerOptions.proxy,
                 data: dataToPass,
-                success: function() {
+                success: function(data) {
                     callback();
                 },
                 error: function(response, type, errorThrown) {

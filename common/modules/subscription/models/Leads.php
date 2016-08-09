@@ -5,6 +5,7 @@ namespace common\modules\subscription\models;
 use common\modules\subscription\classes\SubscriptionServices;
 use Yii;
 use yii\base\Exception;
+use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 use common\modules\subscription\models\LeadsFields;
 
@@ -17,7 +18,8 @@ use common\modules\subscription\models\LeadsFields;
  * @property string $lead_name
  * @property string $lead_family
  * @property string $lead_email
- * @property integer $lead_date
+ * @property integer $created_at
+ * @property integer $updated_at
  * @property integer $lead_email_confirmed
  * @property integer $lead_subscription_confirmed
  * @property integer $lead_item_id
@@ -38,14 +40,21 @@ class Leads extends \yii\db\ActiveRecord
         return '{{%leads}}';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['user_id', 'lead_email', 'lead_date'], 'required'],
-            [['user_id', 'lead_date'], 'safe'],
+            [['user_id', 'lead_email'], 'required'],
+            [['user_id'], 'safe'],
             [['user_id', 'lead_email_confirmed', 'lead_subscription_confirmed', 'lead_item_id'], 'integer'],
             [['lead_referer', 'lead_temp'], 'string'],
             [['lead_display_name', 'lead_item_title'], 'string', 'max' => 255],
@@ -66,7 +75,8 @@ class Leads extends \yii\db\ActiveRecord
             'lead_name' => 'Имя',
             'lead_family' => 'Фамилия',
             'lead_email' => 'Email',
-            'lead_date' => 'Добавлен',
+            'created_at' => 'Добавлен',
+            'updated_at' => 'Обновлен',
             'lead_email_confirmed' => 'Email подтвержден',
             'lead_subscription_confirmed' => 'Подписка подтверждена',
             'lead_item_id' => 'ID замка',
@@ -99,24 +109,21 @@ class Leads extends \yii\db\ActiveRecord
      * @param bool $confirmed Has a lead confirmed one's email address?
      * @return int A lead ID.
      */
-    public function checkAndSave( $model = null, $identity = array(), $context = array(), $emailConfirmed = false, $subscriptionConfirmed = false, $temp = null ) {
+    public function checkAndSave( $model = null, array $identity = [], array $context = [], $emailConfirmed = false, $subscriptionConfirmed = false, array $temp = null ) {
 
-        $email = ArrayHelper::getValue('email', $identity, false);
+        $email = ArrayHelper::getValue($identity, 'email', false);
         if ( isset( $identity['social'] ) ) $emailConfirmed = true;
 
         $itemId = isset( $context['itemId'] ) ? intval( $context['itemId'] ) : 0;
-        //$postId = isset( $context['postId'] ) ? intval( $context['postId'] ) : null;
+       
+        $itemTitle =  ArrayHelper::getValue($context, 'itemTitle');
+        $pageUrl = ArrayHelper::getValue($context, 'pageUrl');
 
-        //$item = get_post( $itemId );
-        $itemTitle = !empty( $item ) ? $item->post_title : null;
-        $postUrl = ArrayHelper::getValue('postUrl', $context);
+        $name = ArrayHelper::getValue($identity, 'name');
+        $family = ArrayHelper::getValue($identity, 'family');
 
-        $name = ArrayHelper::getValue('name', $context);
-        $family = ArrayHelper::getValue('family', $context);
-
-        $displayName = ArrayHelper::getValue('displayName', $context);
+        $displayName = ArrayHelper::getValue($identity, 'displayName');
         if ( empty( $displayName ) ) {
-
             if ( !empty( $name ) && !empty( $family ) ) {
                 $displayName = $name . ' ' . $family;
             } elseif ( !empty( $name ) ) {
@@ -148,14 +155,15 @@ class Leads extends \yii\db\ActiveRecord
             $this->lead_subscription_confirmed = $subscriptionConfirmed ? 1 : 0;
             $this->lead_temp = !empty( $temp ) ? json_encode( $temp ) : null;
             $this->lead_email = $email;
-            $this->lead_date = time();
             $this->lead_item_id = $itemId;
             $this->lead_item_title = $itemTitle;
-            $this->lead_referer = $postUrl;
-            $this->lead_ip = Yii::$app->request->getUserIP();
+            $this->lead_referer = $pageUrl;
+            //$this->lead_ip = Yii::$app->request->getUserIP();
 
             if( $this->save(true) ) {
                 $leadId = Yii::$app->db->getLastInsertID();
+            } else {
+                return false;
             }
 
         } else {
@@ -176,7 +184,9 @@ class Leads extends \yii\db\ActiveRecord
                 if( !empty($subscriptionConfirmed) )
                     $model->lead_temp = !empty( $temp ) ? json_encode( $temp ) : null;
 
-                $model->save(true);
+                if( !$model->save(true) ) {
+                    return false;
+                }
             }
         }
 
@@ -192,9 +202,16 @@ class Leads extends \yii\db\ActiveRecord
 
         if( !empty($fields) ) {
             $leads_fields_model = new LeadsFields();
-            $leads_fields_model->lead_id = $leadId;
-            $leads_fields_model->fields_value = json_decode($fields);
-            $leads_fields_model->save(true);
+            if( $model = $leads_fields_model->findOne($leadId) ) {
+                $model->fields_value = json_encode($fields);
+            } else {
+                $leads_fields_model->lead_id = $leadId;
+                $leads_fields_model->fields_value = json_encode($fields);
+            }
+
+            if( $leads_fields_model->save(true) ) {
+                return false;
+            }
         }
 
         return $leadId;
@@ -218,9 +235,8 @@ class Leads extends \yii\db\ActiveRecord
      * @return object
      */
     public function getByEmail( $email ) {
-        return $this->find()->where(['user_id' => $email]);
+        return $this->find()->where(['lead_email' => $email])->one();
     }
-
 
     /**
      * Confirms a lead.

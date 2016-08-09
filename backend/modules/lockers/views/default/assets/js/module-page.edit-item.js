@@ -30,26 +30,33 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			this.toLockContent = $('#opanda-preview' ).clone();
 
 			$.pandalocker.hooks.add( 'opanda-lock', function(e, locker, sender){
+                console.log(locker);
 				$('.onp-preview-loader').fadeOut();
 			});
 
-            /*$.pandalocker.filters.add( lockId + '.ajax-data', function( dataToPass ){
-                dataToPass.opandaContextData = function() {
+            $('.locker-public-button').click(function(){
+                var statusButtons = $('input[name="SaveLockerMetabox[status]"]'),
+                    statusPublicButton = $('input[name="SaveLockerMetabox[status]"][value="public"]');
 
-                    var context = {};
-                    context.postId = data.postId;
+                statusButtons.prop('checked', false);
+                statusButtons.parent('.btn').removeClass('active');
 
-                    context.postTitle = ( document.getElementsByTagName("title")[0] )
-                        ? document.getElementsByTagName("title")[0].innerHTML
-                        : "(no title)";
+                statusPublicButton.prop('checked', true);
+                statusPublicButton.parent().addClass('active');
 
-                    context.postUrl = window.location.href;
-                    context.itemId = data.lockerId;
+                $(this).submit();
+            });
 
-                    return context;
+            $.pandalocker.filters.add( window.lockerId + '.ajax-data', function( dataToPass ){
+                dataToPass.opandaContextData = {
+                    itemTitle: window.lockerTitle,
+                    pageUrl: window.location.href,
+                    itemId: window.lockerId
                 };
+
+                console.log(dataToPass);
                 return dataToPass;
-            });*/
+            });
 
 			this.initSocialTabs();
             this.setButtonsOrder();
@@ -238,6 +245,9 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
         prepareOptions: function () {
             var self = this;
+
+            this.lockerOptions.id = window.lockerId;
+            this.lockerOptions.lockerId = window.lockerId;
             this.lockerOptions.demo = true;
 
             if( this.lockerType == 'signinlocker' || this.lockerType == 'emaillocker' ) {

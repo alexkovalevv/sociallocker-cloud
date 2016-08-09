@@ -42,6 +42,7 @@ ItemsListAsset::register($this);
             </a>
         </li>
     </ul>
+
     <?php echo GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
@@ -52,7 +53,7 @@ ItemsListAsset::register($this);
 		        'format' => 'raw',
 		        'value' => function($data){
 			        return Html::a($data->title, Url::toRoute('default/edit?id=' . $data->id . '&type=' . $data->type),[
-				        'title'=>'Перейти к редактированию' . $data->title, 'style' => 'font-size:15px; font-weight:bold'
+				        'title'=>'Перейти к редактированию' . $data->title, 'class' => 'locker-list-title'
 			        ]) . '<br>' .
 			        '[' . Html::a('Дублировать', Url::toRoute('default/edit?id=' . $data->id . '&type=' . $data->type),[
 				        'title'=> 'Создать дубликат замка', 'style' => 'font-size:13px'

@@ -64,18 +64,12 @@ class LeadsFields extends \yii\db\ActiveRecord
         $fields = [];
         $customFields = [];
 
-        foreach( $data as $item ) {
-            if( $item['field_custom'] ) {
-                $name = $item['field_name'];
-                if (strpos( $name, '_' ) === 0) {
-                    continue;
-                }
-                $customFields[$item['field_name']] = $item['field_value'];
-
-                $fields[$name] = strip_tags( $item['field_value'] );
+        foreach( $data as $name => $item ) {
+            if( $item['custom'] ) {
+                $customFields[$name] = $item['value'];
             }
 
-            $fields[$item['field_name']] = $item['field_value'];
+            $fields[$name] = $item['value'];
         }
 
         $this->_fields[$leadId] = $fields;
@@ -123,7 +117,7 @@ class LeadsFields extends \yii\db\ActiveRecord
      * @param string $fieldValue A field value to set.
      * @return void
      */
-    public function updateLeadField( $leadId, $fieldName, $fieldValue ) {
+    public function updateLeadField( $leadId, $fieldName, $fieldValue, $custom = 0 ) {
 
         if ( !isset( $this->_fields[$leadId] ) ) {
             $this->_fields[$leadId] = $this->getLeadFields( $leadId );
@@ -147,13 +141,14 @@ class LeadsFields extends \yii\db\ActiveRecord
 
         if( $model ) {
             $data = json_decode($model->fields_value, true);
-            $data[$fieldName] = $fieldValue;
-
+            $data[$fieldName]['value'] = $fieldValue;
+            $data[$fieldName]['custom'] = $custom;
+            $model->fields_value = json_encode($data);
             return $model->save(true);
         }
 
         $this->lead_id = $leadId;
-        $this->fields_value = json_encode([$fieldName => $fieldValue]);
+        $this->fields_value = json_encode([$fieldName => ['value' => $fieldValue, 'custom' => $custom]]);
 
         return $this->save(true);
     }

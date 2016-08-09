@@ -28,7 +28,9 @@ class LeadHandler extends Handler {
         
         $identityData = $this->prepareDataToSave( null, null, $identityData );
 
-        LeadsHelper::add( $identityData, $contextData );
+        $leadId = LeadsHelper::add( $identityData, $contextData );
+
+        return ['leadId' => $leadId];
     }
 }
 

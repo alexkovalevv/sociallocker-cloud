@@ -28,83 +28,89 @@ use backend\modules\lockers\models\lockers\metaboxes\SigninButtonsSettings;
 
 class DefaultController extends Controller
 {
-	/**
-	 * @return mixed
-	 */
-	public function actionIndex()
+    /**
+     * @return mixed
+     */
+    public function actionIndex()
     {
-	    $searchModel = new LockersSearch();
-	    $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new LockersSearch();
+        $dataProvider = $searchModel->search( Yii::$app->request->queryParams );
 
-	    return $this->render('index', [
-		    'searchModel' => $searchModel,
-		    'dataProvider' => $dataProvider,
-	    ]);
+        return $this->render( 'index', [
+            'searchModel'  => $searchModel,
+            'dataProvider' => $dataProvider,
+        ] );
     }
 
     public function actionDraft()
     {
         $searchModel = new LockersSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'draft');
+        $dataProvider = $searchModel->search( Yii::$app->request->queryParams, 'draft' );
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
+        return $this->render( 'index', [
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
-        ]);
+        ] );
     }
 
     public function actionTrash()
     {
         $searchModel = new LockersSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'trash');
+        $dataProvider = $searchModel->search( Yii::$app->request->queryParams, 'trash' );
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
+        return $this->render( 'index', [
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
-        ]);
+        ] );
     }
 
-	public function actionChangeLocker()
-	{
-		return $this->render('change');
-	}
+    public function actionChangeLocker()
+    {
+        return $this->render( 'change' );
+    }
 
-	public function actionCreate($type)
-	{
-		if( empty($type) ) return $this->redirect(['index']);
+    public function actionCreate( $type )
+    {
+        if (empty( $type )) {
+            return $this->redirect( ['index'] );
+        }
 
-		if( !in_array($type, array('sociallocker', 'signinlocker', 'emaillocker')) )
-			return $this->redirect(['index']);
+        if (!in_array( $type, array('sociallocker', 'signinlocker', 'emaillocker') )) {
+            return $this->redirect( ['index'] );
+        }
 
-		$settings = new Settings();
-        $model = $this->initMultimodel($type);
+        $settings = new Settings();
+        $model = $this->initMultimodel( $type );
 
         // Создаем черновик
-        if( $model->saveMultiModel($type, null, true) ) {
+        if ($model->saveMultiModel( $type, null, true )) {
             $locker_id = Yii::$app->db->getLastInsertID();
-            return $this->redirect(['default/edit?type=' . $type . '&id=' . $locker_id]);
+
+            return $this->redirect( ['default/edit?type=' . $type . '&id=' . $locker_id] );
         } else {
             Yii::$app->session->setFlash( 'alert', [
                 'body'    => 'Возникла не известная ошибка при создании замка!',
                 'options' => ['class' => 'alert alert-danger']
             ] );
-            return $this->redirect(['index']);
+
+            return $this->redirect( ['index'] );
         }
-	}
+    }
 
-	public function actionEdit($id, $type)
-	{
-		$settings = new Settings();
+    public function actionEdit( $id, $type )
+    {
+        $settings = new Settings();
 
-        $model = $this->initMultimodel($type);
-		$model->setMultiModel($this->findModel($id));
+        $model = $this->initMultimodel( $type );
+        $model->setMultiModel( $this->findModel( $id ) );
 
-		if( (!isset($type) && empty($type)) || (!isset($id) && empty($id)) )
-			return $this->redirect(['index']);
+        if (( !isset( $type ) && empty( $type ) ) || ( !isset( $id ) && empty( $id ) )) {
+            return $this->redirect( ['index'] );
+        }
 
 
-		if ( $model->load(Yii::$app->request->post()) ) {
-            if( $model->saveMultiModel( $type, $this->findModel($id) )) {
+        if ($model->load( Yii::$app->request->post() )) {
+            if ($model->saveMultiModel( $type, $this->findModel( $id ) )) {
                 Yii::$app->session->setFlash( 'alert', [
                     'body'    => 'Настройки успешно обновлены!',
                     'options' => ['class' => 'alert alert-success']
@@ -117,50 +123,52 @@ class DefaultController extends Controller
                     'options' => ['class' => 'alert alert-danger']
                 ] );
 
-                var_dump($model->getErrors());
+                var_dump( $model->getErrors() );
             }
-		}
-
-		return $this->render( $type . '-create', [
-			'model'=> $model,
-			'model_active_query' => $this->findModel($id),
-		    'settings' => $settings->getModelValue()
-		]);
-	}
-
-	public function actionDelete($id) {
-		//$this->findModel($id)->delete();
-
-        $model = new Lockers();
-        $locker = $model->findOne($id);
-
-        if( $locker ) {
-            $locker->status = 'trash';
-            $locker->save(true);
-
-            Yii::$app->session->setFlash('alert', [
-                'body' => 'Внимание! Замок перенесен в корзину, если вы хотите удалить его насовсем, очистите корзину.',
-                'options' => ['class' => 'alert alert-warning']
-            ]);
-        } else {
-            Yii::$app->session->setFlash('alert', [
-                'body' => 'Ошибка! Замок не найдет в базе данных.',
-                'options' => ['class' => 'alert alert-danger']
-            ]);
         }
 
-		return $this->redirect(['index']);
-	}
+        return $this->render( $type . '-create', [
+            'model'              => $model,
+            'model_query' => $this->findModel( $id ),
+            'settings'           => $settings->getModelValue()
+        ] );
+    }
 
-	public function actionTerms() {
-		echo Yii::$app->lockersSettings->get('terms_of_use_text');
-	}
+    public function actionDelete( $id )
+    {
+        $model = new Lockers();
+        $locker = $model->findOne( $id );
 
-	public function actionPrivacy() {
-		echo Yii::$app->lockersSettings->get('privacy_policy_text');
-	}
+        if ($locker) {
+            $locker->status = 'trash';
+            $locker->save( true );
 
-    protected function initMultimodel($type) {
+            Yii::$app->session->setFlash( 'alert', [
+                'body'    => 'Внимание! Замок перенесен в корзину, если вы хотите удалить его насовсем, очистите корзину.',
+                'options' => ['class' => 'alert alert-warning']
+            ] );
+        } else {
+            Yii::$app->session->setFlash( 'alert', [
+                'body'    => 'Ошибка! Замок не найдет в базе данных.',
+                'options' => ['class' => 'alert alert-danger']
+            ] );
+        }
+
+        return $this->redirect( ['index'] );
+    }
+
+    public function actionTerms()
+    {
+        echo Yii::$app->lockersSettings->get( 'terms_of_use_text' );
+    }
+
+    public function actionPrivacy()
+    {
+        echo Yii::$app->lockersSettings->get( 'privacy_policy_text' );
+    }
+
+    protected function initMultimodel( $type )
+    {
         $model_list = [
             'models' => [
                 'basic'      => new BasicMetabox(),
@@ -171,33 +179,32 @@ class DefaultController extends Controller
         ];
 
 
-        if( $type == 'signinlocker' || $type == 'emaillocker' ) {
+        if ($type == 'signinlocker' || $type == 'emaillocker') {
             $model_list['models']['subscribe'] = new SubscribeMetabox();
         }
 
 
-        if( $type == 'emaillocker' ) {
+        if ($type == 'emaillocker') {
             $model_list['models']['email_form_settings'] = new EmailFormSettings();
         }
 
-        if( $type == 'signinlocker' ) {
+        if ($type == 'signinlocker') {
             $model_list['models']['signin_social'] = new SigninButtonsSettings();
         }
 
-        if( $type == 'sociallocker' ) {
+        if ($type == 'sociallocker') {
             $model_list['models']['social'] = new SocialButtonsSettings();
         }
 
-        return new LockersForm($model_list);
+        return new LockersForm( $model_list );
     }
 
-	protected function findModel($id)
-	{
-		if (($model = Lockers::findOne($id)) !== null) {
-			return $model;
-		} else {
-			throw new NotFoundHttpException('The requested page does not exist.');
-		}
-	}
-
+    protected function findModel( $id )
+    {
+        if (( $model = Lockers::findOne( $id ) ) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException( 'The requested page does not exist.' );
+        }
+    }
 }

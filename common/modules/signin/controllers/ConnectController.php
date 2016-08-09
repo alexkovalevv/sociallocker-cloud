@@ -27,9 +27,11 @@ class ConnectController extends Controller
 {
 
     public function actionIndex() {
+
         $handler = isset($_REQUEST['opandaHandler']) ? $_REQUEST['opandaHandler'] : null;
         if( is_null($handler) || $handler == 'index' ) return;
-        $this->runAction($handler, $_REQUEST);
+
+        return $this->runAction($handler, $_REQUEST);
     }
 
 	public function actionVk()
@@ -43,7 +45,7 @@ class ConnectController extends Controller
 	{
 		$options = Module::getConnectOptions('twitter');
 		$handler = new TwitterHandler( $options );
-		return $this->response($handler);
+        return $this->response($handler);
 	}
 
 	public function actionLinkedin()
@@ -64,7 +66,7 @@ class ConnectController extends Controller
 	{
 		$options = Module::getConnectOptions('subscription');
 		$handler = new LeadHandler( $options );
-		return $this->response($handler);
+        return $this->response($handler);
 	}
 
 	/**
@@ -78,13 +80,13 @@ class ConnectController extends Controller
 		Yii::$app->response->format = Response::FORMAT_JSON;
 
 		try {
-			return $handler->handleRequest();
+           return $handler->handleRequest();
 		} catch (HandlerInternalException $ex) {
-			return ['error' => $ex->getMessage(), 'detailed' => $ex->getDetailed()];
+           return ['error' => $ex->getMessage(), 'detailed' => $ex->getDetailed()];
 		} catch (HandlerException $ex) {
-			return ['error' => $ex->getMessage()];
+           return ['error' => $ex->getMessage()];
 		} catch(Exception $ex) {
-			return ['error' => $ex->getMessage()];
+           return ['error' => $ex->getMessage()];
 		}
 	}
 
