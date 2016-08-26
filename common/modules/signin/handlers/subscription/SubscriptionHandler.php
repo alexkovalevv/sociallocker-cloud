@@ -19,7 +19,7 @@ class SubscriptionHandler extends Handler {
      */
     public function handleRequest() {
         
-        if( !Yii::$app->request->getQueryParam('opandaRequestType') || !Yii::$app->request->getQueryParam('opandaService') ) {
+        if( !isset($_REQUEST['opandaRequestType']) || !isset($_REQUEST['opandaService']) ) {
            throw new HandlerInternalException('Invalid request. The "opandaRequestType" or "opandaService" are not defined.');
         }
 
@@ -30,7 +30,7 @@ class SubscriptionHandler extends Handler {
         }
 
         // - service name
-        
+
         $serviceName = $this->options['service'];
         if ( $serviceName !== $service->name  ) {
            throw new HandlerInternalException( sprintf( 'Invalid subscription service "%s".', $serviceName ));
@@ -38,7 +38,7 @@ class SubscriptionHandler extends Handler {
         
         // - request type
         
-        $requestType = strtolower( Yii::$app->request->getQueryParam('opandaRequestType') );
+        $requestType = strtolower( $_REQUEST['opandaRequestType'] );
         $allowed = array('check', 'subscribe');
 
         if ( !in_array( $requestType, $allowed ) ) {
@@ -47,7 +47,7 @@ class SubscriptionHandler extends Handler {
         
         // - identity data
         
-        $identityData = Yii::$app->request->getQueryParam('opandaIdentityData', array());
+        $identityData = isset($_REQUEST['opandaIdentityData']) ? $_REQUEST['opandaIdentityData'] : [];
         $identityData = $this->normilizeValues( $identityData );
         
         if ( empty( $identityData['email'] )) {
@@ -56,29 +56,29 @@ class SubscriptionHandler extends Handler {
         
         // - service data
         
-        $serviceData = Yii::$app->request->getQueryParam('opandaServiceData', array());
+        $serviceData = isset($_REQUEST['opandaServiceData']) ? $_REQUEST['opandaServiceData'] : [];
         $serviceData = $this->normilizeValues( $serviceData );
         
         // - context data
         
-        $contextData = Yii::$app->request->getQueryParam('opandaContextData', array());
+        $contextData = isset($_REQUEST['opandaContextData']) ? $_REQUEST['opandaContextData'] : [];
         $contextData = $this->normilizeValues( $contextData );
 
         // - list id
         
-        $listId = Yii::$app->request->getQueryParam('opandaListId');
+        $listId = isset($_REQUEST['opandaListId']) ? $_REQUEST['opandaListId'] : null;
         if ( empty( $listId ) ) {
            throw new HandlerException( 'Unable to subscribe. The list ID is not specified.' );
         }
         
         // - double opt-in
         
-        $doubleOptin =  Yii::$app->request->getQueryParam('opandaDoubleOptin', true);
+        $doubleOptin = isset($_REQUEST['opandaDoubleOptin']) ? $_REQUEST['opandaDoubleOptin'] : true;
         $doubleOptin = $this->normilizeValue( $doubleOptin );
         
         // - confirmation
         
-        $confirm =  isset( $_POST['opandaConfirm'] ) ? $_POST['opandaConfirm'] : true;
+        $confirm =  isset( $_REQUEST['opandaConfirm'] ) ? $_REQUEST['opandaConfirm'] : true;
         $confirm = $this->normilizeValue( $confirm );
         
         // verifying user data if needed while subscribing
@@ -90,7 +90,7 @@ class SubscriptionHandler extends Handler {
             
         if ( 'subscribe' === $requestType ) {
 
-            if ( $doubleOptin && in_array( 'quick', $mailServiceInfo['modes'] ) ) {
+            if ( $doubleOptin && in_array( 'quick', $modes ) ) {
                 $verified = $this->verifyUserData( $identityData, $serviceData );
             }     
         }
@@ -104,8 +104,7 @@ class SubscriptionHandler extends Handler {
         $identityData = $this->mapToCustomLabels( $service, $itemId, $identityData );
         
         // checks if the subscription has to be procces via WP
-        
-        $subscribeMode = Yii::$app->lockerMeta($itemId, 'subscribe_mode', true);
+        $subscribeMode = Yii::$app->lockerMeta->get($itemId, 'subscribe_mode', 'quick');
 
         //$subscribeDelivery = get_post_meta($itemId, 'subscribe_delivery', true);
         $subscribeDelivery = false;

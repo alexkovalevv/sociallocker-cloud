@@ -18,7 +18,7 @@ Yii::setAlias('@tests', realpath(__DIR__.'/../../tests'));
 /**
  * Modules
  */
-Yii::setAlias('@lockers', realpath(__DIR__ . '/../../backend/modules/lockers'));
+Yii::setAlias('@lockers', realpath(__DIR__ . '/../../common/modules/lockers'));
 Yii::setAlias('@subscription', realpath(__DIR__ . '/../../common/modules/subscription'));
 
 /**

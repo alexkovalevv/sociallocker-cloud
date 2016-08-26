@@ -95,7 +95,8 @@ class SubscriptionServices {
         $info = self::getServiceInfo( $name );
         if ( empty( $info) ) return null;
 
-        return new $info['class'];
+        $info['class']->setData($info);
+        return $info['class'];
     }
     
     /**

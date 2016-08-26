@@ -21,7 +21,11 @@ $config = [
 
        'signin' => [
 	        'class' => 'common\modules\signin\Module'
-       ]
+       ],
+
+       'lockers' => [
+            'class' => 'common\modules\lockers\Module'
+       ],
     ],
     'components' => [
         'authClientCollection' => [
@@ -66,8 +70,11 @@ $config = [
             'enableAutoLogin' => true,
             'as afterLogin' => 'common\behaviors\LoginTimestampBehavior'
         ],
+        'lockerMeta' => [
+            'class' => 'common\modules\lockers\components\LockerMeta'
+        ],
         'lockersSettings' => [
-	        'class' => 'backend\modules\lockers\components\LockersSettings'
+	        'class' => 'common\modules\lockers\components\LockersSettings'
         ]
     ]
 ];

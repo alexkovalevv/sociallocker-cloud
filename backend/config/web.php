@@ -34,10 +34,10 @@ $config = [
             'as afterLogin' => 'common\behaviors\LoginTimestampBehavior'
         ],
         'lockersSettings' => [
-	        'class' => 'backend\modules\lockers\components\LockersSettings'
+	        'class' => 'common\modules\lockers\components\LockersSettings'
         ],
         'lockerMeta' => [
-	        'class' => 'backend\modules\lockers\components\lockerMeta'
+	        'class' => 'common\modules\lockers\components\LockerMeta'
         ]
         /*'settings' => [
 	        'class' => 'common\components\Settings'
@@ -52,10 +52,10 @@ $config = [
 	        'class' => 'common\modules\subscription\Module'
         ],
         'lockers' => [
-	        'class' => 'backend\modules\lockers\Module'
+	        'class' => 'common\modules\lockers\Module'
         ],
         'signin' => [
-	        'class' => 'backend\modules\signin\Module'
+	        'class' => 'common\modules\signin\Module'
         ]
     ],
     'as globalAccess'=>[

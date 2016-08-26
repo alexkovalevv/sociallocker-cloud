@@ -63,9 +63,8 @@ class Handler {
         // move the values from the custom fields like FNAME, LNAME
         
         if ( !empty( $service ) ) {
-
-            $formType = Yii::$app->lockerMeta->get($itemId, 'opanda_form_type', true);
-            $strFieldsJson = Yii::$app->lockerMeta->get( $itemId, 'opanda_fields', true );
+            $formType = Yii::$app->lockerMeta->get($itemId, 'form_type', 'email-form');
+            $strFieldsJson = Yii::$app->lockerMeta->get($itemId, 'custom_fields', null );
 
             if ( 'custom-form' == $formType && !empty( $strFieldsJson ) ) {
 
@@ -134,8 +133,8 @@ class Handler {
      */
     public function mapToServiceIds( $service, $itemId, $identityData ) {
 
-        $formType = Yii::$app->lockerMeta->get($itemId, 'opanda_form_type', true);
-        $strFieldsJson = Yii::$app->lockerMeta->get( $itemId, 'opanda_fields', true );
+        $formType = Yii::$app->lockerMeta->get($itemId, 'form_type', 'email-form');
+        $strFieldsJson = Yii::$app->lockerMeta->get($itemId, 'custom_fields', null );
         
         if ( 'custom-form' !== $formType || empty( $strFieldsJson ) ) {
             
@@ -173,8 +172,8 @@ class Handler {
      */
     public function mapToCustomLabels( $service, $itemId, $identityData ) {
 
-        $formType = Yii::$app->lockerMeta->get($itemId, 'opanda_form_type', true);
-        $strFieldsJson = Yii::$app->lockerMeta->get( $itemId, 'opanda_fields', true );
+        $formType = Yii::$app->lockerMeta->get($itemId, 'form_type', true);
+        $strFieldsJson = Yii::$app->lockerMeta->get($itemId, 'custom_fields', null );
         
         if ( 'custom-form' !== $formType || empty( $strFieldsJson ) ) return $identityData;
         

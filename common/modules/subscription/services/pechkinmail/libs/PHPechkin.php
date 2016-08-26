@@ -7,6 +7,8 @@
 
 namespace common\modules\subscription\services\pechkinmail\libs;
 
+use yii\base\Exception;
+
 class PHPechkin {
 
 	//login for auth

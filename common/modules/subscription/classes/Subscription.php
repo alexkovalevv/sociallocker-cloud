@@ -12,8 +12,12 @@ abstract class Subscription {
     public $deliveryError;
     
     public function __construct( $data = array() ) {
+        $this->setData($data);
+    }
+
+    public function setData($data) {
         $this->data = $data;
-        
+
         if ( isset( $data['name']) ) $this->name = $data['name'];
         if ( isset( $data['title']) ) $this->title = $data['title'];
     }

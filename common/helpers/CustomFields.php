@@ -13,8 +13,8 @@ use yii\base\Model;
 use yii\bootstrap\ActiveForm;
 use yii\imperavi\Widget;
 use yii\helpers\ArrayHelper;
-use backend\modules\lockers\widgets\controls\dropdown\DropdownControl;
-use backend\modules\lockers\widgets\controls\switcher\SwitchControl;
+use common\modules\lockers\widgets\controls\dropdown\DropdownControl;
+use common\modules\lockers\widgets\controls\switcher\SwitchControl;
 
 /* @var $form \yii\bootstrap\ActiveForm */
 

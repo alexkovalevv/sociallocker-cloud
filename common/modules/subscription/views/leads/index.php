@@ -20,7 +20,7 @@ LeadsAsset::register($this);
     <?php  //echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <a href="#" class="btn btn-success">Экспорт</a>
+        <a href="<?=Url::to(['export']); ?>" class="btn btn-success">Экспорт</a>
         <a href="#" class="btn btn-danger">Удалить всех</a>
     </p>
 
@@ -49,7 +49,7 @@ LeadsAsset::register($this);
                     'label' => 'Канал',
                     'format' => 'raw',
                     'value' => function($data){
-                        return 'Добавлен через: <a href="#">' . $data->lead_item_title . '</a>';
+                        return 'Добавлен через: <a href="' . Url::to(['/lockers/default/edit?id=' . $data->lead_item_id]) . '">' . $data->lead_item_title . '</a>';
                     }
                 ],
                 'created_at:datetime',

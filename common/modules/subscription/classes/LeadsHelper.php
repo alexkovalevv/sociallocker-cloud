@@ -55,7 +55,8 @@ class LeadsHelper {
     public static function add( $identity = array(), $context = array(), $emailConfirmed = false, $subscriptionConfirmed = false, $temp = null ) 
     {
         $itemId = isset( $context['itemId'] ) ? intval( $context['itemId'] ) : 0;
-        if ( !empty( $itemId ) && !isset($identity['source']) && !Yii::$app->LockerMeta->get($itemId, $identity['source'] . '_lead_available', true) )
+
+        if ( !empty($itemId) && isset($identity['source']) && !Yii::$app->lockerMeta->get($itemId, $identity['source'] . '_lead_available', true) )
             return false;
 
         $email = isset( $identity['email'] ) ? $identity['email'] : false;
@@ -73,7 +74,15 @@ class LeadsHelper {
         $lead_fields_model = new LeadsFields();
         $image_source = $lead_fields_model->getLeadField( $lead_id, 'externalImage' );
 
-        if ( empty( $image_source ) ) return false;
+        /*if ( empty( $image_source ) ) {
+            $lead_model = new Leads();
+            $lead_model = $lead_model->findOne($lead_id);
+
+            if( empty($lead_model) ) return false;
+
+            $image_source = "https://www.gravatar.com/avatar/" . md5( strtolower( trim( $lead_model->lead_email ) ) ) . "?s=500&d=mm";
+            $lead_fields_model->updateLeadField( $lead_id, 'externalImage', $image_source );
+        }*/
 
         $upload_dir = Yii::getAlias('@backend/web/upload/leads/');
 
@@ -125,7 +134,7 @@ class LeadsHelper {
     public static function getAvatarUrl( $lead_id, $size = 40 ) {
         $lead_fields_model = new LeadsFields();
 
-        $image_source = $lead_fields_model->getLeadField( $lead_id, 'externalImage', null );
+        //$image_source = $lead_fields_model->getLeadField( $lead_id, 'externalImage', null );
         $image = $lead_fields_model->getLeadField( $lead_id, '_image_x' . $size, null );
         
         // getting an avatar from cache
@@ -158,7 +167,12 @@ class LeadsHelper {
             return $match[0];
         }*/
 
-        return null;
+        $lead_model = new Leads();
+        $lead_model = $lead_model->get($lead_id);
+
+        if( empty($lead_model) ) return null;
+
+        return "https://www.gravatar.com/avatar/" . md5( strtolower( trim( $lead_model->lead_email ) ) ) . "?s=" . $size . "&d=mm";
     }
     
     /**
@@ -177,7 +191,7 @@ class LeadsHelper {
         $alt = 'Аватар пользователя';
         return "<img src='$url' width='$size' height='$size' alt='$alt' />";
     }
-    
+
     /**
      * Returns an URL of the social profile of the lead.
      * 

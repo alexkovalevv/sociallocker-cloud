@@ -57,7 +57,7 @@ class Module extends \yii\base\Module
 
             case 'subscription':
                 return [
-                    'service' => Yii::$app->lockersSettings->get('subscription_service', 'database')
+                    'service' => Yii::$app->lockersSettings->get('subscription_to_service', 'database')
                 ];
         }
     }
