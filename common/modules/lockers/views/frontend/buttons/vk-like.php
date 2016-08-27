@@ -55,21 +55,15 @@ use \yii\helpers\ArrayHelper;
         }*/
   </style>
   <script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
-  <script type="text/javascript">
-      VK.init({
-          apiId: 5337425,
-          onlyWidgets: true
-      });
 
-      VK.Widgets.Like('onp-vk-like', {
-          type: '<?=ArrayHelper::getValue($options, 'type');?>',
-          width: '<?=ArrayHelper::getValue($options, 'width');?>',
-          height: '<?=ArrayHelper::getValue($options, 'height');?>',
-          verb: '<?=ArrayHelper::getValue($options, 'verb');?>',
-          pageTitle: '<?=ArrayHelper::getValue($options, 'pageTitle');?>',
-          pageDescription: '<?=ArrayHelper::getValue($options, 'pageDescription');?>',
-          pageUrl: '<?=ArrayHelper::getValue($options, 'pageUrl');?>',
-          pageImage: '<?=ArrayHelper::getValue($options, 'pageImage');?>'
+  <script type="text/javascript">
+      if( !VK || !VK.init ) {
+          throw new Error('Не удалось загрузить sdk вконтакте.');
+      }
+
+      VK.init({
+          apiId: '<?=ArrayHelper::getValue($options, 'appId');?>',
+          onlyWidgets: true
       });
 
       var postMessageData = {
@@ -81,28 +75,8 @@ use \yii\helpers\ArrayHelper;
           },
           hoverWidget = false;
 
-      window.onload = function(){
 
-          /*var counter = <?=ArrayHelper::getValue($options, 'counter');?>;
-
-          if( !counter ) {
-              document.getElementById('onp-vk-like-button-cotanier').className = 'counter-off';
-          }*/
-
-          document.getElementById('onp-vk-like-button-cotanier').onmouseover = function (e) {
-              hoverWidget = true;
-              postMessageData.onpwgt.button['event'] = 'mouseover';
-              window.parent.postMessage(JSON.stringify(postMessageData), '*');
-          };
-
-          document.getElementById('onp-vk-like-button-cotanier').onmouseout = function (e) {
-              hoverWidget = false;
-              postMessageData.onpwgt.button['event'] = 'mouseout';
-              window.parent.postMessage(JSON.stringify(postMessageData), '*');
-          };
-      };
-
-      VK.Observer.subscribe("widgets.like.liked", function () {          
+      VK.Observer.subscribe("widgets.like.liked", function () {
           if( hoverWidget ) {
               vkShareHint.show();
               vkShareHint.runTimer();
@@ -127,13 +101,61 @@ use \yii\helpers\ArrayHelper;
           window.parent.postMessage(JSON.stringify(postMessageData), '*');
       });
 
-      var checkIframeCreateTimer = setInterval(function () {
-          if (document.getElementById('onp-vk-like').getElementsByTagName('iframe')) {
-              clearInterval(checkIframeCreateTimer);
-              postMessageData.onpwgt.button['event'] = 'loaded';
-              window.parent.postMessage(JSON.stringify(postMessageData), '*');
+      window.onload = function(){
+
+          function listener(event) {
+              if( event.data.indexOf('onpwgt_to') === -1 ) return;
+
+              var data = JSON.parse(event.data);
+              if( data.onpwgt_to && data.onpwgt_to.button && data.onpwgt_to.button.name) {
+                  if(data.onpwgt_to.button.name === 'vk-like') {
+                      var defaultOptions = {
+                              pageUrl: null,
+                              pageTitle: '',
+                              pageDescription: '',
+                              pageImage: '',
+                              layout: 'horizontal',
+                              counter:  1,
+                              type: 'mini',
+                              width: '350',
+                              height: '22',
+                              verb: '0'
+                          },
+                          options = extend({}, defaultOptions, data.onpwgt_to.button);
+
+                      postMessageData.onpwgt.button['url'] = options.pageUrl;
+
+                      var widget = VK.Widgets.Like('onp-vk-like', options);
+
+                      if( widget ) {
+                          postMessageData.onpwgt.button['event'] = 'loaded';
+                          window.parent.postMessage(JSON.stringify(postMessageData), '*');
+                      }
+                  }
+              } else {
+                  throw new Error('Переданые данные не соотвестуют формату.');
+              }
           }
-      }, 50);
+
+          if (window.addEventListener) {
+              window.addEventListener("message", listener);
+          } else {
+              // IE8
+              window.attachEvent("onmessage", listener);
+          }
+
+          document.getElementById('onp-vk-like-button-cotanier').onmouseover = function (e) {
+              hoverWidget = true;
+              postMessageData.onpwgt.button['event'] = 'mouseover';
+              window.parent.postMessage(JSON.stringify(postMessageData), '*');
+          };
+
+          document.getElementById('onp-vk-like-button-cotanier').onmouseout = function (e) {
+              hoverWidget = false;
+              postMessageData.onpwgt.button['event'] = 'mouseout';
+              window.parent.postMessage(JSON.stringify(postMessageData), '*');
+          };
+      };
 
       var vkShareHint = {
           /**
@@ -236,7 +258,15 @@ use \yii\helpers\ArrayHelper;
               var style = window.getComputedStyle(el);
               return (style.display === 'none')
           }
-      }
+      };
+
+      var extend = function (){
+          for(var i=1; i<arguments.length; i++)
+              for(var key in arguments[i])
+                  if(arguments[i].hasOwnProperty(key))
+                      arguments[0][key] = arguments[i][key];
+          return arguments[0];
+      };
   </script>
 </head>
 <body>

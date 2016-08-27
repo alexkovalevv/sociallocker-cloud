@@ -92,11 +92,22 @@ class FrontendController extends Controller
             case 'vk-subscribe':
                 $default_params = [
                     'appId' => '5337425',
-                    'accessToken' => '0ee35de86b55ed7728d8cdc91cfc828719d46a4c6ee06f13b5ef8be5af7be38efa6b74166c32424c94e11',
+                    'accessToken' => 'eb29aae9f8a9d1b857dbf566aef1ed56eda31dd1b1933b65cd9f23b247778ac4b8b1292ff0ee6f86218c59087b48f',
                     'groupId' => 'vyishenebes',
                     'layout'  => 'horizontal',
                     'counter' => 1,
                     'clickja'  => 1,
+                ];
+                break;
+            case 'vk-share':
+                $default_params = [
+                    'appId' => '5337425',
+                    'accessToken' => 'eb29aae9f8a9d1b857dbf566aef1ed56eda31dd1b1933b65cd9f23b247778ac4b8b1292ff0ee6f86218c59087b48f',
+                    'pageUrl' => 'http://ya.ru',
+                    'layout'  => 'horizontal',
+                    'counter' => 1,
+                    'clickja'  => 1,
+                    'noCheck' => 0,
                 ];
                 break;
         }

@@ -27,19 +27,86 @@ $this->title = Yii::$app->name;
             }
         </script>
         
-        <iframe src="http://sociallocker-service.dev/lockers/frontend/button?name=facebook-like&locker_id=22&href=https%3A%2F%2Fsociallocker.ru"
+        <iframe name="asfdf23432" src="http://sociallocker-service.dev/lockers/frontend/button?name=facebook-like&locker_id=22&href=https%3A%2F%2Fsociallocker.ru"
                 frameborder="0" scrolling="no" width="80" height="40">
         </iframe>
         <div style="display:inline-block;position:relative; width:85px; height: 22px;">
-            <iframe style="position: absolute; top:0; left:0; z-index:1;"
+            <iframe name="3ffsdf23432" style="position: absolute; top:0; left:0; z-index:1;"
                 src="http://sociallocker-service.dev/lockers/frontend/button?name=vk-like&locker_id=22&href=https%3A%2F%2Fsociallocker.ru"
                     frameborder="0" scrolling="no" width="300" height="300">
             </iframe>
         </div>
 
-        <iframe style="position: relative; z-index:2;" src="http://sociallocker-service.dev/lockers/frontend/button?name=vk-subscribe&locker_id=22"
+        <iframe name="3ddgfdf23432" style="position: relative; z-index:2;" src="http://sociallocker-service.dev/lockers/frontend/button?name=vk-subscribe&locker_id=22"
                 frameborder="0" scrolling="no" width="160" height="22">
         </iframe>
+
+        <iframe name="dfs4f23432" style="position: relative; z-index:2;" src="http://sociallocker-service.dev/lockers/frontend/button?name=vk-share&locker_id=22"
+                frameborder="0" scrolling="no" width="160" height="22">
+        </iframe>
+
+        <script>
+                var win3 = window.frames['3ffsdf23432'];
+                document.getElementsByName('3ffsdf23432')[0].onload = function() {
+                    var postMessageData = {
+                        onpwgt_to: {
+                            button: {
+                                name: 'vk-like',
+                                pageUrl: 'http://ya.ru',
+                                pageTitle: '',
+                                pageDescription: '',
+                                pageImage: '',
+                                layout: 'horizontal',
+                                counter:  1,
+                                type: 'mini',
+                                width: '350',
+                                height: '22',
+                                verb: '0'
+                            }
+                        }
+                    };
+
+                    win3.postMessage(JSON.stringify(postMessageData), '*');
+                };
+
+                var win4 = window.frames['3ddgfdf23432'];
+                document.getElementsByName('3ddgfdf23432')[0].onload = function() {
+                    var postMessageData = {
+                        onpwgt_to: {
+                            button: {
+                                name: 'vk-subscribe',
+                                groupId: 'vyishenebes',
+                                layout: 'horizontal',
+                                counter:  1,
+                                clickja:  1
+                            }
+                        }
+                    };
+
+                    win4.postMessage(JSON.stringify(postMessageData), '*');
+                };
+
+                var win5 = window.frames['dfs4f23432'];
+                document.getElementsByName('dfs4f23432')[0].onload = function() {
+                    var postMessageData = {
+                        onpwgt_to: {
+                            button: {
+                                name: 'vk-share',
+                                pageUrl: 'http://ya.ru',
+                                pageTitle: '',
+                                pageDescription: '',
+                                pageImage: '',
+                                layout: 'horizontal',
+                                counter: 1,
+                                clickja: 1,
+                                noCheck: 0
+                            }
+                        }
+                    };
+
+                    win5.postMessage(JSON.stringify(postMessageData), '*');
+                };
+        </script>
 
 
         <p class="lead">You have successfully created your Yii-powered application.</p>

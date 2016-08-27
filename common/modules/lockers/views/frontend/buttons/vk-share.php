@@ -5,7 +5,7 @@ use \yii\helpers\ArrayHelper;
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vk share button</title>
+  <title>Кнопка поделиться Вконтакте</title>
   <style>
         body {
             margin: 0;
@@ -13,7 +13,7 @@ use \yii\helpers\ArrayHelper;
         }
 
         iframe[src*="act=a_stats_box"], .VKWidgetsLoader {
-            display:none !important;
+            display: none !important;
         }
 
         /* Flat button default */
@@ -133,15 +133,17 @@ use \yii\helpers\ArrayHelper;
         }
 
         .onp-vk-clickja-button {
-            position:absolute !important;
-            left:0; top:0;
+            position: absolute !important;
+            left: 0;
+            top: 0;
             opacity: 0;
         }
+
         .onp-vk-clickja-button iframe {
-            position:absolute;
+            position: absolute;
             /*top:-190px; left:-30px;*/
-            z-index:9;
-            opacity:0;
+            z-index: 9;
+            opacity: 0;
             -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
         }
   </style>
@@ -170,28 +172,34 @@ use \yii\helpers\ArrayHelper;
          mobile: false,
 
          options: {
-             appId: '<?=ArrayHelper::getValue($options,'appId');?>',
-             accessToken: '<?=ArrayHelper::getValue($options,'accessToken');?>',
-             pageUrl: '<?=ArrayHelper::getValue($options,'pageUrl');?>',
-             pageTitle: '<?=ArrayHelper::getValue($options,'pageTitle');?>',
-             pageDescription: '<?=ArrayHelper::getValue($options,'pageDescription');?>',
-             pageImage: '<?=ArrayHelper::getValue($options,'pageImage');?>',
-             counter: '<?=ArrayHelper::getValue($options,'counter');?>',
-             clickja: '<?=ArrayHelper::getValue($options,'clickja');?>',
-             noCheck: '<?=ArrayHelper::getValue($options,'noCheck');?>'
+             appId: '<?=ArrayHelper::getValue($options, 'appId');?>',
+             accessToken: '<?=ArrayHelper::getValue($options, 'accessToken');?>',
+             pageUrl: null,
+             pageTitle: '',
+             pageDescription: '',
+             pageImage: '',
+             counter: 1,
+             clickja: 0,
+             noCheck: 0
          },
 
-         init: function () {
+         init: function (options) {
              var self = this;
-             this.prepareOptions();
+             this.prepareOptions(options);
              this.setupEvents();
              this.create();
-
-             console.log('start');
          },
 
-         prepareOptions: function () {
+         /**
+          * Обрабатываем опции до их использования
+          * @return void
+         */
+         prepareOptions: function (options) {
+             this.options = extend({}, this.options, options);
+
              this.url = this.options.pageUrl;
+
+             postMessageData.onpwgt.button['url'] = this.url;
 
              //Для мобильных устройств включаем кликджекинг
              if (isMobile()) {
@@ -206,8 +214,8 @@ use \yii\helpers\ArrayHelper;
                  this.options.clickja = false;
              }
 
-             this.cookieCounterCacheName = 'onp-vk-share-button-counter-cache-' + $.pandalocker.tools.hash(this.url);
-             this.cookieMobileCheckName = 'onp-vk-share-button-mobile-check' + $.pandalocker.tools.hash(this.url);
+             this.cookieCounterCacheName = 'onp-vk-share-button-counter-cache-' + hash(this.url);
+             this.cookieMobileCheckName = 'onp-vk-share-button-mobile-check' + hash(this.url);
 
              if (getFromStorage('onp-vk-buttons-oid') && this.options.clickja) {
                  this.vkUserId = getFromStorage('onp-vk-buttons-oid');
@@ -220,12 +228,16 @@ use \yii\helpers\ArrayHelper;
              //this.options.counter = "vertical" === this.groupOptions.layout ? true : this.groupOptions.counters;
          },
 
+         /**
+          * Устанавливаем события соц. сетей или те события, которые должны инициализироваться до создания кнопки.
+          * @return void
+         */
          setupEvents: function () {
              var self = this;
 
 
              if (!self.options.appId) {
-                 throw new Error("Не передан appi id");
+                 throw new Error("Не передан app id");
              }
 
              window.VK.init({
@@ -372,8 +384,8 @@ use \yii\helpers\ArrayHelper;
 
              if (self.mobile) {
                  if (self.vkUserId && self.options.clickja) {
-                     $.pandalocker.tools.setStorage(self.cookieMobileCheckName, self.url, 1);
-                     //self.locker._showScreen('data-processing');
+
+                     setStorage(self.cookieMobileCheckName, self.url, 1);
                      postMessageData.onpwgt.button['event'] = 'processing';
                      window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
@@ -450,29 +462,26 @@ use \yii\helpers\ArrayHelper;
           * если счетчик изменился, мы можем быть уверены, что это правда.
           * @returns void
           */
-         checkShared: function (csCallback) {
+         checkShared: function (callback) {
 
              var self = this;
-             self.getShareCounterScripts();
+             self.getCounterScripts();
 
              if (!window.VK.Share) {
                  window.VK.Share = {};
              }
-             window.VK.Share.count = function (idx, number, callback) {
-                 if (callback) {
-                     return 'mark';
-                 }
+             window.VK.Share.count = function (idx, number) {
 
                  if (self.buttonCounterBuffer < number) {
-                     csCallback && csCallback('success');
+                     callback && callback('success');
 
                      postMessageData.onpwgt.button['event'] = 'share';
                      postMessageData.onpwgt.button['url'] = self.url;
                      window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
-                     //$(document).trigger('vk-counter-ready', [number]);
-
                      self.taskcheckShared = 0;
+
+                     self.updateCounter();
                      return;
                  }
 
@@ -485,8 +494,8 @@ use \yii\helpers\ArrayHelper;
                              postMessageData.onpwgt.button['url'] = self.url;
                              window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
-                             if (csCallback) {
-                                 csCallback && csCallback('fail');
+                             if (callback) {
+                                 callback && callback('fail');
                                  return;
                              }
 
@@ -498,7 +507,7 @@ use \yii\helpers\ArrayHelper;
                      }, 1500
                  );
              };
-         }
+         },
 
          /***
           * Проверяет поделился ли пользователь страницой или нет.
@@ -521,16 +530,13 @@ use \yii\helpers\ArrayHelper;
                      access_token: self.options.accessToken
                  }, function (r) {
 
-                     if (!r || !r.response) {
-                         return;
-                     }
+                     if (!r || !r.response) return;
+
                      if (r.response[1].attachment.link && r.response[1].attachment.link.url) {
 
                          var getWallLink = r.response[1].attachment.link.url;
 
-                         if (!getWallLink) {
-                             return;
-                         }
+                         if (!getWallLink) return;
 
                          callback && callback('success');
 
@@ -541,14 +547,13 @@ use \yii\helpers\ArrayHelper;
                          return false;
                      }
 
+                     callback && callback('fail');
+
                      postMessageData.onpwgt.button['event'] = 'notshare';
                      postMessageData.onpwgt.button['url'] = getWallLink;
                      window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
-                     if (callback) {
-                         callback && callback('fail');
-                         return false;
-                     }
+                     return false;
                  }
              );
          },
@@ -572,16 +577,7 @@ use \yii\helpers\ArrayHelper;
                  height: 24
              }, self.vkWidgetUnique);
 
-             if (this.options.counter) {
-                 this.buttonCounter.className += ' show';
-             }
-
-             if( self.widgetId ) {
-                 this.buttonCounter.className += ' loaded';
-
-                 postMessageData.onpwgt.button['event'] = 'loaded';
-                 window.parent.postMessage(JSON.stringify(postMessageData), '*');
-             }
+             self.setStateAndShowButton();
 
              var timerCheckClickToLikeButton;
 
@@ -595,18 +591,18 @@ use \yii\helpers\ArrayHelper;
                      styleHideWidgetHint = document.createElement('style');
 
                  styleHideWidgetHint.className = "vkwidget" + self.widgetId + "_tt";
-                 styleHideWidgetHint.innerHTML = vkWidgetHintId + '{display:none !important;}';
+                 styleHideWidgetHint.innerHTML = "#" + vkWidgetHintId + '{display:none !important;}';
 
-                 if( !document.getElementsByClassName('vkwidget' + self.widgetId + '_tt') ) {
-                     document.head.insertAfter(styleHideWidgetHint, document.head.lastChild);
+                 if (!document.getElementsByClassName('vkwidget' + self.widgetId + '_tt')[0]) {
+                     document.head.appendChild(styleHideWidgetHint);
                  }
 
                  timerCheckClickToLikeButton = setInterval(function () {
                      var elm = document.getElementById(vkWidgetHintId);
 
-                     if( elm && elm.getAttribute('vkhidden') && elm.getAttribute('vkhidden') == 'no') {
+                     if (elm && elm.getAttribute('vkhidden') && elm.getAttribute('vkhidden') == 'no') {
                          self.button.className += ' onp-vk-default-button-process';
-                         self.button.getElementsByTagName('span').innerText = 'подождите...';
+                         self.button.getElementsByTagName('span')[0].innerText = 'подождите...';
 
                          clearInterval(timerCheckClickToLikeButton);
 
@@ -614,16 +610,19 @@ use \yii\helpers\ArrayHelper;
                              self.getvkUserId(1, function () {
                                  self.likeButtonContanier.style.display = "none";
                                  self.button.className = self.button.className.replace(/\sonp-vk-default-button-process/,'');
+
+                                 self.button.getElementsByTagName('span')[0].innerText = 'поделиться';
                                  elm.remove();
 
                                  postMessageData.onpwgt.button['event'] = 'click';
                                  postMessageData.onpwgt.button['oid'] = self.vkUserId;
                                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
+
+                                 clearInterval(timerCheckClickToLikeButton);
                              });
                          }
                      }
                  }, 50);
-
              };
              document.body.onmouseout = function (e) {
                  self.hoverWidget = false;
@@ -639,28 +638,47 @@ use \yii\helpers\ArrayHelper;
 
          /**
           * Устанавливает счетчик для кнопки
+          * @param force - если true, принудительно обновляет счетчик и сбрасывает кеш.
+          * @param callback
           * @return void
           */
-         setCounter: function () {
+         updateCounter: function (force, callback) {
              var self = this;
-             if (this.buttonCounterBuffer) {
+
+             if (getFromStorage(self.cookieCounterCacheName) && this.buttonCounterBuffer && !force) {
                  this.buttonCounter.innerText = this.minimalizeLargeNum(this.buttonCounterBuffer);
+
+                 callback && callback();
+                 return;
              }
 
-             if (!self.options.clickja || (self.options.clickja && self.vkUserId)) {
-                 if (this.options.counter) {
-                     this.buttonCounter.className += ' show';
-                 }
+             if (!window.VK.Share) window.VK.Share = {};
 
-                 this.buttonCounter.className += ' loaded';
+             window.VK.Share.count = function (idx, number) {
 
-                 postMessageData.onpwgt.button['event'] = 'loaded';
-                 window.parent.postMessage(JSON.stringify(postMessageData), '*');
+                 self.buttonCounterBuffer = number;
+                 self.buttonCounter.innerText = self.minimalizeLargeNum(number);
+
+                 setStorage(self.cookieCounterCacheName, number, 2);
+
+                 callback && callback();
+             };
+
+             this.getCounterScripts();
+         },
+
+         /**
+          * Устанавливает статус загрузки кнопки
+          */
+         setStateAndShowButton: function () {
+             if (this.options.counter) {
+                 this.buttonCounter.className += 'show';
              }
 
-             if (!self.likeButtonContanier.id && self.options.clickja && !self.vkUserId) {
-                 self.initSubscribeWidget();
-             }
+             this.button.className += ' loaded';
+
+             postMessageData.onpwgt.button['event'] = 'loaded';
+             window.parent.postMessage(JSON.stringify(postMessageData), '*');
          },
 
          /**
@@ -670,18 +688,20 @@ use \yii\helpers\ArrayHelper;
           * @param callback
           * @returns void
           */
-         getShareCounterScripts: function (callback) {
+         getCounterScripts: function (callback) {
              var script = document.createElement('script');
              var prior = document.getElementsByTagName('script')[0];
              script.async = 1;
              prior.parentNode.insertBefore(script, prior);
 
-             script.onload = script.onreadystatechange = function( _, isAbort ) {
-                 if(isAbort || !script.readyState || /loaded|complete/.test(script.readyState) ) {
+             script.onload = script.onreadystatechange = function (_, isAbort) {
+                 if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
                      script.onload = script.onreadystatechange = null;
                      script = undefined;
 
-                     if(!isAbort) { if(callback) callback(); }
+                     if (!isAbort) {
+                         if (callback) callback();
+                     }
                  }
              };
 
@@ -706,11 +726,7 @@ use \yii\helpers\ArrayHelper;
              var self = this;
 
              if (!self.options.accessToken) {
-                 throw new Error('Invalid access token');
-             }
-
-             if (!self.options.groupId) {
-                 throw new Error('Invalid group id');
+                 throw new Error('Не установлен токен доступаы');
              }
 
              this.button = document.getElementById('onp-flat-button');
@@ -718,6 +734,8 @@ use \yii\helpers\ArrayHelper;
              this.buttonCounter = document.getElementById('onp-flat-button-default-counter');
 
              this.button.onclick = function () {
+                 self.updateCounter(true);
+                 self.showShareWindow();
 
                  postMessageData.onpwgt.button['event'] = 'click';
                  postMessageData.onpwgt.button['oid'] = self.vkUserId;
@@ -742,18 +760,38 @@ use \yii\helpers\ArrayHelper;
                  };
              }
 
-
-             if (!getFromStorage(self.cookieCounterCacheName)) {
-                 self.updateApiGroupOptions();
-                 return false;
-             }
-
-             self.setGroupCounter();
+             self.updateCounter(false, function () {
+                 if (!self.options.clickja || (self.options.clickja && self.vkUserId)) {
+                     self.setStateAndShowButton();
+                     return;
+                 }
+                 self.initShareWiget();
+             });
          }
      };
 
+     /**
+      * Инициализация кнопки
+     */
      window.onload = function () {
-         shareButton.init();
+         function listener(event) {
+             if( event.data.indexOf('onpwgt_to') === -1 ) return;
+             var data = JSON.parse(event.data);
+             if( data.onpwgt_to && data.onpwgt_to.button && data.onpwgt_to.button.name) {
+                 if(data.onpwgt_to.button.name = 'vk-share') {
+                     shareButton.init(data.onpwgt_to.button);
+                 }
+             } else {
+                 throw new Error('Переданые данные не соотвестуют формату.');
+             }
+         }
+
+         if (window.addEventListener) {
+             window.addEventListener("message", listener);
+         } else {
+             // IE8
+             window.attachEvent("onmessage", listener);
+         }
      };
 
      /**
@@ -875,7 +913,18 @@ use \yii\helpers\ArrayHelper;
          }
      };
 
-     // Find Left Boundry of current Window
+     var extend = function (){
+         for(var i=1; i<arguments.length; i++)
+             for(var key in arguments[i])
+                 if(arguments[i].hasOwnProperty(key))
+                     arguments[0][key] = arguments[i][key];
+         return arguments[0];
+     };
+
+     /**
+      * Ишет границу окна слева
+      * @returns integer
+      */
      var findLeftWindowBoundry = function () {
          // In Internet Explorer window.screenLeft is the window's left boundry
          if (window.screenLeft)
@@ -886,7 +935,10 @@ use \yii\helpers\ArrayHelper;
          return 0;
      };
 
-     // Find Left Boundry of current Window
+     /**
+      * Ишет границу окна сверху
+      * @returns integer
+      */
      var findTopWindowBoundry = function () {
          // In Internet Explorer window.screenLeft is the window's left boundry
          if (window.screenTop)

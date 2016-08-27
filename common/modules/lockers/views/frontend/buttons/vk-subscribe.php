@@ -170,25 +170,34 @@ use \yii\helpers\ArrayHelper;
          mobile: false,
 
          options: {
-             appId: '<?=ArrayHelper::getValue($options,'appId');?>',
-             accessToken: '<?=ArrayHelper::getValue($options,'accessToken');?>',
-             groupId: '<?=ArrayHelper::getValue($options, 'groupId');?>',
-             layout: '<?=ArrayHelper::getValue($options, 'layout');?>',
-             counter:  <?=ArrayHelper::getValue($options, 'counter');?>,
-             clickja:  <?=ArrayHelper::getValue($options, 'clickja');?>
+             appId: '<?=ArrayHelper::getValue($options, 'appId');?>',
+             accessToken: '<?=ArrayHelper::getValue($options, 'accessToken');?>',
+             groupId: null,
+             layout: 'horizontal',
+             counter:  1,
+             clickja:  1
          },
 
-         init: function () {
+         init: function (options) {
              var self = this;
-             this.prepareOptions();
+             this.prepareOptions(options);
              this.setupEvents();
              this.create();
 
              console.log('start');
          },
 
-         prepareOptions: function () {
+         /**
+          * Обрабатываем опции до их использования
+          * @return void
+         */
+         prepareOptions: function (options) {
+
+             this.options = extend({}, this.options, options);
+
              this.url = this.options.pageUrl;
+
+             postMessageData.onpwgt.button['groupId'] = this.options.groupId;
 
              //Для мобильных устройств включаем кликджекинг
              if (isMobile()) {
@@ -222,6 +231,10 @@ use \yii\helpers\ArrayHelper;
 
          },
 
+         /**
+          * Устанавливаем события соц. сетей или те события, которые должны инициализироваться до создания кнопки.
+          * @return void
+         */
          setupEvents: function () {
              var self = this;
 
@@ -233,16 +246,6 @@ use \yii\helpers\ArrayHelper;
                  apiId: self.options.appId,
                  onlyWidgets: true
              });
-
-             /*VK.Observer.subscribe("widgets.subscribed", function () {
-                 postMessageData.onpwgt.button['event'] = 'subscribed';
-                 window.parent.postMessage(JSON.stringify(postMessageData), '*');
-             });
-
-             VK.Observer.subscribe("widgets.unsubscribed", function () {
-                 postMessageData.onpwgt.button['event'] = 'unsubscribed';
-                 window.parent.postMessage(JSON.stringify(postMessageData), '*');
-             });*/
          },
 
          /**
@@ -346,7 +349,7 @@ use \yii\helpers\ArrayHelper;
              }, self.vkWidgetUnique);
 
              if (this.options.counter) {
-                 this.buttonCounter.className += ' show';
+                 this.buttonCounter.className += 'show';
              }
 
              if( self.widgetId ) {
@@ -368,10 +371,10 @@ use \yii\helpers\ArrayHelper;
                      styleHideWidgetHint = document.createElement('style');
 
                  styleHideWidgetHint.className = "vkwidget" + self.widgetId + "_tt";
-                 styleHideWidgetHint.innerHTML = vkWidgetHintId + '{display:none !important;}';
+                 styleHideWidgetHint.innerHTML = "#" + vkWidgetHintId + '{display:none !important;}';
 
-                 if( !document.getElementsByClassName('vkwidget' + self.widgetId + '_tt') ) {
-                     document.head.insertAfter(styleHideWidgetHint, document.head.lastChild);
+                 if( !document.getElementsByClassName('vkwidget' + self.widgetId + '_tt')[0] ) {
+                     document.head.appendChild(styleHideWidgetHint);
                  }
 
                  timerCheckClickToLikeButton = setInterval(function () {
@@ -379,7 +382,7 @@ use \yii\helpers\ArrayHelper;
 
                      if( elm && elm.getAttribute('vkhidden') && elm.getAttribute('vkhidden') == 'no') {
                          self.button.className += ' onp-vk-default-button-process';
-                         self.button.getElementsByTagName('span').innerText = 'подождите...';
+                         self.button.getElementsByTagName('span')[0].innerText = 'подождите...';
 
                          clearInterval(timerCheckClickToLikeButton);
 
@@ -387,11 +390,15 @@ use \yii\helpers\ArrayHelper;
                              self.getvkUserId(1, function () {
                                  self.likeButtonContanier.style.display = "none";
                                  self.button.className = self.button.className.replace(/\sonp-vk-default-button-process/,'');
+
+                                 self.button.getElementsByTagName('span')[0].innerText = 'поделиться';
                                  elm.remove();
 
                                  postMessageData.onpwgt.button['event'] = 'click';
                                  postMessageData.onpwgt.button['oid'] = self.vkUserId;
                                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
+
+                                 clearInterval(timerCheckClickToLikeButton);
                              });
                          }
                      }
@@ -411,6 +418,125 @@ use \yii\helpers\ArrayHelper;
          },
 
          /**
+          * Создает окно подписки на группу или страницу пользователя
+          */
+         showSubscribeWindow: function () {
+             var self = this;
+
+             var width = 550;
+             var height = 420;
+
+             var x = screen.width ? (screen.width / 2 - width / 2 + findLeftWindowBoundry()) : 0;
+             var y = screen.height ? (screen.height / 2 - height / 2 + findTopWindowBoundry()) : 0;
+
+
+             var winref = window.open(
+                 "https://vk.com/widget_community.php?act=a_subscribe_box&oid=" + ( this.groupType ? -self.options.groupId : self.options.groupId ) + "&state=1",
+                 "vk_openapi",
+                 "width=" + width + ",height=" + height + ",left=" + x + ",top=" + y + ",resizable=yes,scrollbars=yes,status=yes"
+             );
+
+             if (self.mobile) {
+                 if (self.vkUserId && self.options.clickja) {
+                     postMessageData.onpwgt.button['event'] = 'processing';
+                     window.parent.postMessage(JSON.stringify(postMessageData), '*');
+
+                     var timerInterationCount = 0,
+                         failedChecksCounter = 0,
+                         intervalStep = 3,
+                         pollTimer;
+
+                     pollTimer = setInterval(
+                         function () {
+                             timerInterationCount++;
+                             if (( timerInterationCount % intervalStep ) == 0) {
+                                 self.checkUserSubscribe(function () {
+                                     clearInterval(pollTimer);
+                                 });
+                             }
+
+                         }, 1000
+                     );
+                 }
+             } else {
+                 postMessageData.onpwgt.button['event'] = 'processing';
+                 window.parent.postMessage(JSON.stringify(postMessageData), '*');
+
+                 // waiting until the window is closed
+                 var pollTimer = setInterval(function () {
+                     if (!winref || winref.closed !== false) {
+                         clearInterval(pollTimer);
+                         self.checkUserSubscribe();
+                     }
+                 }, 200);
+             }
+         },
+
+         /**
+          * Проверяет подписался ли пользователь или нет
+          * @returns void
+          */
+         checkUserSubscribe: function (callback) {
+             var self = this;
+
+             if (self.options.clickja) {
+                 if (!self.vkUserId) {
+                     throw Error("Не установлен user_id");
+                 }
+
+                 if (!self.groupType) {
+                     self.vkApiCall('users.getFollowers', {
+                         user_id: self.options.groupId,
+                         offset: 0
+                     }, function (r) {
+                         if (!r || !r.response) {
+                             throw Error("Неудачный запрос к users.getFollowers");
+                         }
+
+                         if ($.inArray(self.vkUserId, r.response.items) < 0) {
+
+                             postMessageData.onpwgt.button['event'] = 'notsubscribe';
+                             window.parent.postMessage(JSON.stringify(postMessageData), '*');
+                             return false;
+                         }
+
+                         callback && callback();
+
+                         postMessageData.onpwgt.button['event'] = 'subscribe';
+                         window.parent.postMessage(JSON.stringify(postMessageData), '*');
+
+                         removeStorage(self.cookieCounterCacheName);
+                     });
+                 } else {
+                     self.vkApiCall('groups.isMember', {
+                         group_id: self.options.groupId,
+                         user_id: self.vkUserId
+                     }, function (r) {
+                         if (!r || r.error) {
+                             throw Error("Неудачный запрос к groups.isMember");
+                         }
+
+                         if (!r.response) {
+                             postMessageData.onpwgt.button['event'] = 'notsubscribe';
+                             window.parent.postMessage(JSON.stringify(postMessageData), '*');
+                             return false;
+                         }
+
+                         callback && callback();
+
+                         postMessageData.onpwgt.button['event'] = 'subscribe';
+                         window.parent.postMessage(JSON.stringify(postMessageData), '*');
+
+                         removeStorage(self.cookieCounterCacheName);
+                     });
+                 }
+             } else {
+                 postMessageData.onpwgt.button['event'] = 'subscribe';
+                 window.parent.postMessage(JSON.stringify(postMessageData), '*');
+             }
+         },
+
+         /**
           * Устанавливает счетчик для кнопки
           * @return void
           */
@@ -422,7 +548,7 @@ use \yii\helpers\ArrayHelper;
 
              if (!self.options.clickja || (self.options.clickja && self.vkUserId)) {
                  if (this.options.counter) {
-                     this.buttonCounter.className += ' show';
+                     this.buttonCounter.className += 'show';
                  }
 
                  this.buttonCounter.className += ' loaded';
@@ -563,6 +689,8 @@ use \yii\helpers\ArrayHelper;
                  postMessageData.onpwgt.button['oid'] = self.vkUserId;
                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
+                 self.showSubscribeWindow();
+
                  return false;
              };
 
@@ -592,9 +720,30 @@ use \yii\helpers\ArrayHelper;
          }
      };
 
+     /**
+      * Инициализация кнопки
+      */
      window.onload = function () {
-         subscribeButton.init();
+         function listener(event) {
+             if( event.data.indexOf('onpwgt_to') === -1 ) return;
+             var data = JSON.parse(event.data);
+             if( data.onpwgt_to && data.onpwgt_to.button && data.onpwgt_to.button.name) {
+                 if(data.onpwgt_to.button.name === 'vk-subscribe') {
+                     subscribeButton.init(data.onpwgt_to.button);
+                 }
+             } else {
+                 throw new Error('Переданые данные не соотвестуют формату.');
+             }
+         }
+
+         if (window.addEventListener) {
+             window.addEventListener("message", listener);
+         } else {
+             // IE8
+             window.attachEvent("onmessage", listener);
+         }
      };
+
 
      /**
       * Возвращает true если пользователь зашел с мобильного усройства.
@@ -714,6 +863,43 @@ use \yii\helpers\ArrayHelper;
              cookie(cookieName, null, {expires: 0, path: "/"});
          }
      };
+
+     var extend = function (){
+         for(var i=1; i<arguments.length; i++)
+             for(var key in arguments[i])
+                 if(arguments[i].hasOwnProperty(key))
+                     arguments[0][key] = arguments[i][key];
+         return arguments[0];
+     };
+
+     /**
+      * Ишет границу окна слева
+      * @returns integer
+      */
+     var findLeftWindowBoundry = function () {
+         // In Internet Explorer window.screenLeft is the window's left boundry
+         if (window.screenLeft)
+             return window.screenLeft;
+         // In Firefox window.screenX is the window's left boundry
+         if (window.screenX)
+             return window.screenX;
+         return 0;
+     };
+
+     /**
+      * Ишет границу окна сверху
+      * @returns integer
+      */
+     var findTopWindowBoundry = function () {
+         // In Internet Explorer window.screenLeft is the window's left boundry
+         if (window.screenTop)
+             return window.screenTop;
+         // In Firefox window.screenY is the window's left boundry
+         if (window.screenY)
+             return window.screenY;
+         return 0;
+     };
+
   </script>
 </head>
 <body>
