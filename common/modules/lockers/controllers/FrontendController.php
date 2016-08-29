@@ -64,50 +64,28 @@ class FrontendController extends Controller
 
         switch($name) {
             case 'facebook-like':
+                $default_params = [];
+                break;
+            case 'facebook-share':
                 $default_params = [
-                    'href' => 'https://sociallocker.ru',
-                    'layout' => 'box_count',
-                    'action' => 'like',
-                    'size'  => 'small',
-                    'faces' => 'false',
-                    'share' => 'false',
-                    'counter' => 1,
+                    'appId' => '1681260055442448'
                 ];
                 break;
             case 'vk-like':
                 $default_params = [
-                    'appId' => '5337425',
-                    'pageUrl' => 'https://sociallocker.ru',
-                    'counter' => 1,
-                    'type' => 'mini',
-                    'width' => '350',
-                    'height'  => '22',
-                    'verb' => '0',
-                    'pageTitle' => '',
-                    'pageDescription' => '',
-                    'pageImage' => '',
-                    'page_id' => ''
+                    'appId' => '5337425'
                 ];
                 break;
             case 'vk-subscribe':
                 $default_params = [
                     'appId' => '5337425',
                     'accessToken' => 'eb29aae9f8a9d1b857dbf566aef1ed56eda31dd1b1933b65cd9f23b247778ac4b8b1292ff0ee6f86218c59087b48f',
-                    'groupId' => 'vyishenebes',
-                    'layout'  => 'horizontal',
-                    'counter' => 1,
-                    'clickja'  => 1,
                 ];
                 break;
             case 'vk-share':
                 $default_params = [
                     'appId' => '5337425',
                     'accessToken' => 'eb29aae9f8a9d1b857dbf566aef1ed56eda31dd1b1933b65cd9f23b247778ac4b8b1292ff0ee6f86218c59087b48f',
-                    'pageUrl' => 'http://ya.ru',
-                    'layout'  => 'horizontal',
-                    'counter' => 1,
-                    'clickja'  => 1,
-                    'noCheck' => 0,
                 ];
                 break;
         }

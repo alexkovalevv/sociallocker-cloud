@@ -5,149 +5,185 @@ use \yii\helpers\ArrayHelper;
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vk subscribe button</title>
+  <title>Кнопка подписаться Вконтакте</title>
+  <meta charset="utf-8" content="text/html">
+
   <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
+          body {
+              margin: 0;
+              padding: 0;
+          }
 
-        iframe[src*="act=a_stats_box"], .VKWidgetsLoader {
-            display:none !important;
-        }
+          iframe[src*="act=a_stats_box"], .VKWidgetsLoader {
+              display: none !important;
+          }
 
-        /* Flat button default */
-        .onp-flat-button-default {
-            display: inline-block;
-            position: relative;
-            min-width: 10px;
-            height: 20px;
-            padding: 1px 10px 1px 0;
-            margin-right: 1px;
-            line-height: 1.5;
-            font-family: tahoma, arial, verdana, sans-serif, Lucida Sans;
-            text-shadow: none !important;
-            font-size: 12px;
-            color: #fff;
-            background: #5F83AA;
-            border-radius: 2px;
-            -moz-border-radius: 2px;
-            -webkit-border-radius: 2px;
-            z-index: 1;
-            cursor: pointer;
-            text-align: left;
-            white-space: nowrap;
-            vertical-align: top;
-            box-sizing: content-box;
-        }
+          #btn {
+              display: none;
+              position: relative;
+              min-width: 10px;
+              height: 20px;
+              padding: 1px 10px 1px 0;
+              margin-right: 1px;
+              line-height: 1.5;
+              font-family: tahoma, arial, verdana, sans-serif, Lucida Sans;
+              text-shadow: none !important;
+              font-size: 12px;
+              color: #fff;
+              background: #5F83AA;
+              border-radius: 2px;
+              -moz-border-radius: 2px;
+              -webkit-border-radius: 2px;
+              z-index: 1;
+              cursor: pointer;
+              text-align: left;
+              white-space: nowrap;
+              vertical-align: top;
+              box-sizing: content-box;
+          }
 
-        .onp-flat-button-default.onp-vk-default-button-process {
-            background: rgb(185, 185, 185);
-        }
+          #btn-contanier.vertical #btn {
+              margin-top:30px;
+          }
 
-        .onp-flat-button-default.onp-button-loaded {
-            display: inline-block;
-        }
+          #btn.process {
+              background: rgb(185, 185, 185);
+          }
 
-        .onp-flat-button-default .onp-flat-button-vk-logo {
-            display: block;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAA7CAYAAACZr7GXAAAABGdBTUEAALGPC/xhBQAAArJJREFUWAntlrtrVEEUxrMxhUgiIiLRwlaEIIKN+IoaRG3UkKBWitj7DyiYf8A+VqKFVr7QYBElbQxGjeCjsfGFNr4WJfG1/r51Jpy9986ducTOHfj2nDnn+76dnb2zsx2NRuMe0LjVwSB2gtcqMH6Axa6+mXxORcZ+1XKDxrlm++/LOhFIR02tx9XuuNpb4pKckSNtMMILrnbW1HrID5n5kUIjX4R41ZF/EbcCazbM/JPrX/eaYIS4BtSd4D3xkcuz4WTQxDZQHc8q3XyC+N3l+gL2WF0wh3gK/HZCH1aTbAGfXUFxbdDENiDuALeB9ukDWKo+sR9oCzRGraadL2AH2Mw+8BC8A8fAUfAKTIG+StYIJoEfP0kEP6aqmvkn3xvY+KWKWSfk8RLBWEkv32IZK8FTuxyXPyAuyysiFUS94LkzUdBBXx6RhduIV4FnzmhFmJnYwagLLEqk/7c09kjf5Bj4CC6CbnAe6LfrBuhN3hzI/jIhbQ6dUTvil4h7txoqHZnm3RhYQb1WqzV/bQP9+bKO08v5WXHyorhcUGVl+4Duy6KhW6m/QBYuIdBvWNZQ/zMGw6qSDkLdm/6ak9FwCT3ewuAEeAMOx9ltxj/bATZ8N9CxEnbKmLgdXAaXwK6kN4M4COzQ36bTYNYWyYeihpBmMqLQ9HHMTAe9Dqk7RqQfPfA66DMJRqLcj/JY2Sbg/2aGPuI3GuujZiJA1JcQMpTRQJKRJyE4WGD4lVraY+GNfER4wBjKqPnM+X7liMFecBNsqyxuCxa+A9cmps9kXVQbn3zSmJ3T1dA6VFMvp7tyd3pEjayZ5r5nDb2Rei0aS25pmInlJBnpQxh9LvWG+gSlK/K7kXPIFGSSM4LTleElTYcGNo4EiX7pfnODxNSGNUzVlPK8YSmpSjP38FUQ/wFdLkenTFLauwAAAABJRU5ErkJggg==');
-            background-position: 0px 0px;
-            height: 8px;
-            width: 14px;
-            margin: 3px 0 0 1px;
-        }
+          #btn.loaded {
+              display: inline-block;
+          }
 
-        .onp-flat-button-default span {
-            display: inline-block;
-            padding: 0px;
-        }
+          #btn .btn-icon {
+              display: block;
+              background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAA7CAYAAACZr7GXAAAABGdBTUEAALGPC/xhBQAAArJJREFUWAntlrtrVEEUxrMxhUgiIiLRwlaEIIKN+IoaRG3UkKBWitj7DyiYf8A+VqKFVr7QYBElbQxGjeCjsfGFNr4WJfG1/r51Jpy9986ducTOHfj2nDnn+76dnb2zsx2NRuMe0LjVwSB2gtcqMH6Axa6+mXxORcZ+1XKDxrlm++/LOhFIR02tx9XuuNpb4pKckSNtMMILrnbW1HrID5n5kUIjX4R41ZF/EbcCazbM/JPrX/eaYIS4BtSd4D3xkcuz4WTQxDZQHc8q3XyC+N3l+gL2WF0wh3gK/HZCH1aTbAGfXUFxbdDENiDuALeB9ukDWKo+sR9oCzRGraadL2AH2Mw+8BC8A8fAUfAKTIG+StYIJoEfP0kEP6aqmvkn3xvY+KWKWSfk8RLBWEkv32IZK8FTuxyXPyAuyysiFUS94LkzUdBBXx6RhduIV4FnzmhFmJnYwagLLEqk/7c09kjf5Bj4CC6CbnAe6LfrBuhN3hzI/jIhbQ6dUTvil4h7txoqHZnm3RhYQb1WqzV/bQP9+bKO08v5WXHyorhcUGVl+4Duy6KhW6m/QBYuIdBvWNZQ/zMGw6qSDkLdm/6ak9FwCT3ewuAEeAMOx9ltxj/bATZ8N9CxEnbKmLgdXAaXwK6kN4M4COzQ36bTYNYWyYeihpBmMqLQ9HHMTAe9Dqk7RqQfPfA66DMJRqLcj/JY2Sbg/2aGPuI3GuujZiJA1JcQMpTRQJKRJyE4WGD4lVraY+GNfER4wBjKqPnM+X7liMFecBNsqyxuCxa+A9cmps9kXVQbn3zSmJ3T1dA6VFMvp7tyd3pEjayZ5r5nDb2Rei0aS25pmInlJBnpQxh9LvWG+gSlK/K7kXPIFGSSM4LTleElTYcGNo4EiX7pfnODxNSGNUzVlPK8YSmpSjP38FUQ/wFdLkenTFLauwAAAABJRU5ErkJggg==');
+              background-position: 0px 0px;
+              height: 8px;
+              width: 14px;
+              margin: 3px 0 0 1px;
+          }
 
-        .onp-flat-button-default .onp-flat-button-left-side {
-            display: inline-block;
-            width: 20px;
-            height: 14px;
-            float: left;
-            border-right: 1px solid #87a2bf;
-            border-right-color: rgba(255, 255, 255, 0.24);
-            padding-left: 5px;
-            padding-right: 1px;
-            margin: 3px 8px 0 0;
-            text-align: center;
-            vertical-align: top;
-            box-sizing: content-box;
-        }
+          #btn span {
+              display: inline-block;
+              padding: 0px;
+          }
 
-        .onp-flat-button-default:hover {
-            box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1);
-            -webkit-box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1);
-            -moz-box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1);
-        }
+          #btn .btn-left-side {
+              display: inline-block;
+              width: 20px;
+              height: 14px;
+              float: left;
+              border-right: 1px solid #87a2bf;
+              border-right-color: rgba(255, 255, 255, 0.24);
+              padding-left: 5px;
+              padding-right: 1px;
+              margin: 3px 8px 0 0;
+              text-align: center;
+              vertical-align: top;
+              box-sizing: content-box;
+          }
 
-        #onp-flat-button-default-counter {
-            position: relative;
-            display: none;
-            vertical-align: top;
-            min-width: 15px;
-            border: 1px solid #adbdcc;
-            color: #55677d;
-            -webkit-border-radius: 2px;
-            -moz-border-radius: 2px;
-            border-radius: 2px;
-            cursor: pointer;
-            padding: 4px 6px 4px;
-            margin-left: 3px;
-            font-family: tahoma, verdana, arial, sans-serif;
-            font-size: 11px;
-            text-align: center;
-            line-height: 12px;
-            background: #ffffff;
-        }
+          #btn:hover {
+              box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1);
+              -webkit-box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1);
+              -moz-box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1);
+          }
 
-        #onp-flat-button-default-counter.show {
-            display: inline-block !important;
-        }
+          #btn.confirmation {
+              background: #8D969E;
+          }
 
-        #onp-flat-button-default-counter:after, #onp-flat-button-default-counter:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: -12px;
-            margin-top: -6px;
-            border: 6px solid transparent;
-            border-right-color: #608ab1;
-            z-index: 1;
-        }
+          #btn-counter {
+              position: relative;
+              display: none;
+              vertical-align: top;
+              min-width: 15px;
+              border: 1px solid #adbdcc;
+              color: #55677d;
+              -webkit-border-radius: 2px;
+              -moz-border-radius: 2px;
+              border-radius: 2px;
+              cursor: pointer;
+              padding: 4px 6px 4px;
+              margin-left: 3px;
+              font-family: tahoma, verdana, arial, sans-serif;
+              font-size: 11px;
+              text-align: center;
+              line-height: 12px;
+              background: #ffffff;
+          }
 
-        #onp-flat-button-default-counter:before {
-            display: block;
-            margin-top: -5px;
-            border: 5px solid transparent;
-            left: -10px;
-            border-right-color: #fff;
-            z-index: 9;
-        }
+          #btn-contanier.vertical #btn-counter {
+              position:absolute;
+              top:0; left:0;
+              width:102px;
+              margin-left:0;
+          }
 
-        .onp-flat-button-default.onp-hold-confirmation {
-            background: #8D969E;
-        }
+          #btn-counter.show {
+              display: inline-block !important;
+          }
 
-        .onp-vk-clickja-button {
-            position:absolute !important;
-            left:0; top:0;
-            opacity: 0;
-        }
-        .onp-vk-clickja-button iframe {
-            position:absolute;
-            /*top:-190px; left:-30px;*/
-            z-index:9;
-            opacity:0;
-            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-        }
+          #btn-counter:after, #btn-counter:before {
+              content: '';
+              position: absolute;
+              top: 50%;
+              left: -12px;
+              margin-top: -6px;
+              border: 6px solid transparent;
+              border-right-color: #608ab1;
+              z-index: 1;
+          }
+
+          #btn-counter:before {
+              display: block;
+              margin-top: -5px;
+              border: 5px solid transparent;
+              left: -10px;
+              border-right-color: #fff;
+              z-index: 9;
+          }
+
+          #btn-contanier.vertical #btn-counter:after, #btn-contanier.vertical #btn-counter:before {
+              bottom: -12px;
+              top:auto;
+              left: 80%;
+              margin-top:0;
+              margin-left: -6px;
+              border: 6px solid transparent;
+              border-top-color: #608ab1;
+          }
+
+          #btn-contanier.vertical #btn-counter:before {
+              margin-left: -5px;
+              border: 5px solid transparent;
+              bottom: -10px;
+              border-top-color: #fff;
+          }
+
+          .btn-clickja-verify {
+              position: absolute !important;
+              left: 0;
+              top: 0;
+              opacity: 0;
+          }
+
+          .btn-clickja-verify iframe {
+              position: absolute;
+              /*top:-190px; left:-30px;*/
+              z-index: 9;
+              opacity: 0;
+              -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+          }
   </style>
   <script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
+
   <script type="text/javascript">
      'use strict';
+
+     if( !VK || !VK.init ) {
+         throw new Error('Не удалось загрузить sdk вконтакте.');
+     }
 
      var postMessageData = {
          onpwgt: {
@@ -157,17 +193,22 @@ use \yii\helpers\ArrayHelper;
          }
      };
 
+     /**
+      * Объект кнопки subscribe.
+      * Для инициализации кнопки используем метод init, метод init принимает в качестве аргумента
+      * объект опций, которые получены с помощую прослушивания postMessage.
+     */
      var subscribeButton = {
-         vkUserId: null,
-         vkRqApiGetListConfirm: true,
-         vkRqApiGetgetByIdConfirm: true,
+         userId: null,
+         rqApiGetListConfirm: true,
+         rqApiGetgetByIdConfirm: true,
          hoverWidget: false,
          groupType: true,
-         buttonCounterBuffer: null,
-         vkWidgetUnique: null,
+         counterBuffer: null,
+         widgetUqNumber: null,
          groupInfo: null,
-         vkAuth: false,
-         mobile: false,
+         isAuth: false,
+         isMobile: false,
 
          options: {
              appId: '<?=ArrayHelper::getValue($options, 'appId');?>',
@@ -178,17 +219,21 @@ use \yii\helpers\ArrayHelper;
              clickja:  1
          },
 
+         /**
+          * Инициализирует кнопку.
+          * @param options - object набор опций
+          * @return void
+         */
          init: function (options) {
              var self = this;
              this.prepareOptions(options);
              this.setupEvents();
              this.create();
-
-             console.log('start');
          },
 
          /**
           * Обрабатываем опции до их использования
+          * @param options - object набор опций
           * @return void
          */
          prepareOptions: function (options) {
@@ -201,7 +246,7 @@ use \yii\helpers\ArrayHelper;
 
              //Для мобильных устройств включаем кликджекинг
              if (isMobile()) {
-                 this.mobile = true;
+                 this.isMobile = true;
              }
 
              if (navigator.userAgent.search(/YaBrowser/i) > 0) {
@@ -214,15 +259,15 @@ use \yii\helpers\ArrayHelper;
 
                  this.originalGroupId = this.options.groupId;
 
-                 this.cookieCounterCacheName = 'onp-vk-subscribe-button-group-info-catche_' + hash(this.originalGroupId);
+                 this.cookieCounterCacheName = 'vk_subscribe_btn_cache_' + hash(this.originalGroupId);
 
-                 if ( getFromStorage('onp-vk-buttons-oid') && this.options.clickja ) {
-                    this.vkUserId = getFromStorage('onp-vk-buttons-oid');
+                 if ( getFromStorage('vk_user_id') && this.options.clickja ) {
+                    this.userId = getFromStorage('vk_user_id');
                  }
 
                  if (getFromStorage(this.cookieCounterCacheName)) {
                      this.groupInfo = JSON.parse(getFromStorage(this.cookieCounterCacheName));
-                     this.buttonCounterBuffer = this.groupInfo.member_count;
+                     this.counterBuffer = this.groupInfo.member_count;
                      this.options.groupId = this.groupInfo.oid;
                  }
 
@@ -285,22 +330,22 @@ use \yii\helpers\ArrayHelper;
           * @param callback
           * @returns void
           */
-         getvkUserId: function (likeId, callback) {
+         getUserId: function (likeId, callback) {
              var self = this;
 
-             self.vkRqApiGetListConfirm = false;
+             self.rqApiGetListConfirm = false;
 
              self.vkApiCall('likes.getList', {
                  type: 'sitepage',
                  owner_id: self.options.appId,
                  page_url: self.url,
-                 item_id: self.vkWidgetUnique,
+                 item_id: self.widgetUqNumber,
                  access_tooken: self.options.accessToken,
                  extended: 1,
                  offset: 0,
                  count: 10
              }, function (r) {
-                 self.vkRqApiGetListConfirm = true;
+                 self.rqApiGetListConfirm = true;
 
                  if (r && r.error) {
                      throw Error(r.error.error_msg);
@@ -313,19 +358,19 @@ use \yii\helpers\ArrayHelper;
                  var users = r.response.items.reverse();
                  var currentUserInfo = users[likeId - 1];
 
-                 self.vkUserId = currentUserInfo.uid;
-                 setStorage('onp-vk-buttons-oid', self.vkUserId, 364);
+                 self.userId = currentUserInfo.uid;
+                 setStorage('vk_user_id', self.userId, 364);
 
-                 callback(self.vkUserId);
+                 callback(self.userId);
              });
 
-             if (!timerVkRqApiGetListConfirm) {
-                 var timerVkRqApiGetListConfirm = setInterval(function () {
-                     if (self.vkRqApiGetListConfirm) {
-                         clearInterval(timerVkRqApiGetListConfirm);
+             if (!timerrqApiGetListConfirm) {
+                 var timerrqApiGetListConfirm = setInterval(function () {
+                     if (self.rqApiGetListConfirm) {
+                         clearInterval(timerrqApiGetListConfirm);
                          return false;
                      }
-                     self.getvkUserId(likeId, callback);
+                     self.getUserId(likeId, callback);
                  }, 3000);
              }
          },
@@ -337,8 +382,8 @@ use \yii\helpers\ArrayHelper;
           */
          initSubscribeWidget: function () {
              var self = this;
-             self.vkWidgetUnique = Math.floor((Math.random() * 999999) + 1);
-             var vkWidgetUniId = "onp-vk-clickja-button-" + self.vkWidgetUnique;
+             self.widgetUqNumber = Math.floor((Math.random() * 999999) + 1);
+             var vkWidgetUniId = "btn-clickja-verify-" + self.widgetUqNumber;
              self.likeButtonContanier.id = vkWidgetUniId;
 
              self.widgetId = VK.Widgets.Like(vkWidgetUniId, {
@@ -346,14 +391,14 @@ use \yii\helpers\ArrayHelper;
                  pageUrl: self.url,
                  verb: 1,
                  height: 24
-             }, self.vkWidgetUnique);
+             }, self.widgetUqNumber);
 
              if (this.options.counter) {
                  this.buttonCounter.className += 'show';
              }
 
              if( self.widgetId ) {
-                 this.buttonCounter.className += ' loaded';
+                 this.button.className += ' loaded';
 
                  postMessageData.onpwgt.button['event'] = 'loaded';
                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
@@ -381,21 +426,21 @@ use \yii\helpers\ArrayHelper;
                      var elm = document.getElementById(vkWidgetHintId);
 
                      if( elm && elm.getAttribute('vkhidden') && elm.getAttribute('vkhidden') == 'no') {
-                         self.button.className += ' onp-vk-default-button-process';
+                         self.button.className += ' process';
                          self.button.getElementsByTagName('span')[0].innerText = 'подождите...';
 
                          clearInterval(timerCheckClickToLikeButton);
 
                          if (self.hoverWidget) {
-                             self.getvkUserId(1, function () {
+                             self.getUserId(1, function () {
                                  self.likeButtonContanier.style.display = "none";
-                                 self.button.className = self.button.className.replace(/\sonp-vk-default-button-process/,'');
+                                 self.button.className = self.button.className.replace(/\sprocess/,'');
 
                                  self.button.getElementsByTagName('span')[0].innerText = 'поделиться';
                                  elm.remove();
 
                                  postMessageData.onpwgt.button['event'] = 'click';
-                                 postMessageData.onpwgt.button['oid'] = self.vkUserId;
+                                 postMessageData.onpwgt.button['oid'] = self.userId;
                                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
                                  clearInterval(timerCheckClickToLikeButton);
@@ -436,8 +481,8 @@ use \yii\helpers\ArrayHelper;
                  "width=" + width + ",height=" + height + ",left=" + x + ",top=" + y + ",resizable=yes,scrollbars=yes,status=yes"
              );
 
-             if (self.mobile) {
-                 if (self.vkUserId && self.options.clickja) {
+             if (self.isMobile) {
+                 if (self.userId && self.options.clickja) {
                      postMessageData.onpwgt.button['event'] = 'processing';
                      window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
@@ -480,7 +525,7 @@ use \yii\helpers\ArrayHelper;
              var self = this;
 
              if (self.options.clickja) {
-                 if (!self.vkUserId) {
+                 if (!self.userId) {
                      throw Error("Не установлен user_id");
                  }
 
@@ -493,7 +538,7 @@ use \yii\helpers\ArrayHelper;
                              throw Error("Неудачный запрос к users.getFollowers");
                          }
 
-                         if ($.inArray(self.vkUserId, r.response.items) < 0) {
+                         if ($.inArray(self.userId, r.response.items) < 0) {
 
                              postMessageData.onpwgt.button['event'] = 'notsubscribe';
                              window.parent.postMessage(JSON.stringify(postMessageData), '*');
@@ -510,7 +555,7 @@ use \yii\helpers\ArrayHelper;
                  } else {
                      self.vkApiCall('groups.isMember', {
                          group_id: self.options.groupId,
-                         user_id: self.vkUserId
+                         user_id: self.userId
                      }, function (r) {
                          if (!r || r.error) {
                              throw Error("Неудачный запрос к groups.isMember");
@@ -542,22 +587,22 @@ use \yii\helpers\ArrayHelper;
           */
          setGroupCounter: function () {
              var self = this;
-             if (this.buttonCounterBuffer) {
-                 this.buttonCounter.innerText = this.minimalizeLargeNum(this.buttonCounterBuffer);
+             if (this.counterBuffer) {
+                 this.buttonCounter.innerText = this.minimalizeLargeNum(this.counterBuffer);
              }
 
-             if (!self.options.clickja || (self.options.clickja && self.vkUserId)) {
+             if (!self.options.clickja || (self.options.clickja && self.userId)) {
                  if (this.options.counter) {
                      this.buttonCounter.className += 'show';
                  }
 
-                 this.buttonCounter.className += ' loaded';
+                 this.button.className += ' loaded';
 
                  postMessageData.onpwgt.button['event'] = 'loaded';
                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
              }
 
-             if (!self.likeButtonContanier.id && self.options.clickja && !self.vkUserId) {
+             if (!self.likeButtonContanier.id && self.options.clickja && !self.userId) {
                  self.initSubscribeWidget();
              }
          },
@@ -571,14 +616,14 @@ use \yii\helpers\ArrayHelper;
          updateApiGroupOptions: function (callback) {
              var self = this;
 
-             self.vkRqApiGetgetByIdConfirm = false;
+             self.rqApiGetgetByIdConfirm = false;
 
              if (!this.groupType) {
                  self.vkApiCall('users.get', {
                      user_ids: self.options.groupId.replace('@', ''),
                      fields: 'followers_count, photo_100'
                  }, function (r) {
-                     self.vkRqApiGetgetByIdConfirm = true;
+                     self.rqApiGetgetByIdConfirm = true;
 
                      if (r && r.error) {
                          if (r.error.error_code == 113) {
@@ -599,7 +644,7 @@ use \yii\helpers\ArrayHelper;
                          member_count: parseInt(r.response[0].followers_count)
                      };
 
-                     self.buttonCounterBuffer = parseInt(r.response[0].followers_count);
+                     self.counterBuffer = parseInt(r.response[0].followers_count);
                      self.options.groupId = parseInt(r.response[0].uid);
 
                      setStorage(self.cookieCounterCacheName, JSON.stringify(self.groupInfo), 2);
@@ -612,7 +657,7 @@ use \yii\helpers\ArrayHelper;
                      group_id: self.options.groupId,
                      fields: 'members_count'
                  }, function (r) {
-                     self.vkRqApiGetgetByIdConfirm = true;
+                     self.rqApiGetgetByIdConfirm = true;
 
                      if (r && r.error) {
                          if (r.error.error_code == 100) {
@@ -634,7 +679,7 @@ use \yii\helpers\ArrayHelper;
                          member_count: parseInt(r.response[0].members_count)
                      };
 
-                     self.buttonCounterBuffer = parseInt(r.response[0].members_count);
+                     self.counterBuffer = parseInt(r.response[0].members_count);
                      self.options.groupId = parseInt(r.response[0].gid);
 
                      setStorage(self.cookieCounterCacheName, JSON.stringify(self.groupInfo), 2);
@@ -645,12 +690,12 @@ use \yii\helpers\ArrayHelper;
              }
 
              //Автодозвон если первый раз callback не был выполнен
-             var timerVkRqApiGetgetByIdConfirm = setInterval(function () {
-                 if (!self.vkRqApiGetgetByIdConfirm) {
+             var timerrqApiGetgetByIdConfirm = setInterval(function () {
+                 if (!self.rqApiGetgetByIdConfirm) {
                      self.updateApiGroupOptions(callback);
                      return false;
                  }
-                 clearInterval(timerVkRqApiGetgetByIdConfirm);
+                 clearInterval(timerrqApiGetgetByIdConfirm);
              }, 3000);
          },
 
@@ -679,14 +724,18 @@ use \yii\helpers\ArrayHelper;
                  throw new Error('Invalid group id');
              }
 
-             this.button = document.getElementById('onp-flat-button');
-             this.likeButtonContanier = this.button.getElementsByClassName('onp-vk-clickja-button')[0];
-             this.buttonCounter = document.getElementById('onp-flat-button-default-counter');
+             this.button = document.getElementById('btn');
+             this.likeButtonContanier = this.button.getElementsByClassName('btn-clickja-verify')[0];
+             this.buttonCounter = document.getElementById('btn-counter');
+
+             if( this.options.layout === 'vertical' ) {
+                 this.button.parentNode.className = "vertical"
+             }
 
              this.button.onclick = function () {
 
                  postMessageData.onpwgt.button['event'] = 'click';
-                 postMessageData.onpwgt.button['oid'] = self.vkUserId;
+                 postMessageData.onpwgt.button['oid'] = self.userId;
                  window.parent.postMessage(JSON.stringify(postMessageData), '*');
 
                  self.showSubscribeWindow();
@@ -694,7 +743,7 @@ use \yii\helpers\ArrayHelper;
                  return false;
              };
 
-             if(!self.options.clickja || self.vkUserId) {
+             if(!self.options.clickja || self.userId) {
                  document.body.onmouseover = function (e) {
                      self.hoverWidget = true;
 
@@ -719,31 +768,6 @@ use \yii\helpers\ArrayHelper;
              self.setGroupCounter();
          }
      };
-
-     /**
-      * Инициализация кнопки
-      */
-     window.onload = function () {
-         function listener(event) {
-             if( event.data.indexOf('onpwgt_to') === -1 ) return;
-             var data = JSON.parse(event.data);
-             if( data.onpwgt_to && data.onpwgt_to.button && data.onpwgt_to.button.name) {
-                 if(data.onpwgt_to.button.name === 'vk-subscribe') {
-                     subscribeButton.init(data.onpwgt_to.button);
-                 }
-             } else {
-                 throw new Error('Переданые данные не соотвестуют формату.');
-             }
-         }
-
-         if (window.addEventListener) {
-             window.addEventListener("message", listener);
-         } else {
-             // IE8
-             window.attachEvent("onmessage", listener);
-         }
-     };
-
 
      /**
       * Возвращает true если пользователь зашел с мобильного усройства.
@@ -864,6 +888,10 @@ use \yii\helpers\ArrayHelper;
          }
      };
 
+     /**
+      * Сливает список перечесленных объектов в один
+      * @returns object
+      */
      var extend = function (){
          for(var i=1; i<arguments.length; i++)
              for(var key in arguments[i])
@@ -900,14 +928,40 @@ use \yii\helpers\ArrayHelper;
          return 0;
      };
 
+
+     /**
+      * Инициализация кнопки
+      */
+     window.onload = function () {
+         function listener(event) {
+             if( event.data.indexOf('onpwgt_to') === -1 ) return;
+             var data = JSON.parse(event.data);
+             if( data.onpwgt_to && data.onpwgt_to.button && data.onpwgt_to.button.name) {
+                 if(data.onpwgt_to.button.name === 'vk-subscribe') {
+                     subscribeButton.init(data.onpwgt_to.button);
+                 }
+             } else {
+                 throw new Error('Переданые данные не соотвестуют формату.');
+             }
+         }
+
+         if (window.addEventListener) {
+             window.addEventListener("message", listener);
+         } else {
+             // IE8
+             window.attachEvent("onmessage", listener);
+         }
+     };
   </script>
 </head>
 <body>
-    <div id="onp-flat-button" class="onp-flat-button-default onp-sl-vk-subscribe-button">
-        <div class="onp-flat-button-left-side"><i class="onp-flat-button-vk-logo"></i></div>
+<div id="btn-contanier">
+    <div id="btn">
+        <div class="btn-left-side"><i class="btn-icon"></i></div>
         <span>подписаться</span>
-        <div class="onp-vk-clickja-button"></div>
+        <div class="btn-clickja-verify"></div>
     </div>
-    <div id="onp-flat-button-default-counter">-</div>
+    <div id="btn-counter">-</div>
+</div>
 </body>
 </html>

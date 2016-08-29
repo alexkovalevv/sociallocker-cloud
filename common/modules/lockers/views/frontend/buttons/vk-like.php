@@ -4,7 +4,9 @@ use \yii\helpers\ArrayHelper;
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Vk like button</title>
+  <title>Кнопка Вконтакте мне нравится</title>
+  <meta charset="utf-8" content="text/html">
+
   <style>
         body{
             margin:0;
@@ -57,6 +59,7 @@ use \yii\helpers\ArrayHelper;
   <script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
 
   <script type="text/javascript">
+
       if( !VK || !VK.init ) {
           throw new Error('Не удалось загрузить sdk вконтакте.');
       }
@@ -114,7 +117,6 @@ use \yii\helpers\ArrayHelper;
                               pageTitle: '',
                               pageDescription: '',
                               pageImage: '',
-                              layout: 'horizontal',
                               counter:  1,
                               type: 'mini',
                               width: '350',
@@ -159,15 +161,16 @@ use \yii\helpers\ArrayHelper;
 
       var vkShareHint = {
           /**
-           * Shows the VK Share Hint.
+           * Показывает подсказку "Рассказать друзьям".
+           * @return void
            */
           show: function () {
 
-              // if the hint is already visible, nothing to do
+              // если подсказка уже видимая, то ничего не делаем
               if (this.elementShown) return;
               this.elementShown = true;
 
-              // if the hint has not been created yet, creates it only once
+              // если подсказка еще не создана, создаем ее и вставляем в документ
               if (!this.element) {
                   this.element = document.createElement('div');
                   this.element.className = "onp-vk-like-alert";
@@ -175,17 +178,18 @@ use \yii\helpers\ArrayHelper;
                   document.body.insertBefore(this.element, document.body.childNodes[0]);
               }
 
-              // updates the position of the hint and shows it
+              // Обновляем позицию подсказки и показываем ее
               this.locate();
               this.element.style.display = "block";
           },
 
           /**
-           * Hides the VK Share hint.
+           * Скрывает подсказку
+           * @return void
            */
           hide: function () {
 
-              // nothing to do, if the hint is already hidden or if it has not been created yet
+              // ничего не делаем, если подсказка уже скрыта или ее не существует
               if (!this.elementShown || !this.element) return;
               this.elementShown = false;
 
@@ -193,7 +197,8 @@ use \yii\helpers\ArrayHelper;
           },
 
           /**
-           * Update the VK Share hint position.
+           * Обновляет позицию подсказки
+           * @return void
            */
           locate: function () {
               var self = this;
@@ -205,19 +210,19 @@ use \yii\helpers\ArrayHelper;
 
               var idxVkWidget = frameLikeWidget.getAttribute('id').replace(/vkwidget/i, '');
 
-              // finds the targte element to attach the VK Share hint
+
               if ( !self.target ) {
                   self.target = document.getElementById('vkwidget' + idxVkWidget + '_tt');
               }
 
-              // updates the poistion of the VK Share hint
               self.element.style.top = (parseInt(self.target.style.top) + 115) + "px";
               self.element.style.left = (parseInt(self.target.style.left) + 5)  + "px";
           },
 
           /**
-           * Runs a timer which will work 20 seconds to show the VK Share
-           * hint again after leaving the mouse pointer from the Like button.
+           * Запуск таймера, который проверяет, каждые 20 сек видимость всплывающей подсказки вконтакте.
+           * Если подсказка вконтакте видима, то делаем видимой и нашу подсказку, иначе скрываем.
+           * @return void
            */
           runTimer: function () {
               var self = this;
@@ -244,7 +249,8 @@ use \yii\helpers\ArrayHelper;
           },
 
           /**
-           * Stops the VK Share Timer.
+           * Останавливаем таймер
+           * @return void
            */
           stop: function () {
               if (!this.elementTimer) return;
@@ -254,12 +260,21 @@ use \yii\helpers\ArrayHelper;
               this.hide();
           },
 
+          /**
+           * Проверяем видимость элемента
+           * @param el
+           * @returns {boolean}
+           */
           isHidden: function(el) {
               var style = window.getComputedStyle(el);
               return (style.display === 'none')
           }
       };
 
+      /**
+       * Сливает список перечесленных объектов в один
+       * @returns object
+       */
       var extend = function (){
           for(var i=1; i<arguments.length; i++)
               for(var key in arguments[i])
