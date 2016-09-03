@@ -10527,6 +10527,8 @@
             this.showError( $.pandalocker.lang.connectButtons.twitter.proxyEmpty );
             return;
         }
+
+	    console.log(this.options.actions);
         
         if ( $.inArray( 'follow', this.options.actions ) !== -1 ) {
 

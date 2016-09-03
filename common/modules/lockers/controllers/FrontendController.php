@@ -100,6 +100,13 @@ class FrontendController extends Controller
         return $this->render('buttons/' . $name, ['options' => $params]);
     }
 
+    public function actionSdk() {
+        $this->layout = false;
+        //Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return $this->render('buttons/sdk');
+    }
+
 
     /**
      * Возвращает массив опций отформатированных по модели
