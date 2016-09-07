@@ -32,7 +32,8 @@ class TwitterHandler extends Handler {
         $allowed = array('init', 'callback');
 
         if ( empty( $requestType ) || !in_array($requestType, $allowed) )
-            throw new HandlerException('Invalid request type.');
+            return ['error' => 'Invalid request type.'];
+            //throw new HandlerException('Invalid request type.');
 
         // the visitor id is used as a key for the storage where all the tokens are saved
         $visitorId = !empty( $_REQUEST['opandaVisitorId'] ) ? $_REQUEST['opandaVisitorId'] : null;
@@ -90,7 +91,6 @@ class TwitterHandler extends Handler {
             $extendUrlParams .= '&opandaFollowTo=' . $this->followTo;
         }
 
-
         return $proxy . $prefix . 'opandaHandler=twitter-' . ($this->sToken ? $this->sToken : '')  . '&opandaRequestType=callback' . $extendUrlParams . '&opandaVisitorId=' . $visitorId . ('&opandaKeepOpen=' . ($keepOpen ? '1' : '0'));
     }
 
@@ -125,9 +125,7 @@ class TwitterHandler extends Handler {
         $options = $this->options;
         $keepOpen = !empty( $_REQUEST['opandaKeepOpen'] ) ? (bool)$_REQUEST['opandaKeepOpen'] : null;
 
-        if ( empty( $visitorId ) ) {
-            throw new HandlerException( 'Invalid visitor ID.' );
-        }
+        if ( empty( $visitorId ) ) return ['error' => 'Invalid visitor ID.'];
 
         $denied = isset( $_REQUEST['denied'] );
         if ( $denied ) {
@@ -150,7 +148,7 @@ class TwitterHandler extends Handler {
             $secret = $this->getValue( $visitorId, 'temp_twitter_secret' );
 
             if (empty( $secret )) {
-                throw new HandlerException( "The secret of the request token is invalid for $visitorId" );
+                return ['error' => "The secret of the request token is invalid for $visitorId"];
             }
 
             $connection = new TwitterOAuth( $options['consumer_key'], $options['consumer_secret'], $token, $secret );
@@ -203,20 +201,20 @@ class TwitterHandler extends Handler {
         $options = $this->options;
 
         if ( empty( $visitorId ) && ( empty( $token ) || empty( $secret ) ) )
-            throw new HandlerException('Invalid visitor ID.');
+            return ['error' => 'Invalid visitor ID.'];
 
         $accessData = SigninUserAccess::getAccessData($visitorId);
 
         if ( empty( $accessData ) && ( empty( $token ) || empty( $secret ) ) )
-            throw new HandlerException('Invalid access data.');
+            return ['error' => 'Invalid access data.'];
 
         if ( empty( $token ) ) {
             $token = isset($accessData['twitter_token']) ? $accessData['twitter_token'] : null;
-            if ( empty( $token ) ) throw new HandlerException( "The access token not found for $visitorId" );
+            if ( empty( $token ) ) return ['error' => "The access token not found for $visitorId"];
         }
         if ( empty( $secret ) ) {
             $secret = isset($accessData['twitter_secret']) ? $accessData['twitter_secret'] : null;
-            if ( empty( $secret ) ) throw new HandlerException( "The secret of the access token is invalid for $visitorId" );
+            if ( empty( $secret ) ) return ['error' => "The secret of the access token is invalid for $visitorId"];
         }
 
         return new TwitterOAuth( $options['consumer_key'], $options['consumer_secret'], $token, $secret);
@@ -252,7 +250,7 @@ class TwitterHandler extends Handler {
         $contextData = $this->normilizeValues( $contextData );
 
         $followTo = $this->followTo;
-        if ( empty( $followTo) ) throw new HandlerException( "The user name to follow is not specified" );
+        if ( empty( $followTo) ) return ['error' => "The user name to follow is not specified"];
 
         $notifications = isset( $_REQUEST['opandaNotifications'] ) ? $_REQUEST['opandaNotifications'] : false;
         $notifications = $this->normilizeValue( $notifications );
@@ -288,7 +286,7 @@ class TwitterHandler extends Handler {
         $contextData = $this->normilizeValues( $contextData );
 
         $message = $this->tweetMessage;
-        if ( empty( $message) ) throw new HandlerException( "The tweet text is not specified." );
+        if ( empty( $message) ) return ['error' => "The tweet text is not specified."];
 
         $response = $oauth->post('statuses/update', array(
             'status' => $message

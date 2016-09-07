@@ -102,10 +102,9 @@ class ConnectController extends Controller
 
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        $handler = isset($_POST['handler']) ? $_POST['handler'] : null;
         $s_token = isset($_POST['s_token']) ? $_POST['s_token'] : null;
 
-        if( empty($handler) || empty($s_token) ) {
+        if( empty($s_token) ) {
             return ['error' => 'Переданы некорректные параметры'];
         }
 
