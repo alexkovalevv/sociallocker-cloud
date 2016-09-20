@@ -148,6 +148,11 @@ class CustomFields
     }
 
     public function hidden( $attribute, array $options = [] ) {
+
+	    if (empty( $this->model->$attribute )) {
+		    $options['value'] = $this->getFieldValueDefault( $attribute );
+	    }
+
         return $this->form->field( $this->model, $attribute)
             ->hiddenInput($options)->label(false);
     }

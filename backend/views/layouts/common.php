@@ -163,7 +163,19 @@ $bundle = BackendAsset::register($this);
                         ],
 
                         [
-	                        'label' => 'Подписчики',
+	                        'label' => 'Мои сайты',
+	                        'url'=>['#'],
+	                        'icon' => '<i class="fa fa-home" aria-hidden="true"></i>'
+                        ],
+
+                        [
+	                        'label' => 'Общая статистика',
+	                        'url'=>['/lockers/default/index'],
+                            'icon' => '<i class="fa fa-area-chart" aria-hidden="true"></i>'
+                        ],
+
+                        [
+	                        'label' => 'Email подписчики',
 	                        'url'=>['/subscription/leads/index'],
 	                        'badge' => \common\modules\subscription\models\Leads::getCount(),
 	                        'badgeBgClass'=>'label-warning',
@@ -171,9 +183,21 @@ $bundle = BackendAsset::register($this);
                         ],
 
                         [
-	                        'label' => 'Статистика',
-	                        'url'=>['/lockers/default/index'],
-                            'icon' => '<i class="fa fa-area-chart" aria-hidden="true"></i>'
+	                        'label' => 'Отметки',
+	                        'url'=>['#'],
+	                        'badge' => '1684',
+	                        'badgeBgClass'=>'label-primary',
+	                        'icon' => '<i class="fa fa-share-alt" aria-hidden="true"></i>'
+                        ],
+
+                        [
+	                        'label'=> 'Установка замка',
+	                        'icon'=>'<i class="fa fa-wrench"></i>',
+	                        'url'=>['#'],
+	                        'items' => [
+		                        ['label' => 'Все условия', 'url'=>['/lockers/visability/index']],
+		                        ['label' => 'Создать условие', 'url'=>['/lockers/visability/index']]
+	                        ]
                         ],
 
                         [
