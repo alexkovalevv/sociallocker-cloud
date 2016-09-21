@@ -10,8 +10,6 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property integer $id
  * @property integer $locker_id
- * @property integer $site_id
- * @property integer $title
  * @property string $lock_type
  * @property string $when_show
  * @property string $way_lock
@@ -45,12 +43,12 @@ class LockersVisability extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['locker_id', 'site_id', 'title', 'lock_type', 'when_show', 'way_lock', 'lock_selector'], 'required'],
-            [['locker_id', 'site_id', 'delay', 'created_at', 'updated_at'], 'integer'],
+            [['locker_id', 'lock_type', 'when_show', 'way_lock', 'lock_selector'], 'required'],
+            [['locker_id', 'delay', 'created_at', 'updated_at'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['conditions', 'hidden_content'], 'string'],
             [['lock_type', 'when_show', 'way_lock'], 'string', 'max' => 15],
-            [['lock_selector', 'target_selector', 'title'], 'string', 'max' => 255]
+            [['lock_selector', 'target_selector'], 'string', 'max' => 255]
         ];
     }
 
@@ -62,7 +60,6 @@ class LockersVisability extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'locker_id' => 'Locker ID',
-            'site_id' => 'Site ID',
             'lock_type' => 'Тип блокировки \"скрыть сайт полностью\", \"внутри контента\"',
             'when_show' => 'Когда показывать замок',
             'lock_selector' => 'Селектор контейнера в которым должне быть скрыто содержимое',

@@ -1,6 +1,4 @@
 <?php
-
-
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
@@ -80,7 +78,13 @@ ItemsListAsset::register($this);
 			        }
 		        }
 	        ],
-            'created_at:datetime'
+	        [
+		        'label'  => 'Настройки',
+		        'format' => 'raw',
+		        'value'  => function ( $data ) {
+			        return '<a href="'. Url::toRoute('visability/edit?locker_id=' . $data->id). '" class="btn btn-default">Настройки отображения</a>';
+		        }
+	        ],
         ],
     ]); ?>
 

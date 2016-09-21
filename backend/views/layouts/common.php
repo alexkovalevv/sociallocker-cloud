@@ -191,17 +191,7 @@ $bundle = BackendAsset::register($this);
                         ],
 
                         [
-	                        'label'=> 'Установка замка',
-	                        'icon'=>'<i class="fa fa-wrench"></i>',
-	                        'url'=>['#'],
-	                        'items' => [
-		                        ['label' => 'Все условия', 'url'=>['/lockers/visability/index']],
-		                        ['label' => 'Создать условие', 'url'=>['/lockers/visability/create']]
-	                        ]
-                        ],
-
-                        [
-	                        'label'=> 'Замки',
+	                        'label'=> 'Мои замки',
 	                        'icon'=>'<i class="fa fa-lock"></i>',
 	                        'url'=>['#'],
 	                        'items' => [
@@ -212,6 +202,7 @@ $bundle = BackendAsset::register($this);
 
 	                        ]
                         ],
+
                         [
                             'label'=>Yii::t('backend', 'Other'),
                             'url' => '#',

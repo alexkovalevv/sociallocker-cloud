@@ -9,7 +9,7 @@ use yii\helpers\Html;
 /* @var $templates common\modules\lockers\controllers\VisabilityController.php */
 /* @var $lockers common\modules\lockers\controllers\VisabilityController.php */
 
-$this->title = "Создание условий отображения замка";
+$this->title = "Шаг #2. Создание условий отображения замка";
 $this->params['breadcrumbs'][] = $this->title;
 
 // Подключение js и css файлов
@@ -26,14 +26,6 @@ $custom_fields = new CustomFields($form, $model);
 ?>
 
 <div class="visability-basic-options" style="margin:20px 0; overflow:hidden">
-<?= $custom_fields->textInput('title'); ?>
-
-<?=$custom_fields->dropdown('default', 'site_id', [
-	['value' => '21', 'text' => 'https://sociallocker.ru'],
-	['value' => '54', 'text' => 'http://test.sociallocker.ru'],
-]); ?>
-
-<?=$custom_fields->dropdown('default', 'locker_id', $lockers); ?>
 
 <?= $custom_fields->radio( 'lock_type', [
 	['label' => 'Скрыть всю страницу', 'value' => 'absolute'],
@@ -108,7 +100,6 @@ $custom_fields = new CustomFields($form, $model);
 ?>
 <div style="margin-top:20px;">
 	<?php echo Html::submitButton( 'Сохранить', ['id' => 'visability-save-button', 'class' => 'btn btn-primary'] ) ?>
-	<?php echo Html::a( 'Отменить', ['/lockers/visability/index'], ['class' => 'btn btn-warning'] ); ?>
 </div>
 
 <?php ActiveForm::end(); ?>

@@ -15,14 +15,7 @@ class EditConditions extends Model
 	// Селектор контейнера в которым должне быть скрыто содержимое (по умолчанию)
 	protected $default_lock_selector;
 
-	// Сайт
-	public $site_id;
-
-	// Замок
 	public $locker_id;
-
-	// Заголовок условия
-	public $title;
 
 	// Тип блокировки "absolute", "inline"'
 	public $lock_type;
@@ -69,10 +62,9 @@ class EditConditions extends Model
 				return $model->when_show == 'click_element' || $model->when_show == 'hover_element';
 			}],
 
-			[['title', 'locker_id', 'site_id', 'lock_type', 'when_show', 'way_lock', 'lock_selector'], 'required'],
+			[['locker_id', 'lock_type', 'when_show', 'way_lock', 'lock_selector'], 'required'],
 
 			[[
-				 'title',
 				 'lock_type',
 				 'lock_selector',
 				 'target_selector',
@@ -83,7 +75,6 @@ class EditConditions extends Model
 			 ], 'string'],
 
 			[[
-				 'site_id',
 				 'locker_id',
 				 'delay',
 			 ], 'integer'],
@@ -96,9 +87,6 @@ class EditConditions extends Model
 
 	public function attributeLabels() {
 		return [
-			'title' => 'Введите заголовок условия',
-			'site_id' => 'Выберите сайт',
-			'locker_id' => 'Выберите замок',
 			'lock_type' => 'Какой контент скрывать?',
 			'way_lock' => 'Способ блокировки',
 			'when_show' => 'Когда показывать?',
@@ -112,9 +100,6 @@ class EditConditions extends Model
 
 	public function attributeHints() {
 		return [
-			'title' => 'Введите заголовок условия. Например: "Показ замков для вебинара #245"',
-			'site_id' => 'Выберите сайт, на котором вы будете использовать замок.',
-			'locker_id' => 'Выберите замок, который вы будете использовать.',
 			'lock_type' => 'Выберите, какой контент вы хотите скрыть на сайте.',
 			'way_lock' => 'Выберите способ блокировки контента.',
 			'when_show' => 'Выберите способ, когда показать замок. Например, сразу при посещении страницы или при нажатии на ссылку или наведении на картинку.',
@@ -132,13 +117,9 @@ class EditConditions extends Model
 	 */
 	public function attributeDefaults() {
 
-		$condition_title = 'Новое условие ';
-		$condition_title .= ' (#'. rand(1,999) .')';
-
 		if( empty($this->lock_selector) ) $this->lock_selector = "." . $this->default_lock_selector;
 
 		return [
-			'title' => $condition_title,
 			'lock_type' => 'inline',
 			'way_lock' => 'html',
 			'delay' => 0,
@@ -149,13 +130,13 @@ class EditConditions extends Model
 		];
 	}
 
-	public static function getModel($id) {
+	public static function getModel($locker_id) {
 		$visability_model = new LockersVisability();
-		return $visability_model->findOne($id);
+		return $visability_model->findOne($locker_id);
 	}
 
-	public function setModel($id) {
-		$model = self::getModel($id);
+	public function setModel($locker_id) {
+		$model = self::getModel($locker_id);
 
 		if( $model === null ) return false;
 
@@ -163,18 +144,22 @@ class EditConditions extends Model
 		return $model;
 	}
 
-	public function save($validate, $model = null) {
+	public function save($validate, $model = null, $draft = false) {
 
-		if( $validate && $this->validate() ) {
+		if ( !$draft && $validate && !$this->validate()) {
+			return false;
+		}
 
-			if( empty($model) ) $model = new LockersVisability();
-			$model->attributes = $this->attributes;
+		if( empty($model) ) $model = new LockersVisability();
 
-			if($this->validate() && $model->save(true)) {
-				return true;
-			}
+		if ( $draft && method_exists( $this, 'attributeDefaults' ) ) {
+			$this->attributes = array_merge($this->attributes, $this->attributeDefaults());
+		}
 
-			var_dump($model->getErrors());
+		$model->attributes = $this->attributes;
+
+		if($model->save(true)) {
+			return true;
 		}
 
 		return false;

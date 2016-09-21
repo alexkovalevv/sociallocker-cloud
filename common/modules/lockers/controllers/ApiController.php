@@ -6,8 +6,10 @@
 
 namespace common\modules\lockers\controllers;
 
+use common\modules\lockers\models\lockers\Lockers;
 use common\modules\lockers\models\stats\LockersStatImpress;
 use common\modules\lockers\models\stats\LockersStatUnlock;
+use common\modules\lockers\models\visability\LockersVisability;
 use Yii;
 use yii\web\Response;
 use yii\helpers\ArrayHelper;
@@ -67,6 +69,30 @@ class ApiController extends Controller
 
 	    return $param;
     }
+
+	public function actionGetOptions($client_id) {
+		/*$lockers_options = [];
+		$lockers = Lockers::find()->where(
+			['user_id' => $client_id, 'status' => 'public']
+		)->all();
+
+		foreach($lockers as $locker) {
+			$visabiliti_options = LockersVisability::find()->where(
+				['locker_id' => $locker->id]
+			)->all();
+
+			var_dump($visabiliti_options->id);
+
+			//var_dump($locker->id);
+			//$lockers_options[] = $locker;
+		}*/
+		//$lockers_options = json_decode($lockers->options);
+
+
+
+		//$visability_options = [];
+		//$options = [];
+	}
 
 	public function beforeAction($action) {
 		$this->enableCsrfValidation = false;

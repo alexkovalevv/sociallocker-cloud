@@ -7,6 +7,8 @@
 namespace common\modules\lockers\controllers;
 
 use common\modules\lockers\models\lockers\metaboxes\EmailFormSettings;
+use common\modules\lockers\models\visability\EditConditions;
+use common\modules\lockers\widgets\conditionEditor\ConditionEditor;
 use Yii;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -111,12 +113,21 @@ class DefaultController extends Controller
 
         if ($multi_model->load( Yii::$app->request->post() )) {
             if ($multi_model->saveMultiModel( $type, $this->findModel( $id ) )) {
-                Yii::$app->session->setFlash( 'alert', [
+                /*Yii::$app->session->setFlash( 'alert', [
                     'body'    => 'Настройки успешно обновлены!',
                     'options' => ['class' => 'alert alert-success']
-                ] );
+                ] );*/
 
-                return $this->refresh();
+                //return $this->refresh();
+
+	            $visability_model = EditConditions::getModel($id);
+	            $redirect_url = ['visability/create?locker_id=' . $id];
+
+				if( !empty($visability_model) ) {
+					$redirect_url = ['visability/edit?locker_id=' . $id];
+				}
+
+	            $this->redirect($redirect_url);
             } else {
                 Yii::$app->session->setFlash( 'alert', [
                     'body'    => 'Возникли ошибки при заполнении формы! Пожалуйста, проверьте внимательно неправильно заполненные поля.',
