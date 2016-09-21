@@ -11,8 +11,10 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $id
  * @property integer $locker_id
  * @property integer $site_id
+ * @property integer $title
  * @property string $lock_type
  * @property string $when_show
+ * @property string $way_lock
  * @property string $lock_selector
  * @property string $target_selector
  * @property integer $delay
@@ -43,11 +45,12 @@ class LockersVisability extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['locker_id', 'site_id', 'lock_type', 'when_show', 'lock_selector'], 'required'],
+            [['locker_id', 'site_id', 'title', 'lock_type', 'when_show', 'way_lock', 'lock_selector'], 'required'],
             [['locker_id', 'site_id', 'delay', 'created_at', 'updated_at'], 'integer'],
-            [['created_at', 'updated_at', 'conditions'], 'safe'],
-            [['lock_type', 'when_show'], 'string', 'max' => 10],
-            [['lock_selector', 'target_selector'], 'string', 'max' => 255],
+            [['created_at', 'updated_at'], 'safe'],
+            [['conditions', 'hidden_content'], 'string'],
+            [['lock_type', 'when_show', 'way_lock'], 'string', 'max' => 15],
+            [['lock_selector', 'target_selector', 'title'], 'string', 'max' => 255]
         ];
     }
 

@@ -5,15 +5,86 @@
  */
 namespace common\modules\lockers\controllers;
 
-use common\modules\lockers\models\lockers\Lockers;
+
 use Yii;
 use yii\web\Controller;
 use common\modules\lockers\models\visability\EditConditions;
+use common\modules\lockers\models\search\VisabilitySearch;
+use common\modules\lockers\models\lockers\Lockers;
 
 class VisabilityController extends Controller {
+
 	public function actionIndex() {
+
+		$searchModel = new VisabilitySearch();
+		$dataProvider = $searchModel->search( Yii::$app->request->queryParams );
+
+		return $this->render( 'index', [
+			'searchModel'  => $searchModel,
+			'dataProvider' => $dataProvider,
+		] );
+	}
+
+	public function actionEdit($id)  {
+
 		$model = new EditConditions();
 
+		if( !($visability_model = $model->setModel($id)) ) {
+			return $this->redirect( ['index'] );
+		}
+
+		if( $model->load( Yii::$app->request->post()) && $model->save(true, $visability_model) ) {
+			Yii::$app->session->setFlash( 'alert', [
+				'body'    => 'Условие успешно создано!',
+				'options' => ['class' => 'alert alert-success']
+			] );
+
+			return $this->redirect('index');
+		}
+
+		return $this->render( 'edit', [
+			'filters'   => $this->getVisibilityFilters(),
+			'templates' => $this->getVisibilityTemplates(),
+			'model'     => $model,
+			'lockers'   => $this->getLockersList()
+		]);
+	}
+
+	public function actionCreate() {
+		$model = new EditConditions();
+
+		if( $model->load( Yii::$app->request->post()) && $model->save(true) ) {
+			Yii::$app->session->setFlash( 'alert', [
+				'body'    => 'Условие успешно создано!',
+				'options' => ['class' => 'alert alert-success']
+			] );
+
+			return $this->redirect('index');
+		}
+
+		return $this->render( 'edit', [
+			'filters'   => $this->getVisibilityFilters(),
+			'templates' => $this->getVisibilityTemplates(),
+			'model'     => $model,
+			'lockers'   => $this->getLockersList()
+		] );
+	}
+
+	public function actionDelete($id) {
+		$model = EditConditions::getModel($id);
+		if( empty($model) ) return $this->redirect('index');
+
+		$model->delete();
+
+		Yii::$app->session->setFlash( 'alert', [
+			'body'    => 'Плавило успешно удалено!',
+			'options' => ['class' => 'alert alert-danger']
+		] );
+
+		return $this->redirect('index');
+	}
+
+	public function getLockersList() {
 		$lockers_model = new Lockers();
 		$lockers = $lockers_model->find()->where( [
 			'user_id' => Yii::$app->user->identity->id,
@@ -28,21 +99,7 @@ class VisabilityController extends Controller {
 			];
 		}
 
-		if( $model->load( Yii::$app->request->post()) && $model->save() ) {
-			Yii::$app->session->setFlash( 'alert', [
-				'body'    => 'Настройки успешно обновлены!',
-				'options' => ['class' => 'alert alert-success']
-			] );
-
-			//return $this->refresh();
-		}
-
-		return $this->render( 'index', [
-			'filters'   => $this->getVisibilityFilters(),
-			'templates' => $this->getVisibilityTemplates(),
-			'model'     => $model,
-			'lockers'   => $lockers_list
-		] );
+		return $lockers_list;
 	}
 
 	public function getVisibilityFilters() {

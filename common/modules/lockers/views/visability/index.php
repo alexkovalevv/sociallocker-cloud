@@ -1,83 +1,66 @@
 <?php
-use common\modules\lockers\widgets\conditionEditor\ConditionEditor;
-use common\helpers\CustomFields;
-use yii\bootstrap\ActiveForm;
+
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\grid\GridView;
+use common\modules\lockers\assets\ItemsListAsset;
+use common\modules\lockers\models\lockers\Lockers;
 
-/* @var $filters common\modules\lockers\controllers\VisabilityController.php */
-/* @var $templates common\modules\lockers\controllers\VisabilityController.php */
-/* @var $lockers common\modules\lockers\controllers\VisabilityController.php */
+/* @var $this yii\web\View */
+/* @var $searchModel common\modules\lockers\models\search\LockersSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "Создание условий отображения замка";
+$this->title = "Правила и условия отображения замков";
 $this->params['breadcrumbs'][] = $this->title;
-
-$form = ActiveForm::begin(
-	[
-		'enableClientValidation' => false,
-		'enableAjaxValidation' => false
-	]
-);
-
-$custom_fields = new CustomFields($form, $model);
 ?>
+<div class="lockers-index">
 
-<div class="visability-basic-options" style="margin:20px 0; overflow:hidden">
-<?=$custom_fields->dropdown('default', 'site_id', [
-	['value' => '21', 'text' => 'https://sociallocker.ru'],
-	['value' => '54', 'text' => 'http://test.sociallocker.ru'],
-]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-<?=$custom_fields->dropdown('default', 'locker_id', $lockers); ?>
+    <p>
+        <?php echo Html::a('Новое условие', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
 
-<?= $custom_fields->radio( 'lock_type', [
-	['label' => 'Скрыть всю страницу', 'value' => 'absolute'],
-	['label' => 'Внутри страницы', 'value' => 'inline']
-], [
-	'events' => [
-		'.control-lock-selector' => [
-			'inline'   => 'show',
-			'absolute' => 'hide'
-		]
-	]
-]);
-?>
-<div class="control-lock-selector">
-	<?= $custom_fields->textInput('lock_selector'); ?>
-</div>
+    <?php echo GridView::widget([
+        'dataProvider' => $dataProvider,
+        //'filterModel' => $searchModel,
+        'columns' => [
+	        ['class' => 'yii\grid\CheckboxColumn'],
+	        [
+		        'label' => 'Название условия',
+		        'format' => 'raw',
+		        'value' => function($data){
+			        return Html::a($data->title, Url::toRoute('visability/edit?id=' . $data->id ),[
+				        'title'=>'Перейти к редактированию' . $data->title, 'class' => 'locker-list-title'
+			        ]) . '<br>[' .
+			        Html::a('Удалить', Url::toRoute('visability/delete?id=' . $data->id),[
+				        'title'=> 'Удалить условие', 'style' => 'color:#a00; font-size:13px'
+			        ]) . ']';
+		        },
+	        ],
+	        [
+		        'label' => 'Тип блокировки',
+		        'format' => 'raw',
+		        'value' => function($data){
+			        if( $data->way_lock == 'html' ) {
+				        return 'Контент заблокирован через вставку кода:
+ 						<pre style="padding:15px">&lt;div class="'. str_replace('.', '', $data->lock_selector) . '"&gt;&lt;/div&gt;</pre>
+ 						<small style="color:#414141"><i>Скопируйте код выше и вставьте его в любое место на вашем сайте, после вставки и обновления страницы, замок появится в этом месте.</i></small>';
+			        } else if($data->way_lock == 'css') {
+						return 'Контент заблокирован через css селектор: <strong>' . $data->lock_selector . '</strong>';
+			        }
+			        return '';
+		        },
+	        ],
 
-
-<?= $custom_fields->radio( 'when_show', [
-	['label' => 'При просмотре', 'value' => 'page_view'],
-	['label' => 'При нажатии', 'value' => 'click_element'],
-	['label' => 'При наведении', 'value' => 'hover_element'],
-], [
-	'events' => [
-		'.control-target-selector' => [
-			'click_element'  => 'show',
-			'hover_element' => 'show',
-			'page_view'     => 'hide'
-		]
-	]
-] );
-?>
-
-<div class="control-target-selector">
-	<?= $custom_fields->textInput('target_selector'); ?>
-</div>
+	        [
+		        'label' => 'Характеристики',
+		        'format' => 'raw',
+		        'value' => function($data){
+			        return '<strong>Сайт:</strong><br> https://sociallocker.ru<br><strong>Замок:</strong><br> <span style="white-space: nowrap;">' . Lockers::findModel($data->locker_id)->title . '</span>';
+		        },
+	        ]
+        ],
+    ]); ?>
 
 </div>
-<?=ConditionEditor::widget([
-	'form' => $form,
-	'model' => $model,
-	'attribute' => 'conditions',
-	'filters' => $filters,
-	'templates' => $templates,
-    'save_button_id' => 'visability-save-button'
-]);
-?>
-<div style="margin-top:20px;">
-	<?php echo Html::submitButton( 'Сохранить', ['id' => 'visability-save-button', 'class' => 'btn btn-primary'] ) ?>
-	<?php echo Html::a( 'Отменить', ['/lockers/visability/index'], ['class' => 'btn btn-warning'] ); ?>
-</div>
-
-<?php ActiveForm::end(); ?>

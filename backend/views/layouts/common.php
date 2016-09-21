@@ -196,7 +196,7 @@ $bundle = BackendAsset::register($this);
 	                        'url'=>['#'],
 	                        'items' => [
 		                        ['label' => 'Все условия', 'url'=>['/lockers/visability/index']],
-		                        ['label' => 'Создать условие', 'url'=>['/lockers/visability/index']]
+		                        ['label' => 'Создать условие', 'url'=>['/lockers/visability/create']]
 	                        ]
                         ],
 
