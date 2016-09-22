@@ -50,7 +50,8 @@
     "bower-asset/flot": "^0.8",
     "symfony/process": "^3.0",
     "2amigos/yii2-tinymce-widget": "~1.1",
-    "yiisoft/yii2-imagine": "*"    
+    "yiisoft/yii2-imagine": "*",
+    "unclead/yii2-multiple-input": "~1.0"    
   },
   "require-dev": {
     "yiisoft/yii2-debug": "^2.0.0",

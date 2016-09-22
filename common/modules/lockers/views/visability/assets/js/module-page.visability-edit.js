@@ -1,5 +1,5 @@
-(function($){
-	$(function(){
+(function($) {
+	$(function() {
 		var el = $('.control-way-lock').find('.wt-switch');
 
 		checkWayLock();

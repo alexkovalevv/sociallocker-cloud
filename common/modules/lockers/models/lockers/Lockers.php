@@ -2,6 +2,7 @@
 
 namespace common\modules\lockers\models\lockers;
 
+use common\modules\lockers\models\visability\LockersVisability;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -66,7 +67,11 @@ class Lockers extends ActiveRecord
         ];
     }
 
-    public static function findModel( $id )
+	public function getLockersVisability() {
+		return $this->hasOne(LockersVisability::className(), ['locker_id' => 'id']);
+	}
+
+    public static function findModel($id)
     {
         if (( $model = self::findOne( $id ) ) !== null) {
             return $model;

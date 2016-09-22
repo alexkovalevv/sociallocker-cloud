@@ -1,119 +1,130 @@
 <?php
-/**
- * Кнопка переключатель
- * @author    Alex Kovalevv <alex.kovalevv@gmail.com>
- * @copyright Copyright &copy; Alex Kovalev, sociallocker.ru, 2016
- * @package   yii2-widgets
- * @version   1.0.0
- */
-namespace common\modules\lockers\widgets\controls\switcher;
+	/**
+	 * Кнопка переключатель
+	 * @author    Alex Kovalevv <alex.kovalevv@gmail.com>
+	 * @copyright Copyright &copy; Alex Kovalev, sociallocker.ru, 2016
+	 * @package   yii2-widgets
+	 * @version   1.0.0
+	 */
+	namespace common\modules\lockers\widgets\controls\switcher;
 
-use Yii;
-use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
-use yii\bootstrap\InputWidget;
+	use Yii;
+	use yii\helpers\Html;
+	use yii\helpers\ArrayHelper;
+	use yii\bootstrap\InputWidget;
 
+	class SwitchControl extends InputWidget {
 
-class SwitchControl extends InputWidget
-{
-    public $model;
+		public $model;
 
-    public $attribute;
-    /**
-     * @var array элементы массива, где label это текст кнопки, value - значение
-     * пример использования:
-     * 'items' => [['label' => 'Скрыть', 'value' => 'none'],['label' => 'Прозрачный слой', 'value' => 'opacity']]
-     */
-    public $items = [
-        ['label' => 'Вкл.', 'value' => 1],
-        ['label' => 'Выкл.', 'value' => 0]
-    ];
+		public $attribute;
+		/**
+		 * @var array элементы массива, где label это текст кнопки, value - значение
+		 * пример использования:
+		 * 'items' => [['label' => 'Скрыть', 'value' => 'none'],['label' => 'Прозрачный слой', 'value' => 'opacity']]
+		 */
+		public $items = [
+			['label' => 'Вкл.', 'value' => 1],
+			['label' => 'Выкл.', 'value' => 0]
+		];
 
-    /**
-     * @var $value значение поля
-     */
-    public $value;
+		/**
+		 * @var string $value значение поля
+		 */
+		public $value;
 
-    /**
-     * @var string значение по умолчанию
-     */
-    public $default = false;
+		/**
+		 * @var string значение по умолчанию
+		 */
+		public $default = false;
 
-    public $options = [];
+		public $options = [];
 
-    /**
-     * @var string события, выполняются во время переключения кнопок
-     * Доступные события:
-     * ['class-name' => ['1' =>'show', '0' => 'hide']]
-     * Если значения 1 или 0 указанные в примере, совпадают со значением value кнопок,
-     * то выполнитеся действие для указанного класса
-     */
-    public $events = [];
+		/**
+		 * @var array события, выполняются во время переключения кнопок
+		 * Доступные события:
+		 * ['class-name' => ['1' =>'show', '0' => 'hide']]
+		 * Если значения 1 или 0 указанные в примере, совпадают со значением value кнопок,
+		 * то выполнитеся действие для указанного класса
+		 */
+		public $events = [];
 
-    public $itemsOptions = ['class' => 'btn btn-default'];
+		public $itemsOptions = ['class' => 'btn btn-default'];
 
-    public $contanierOptions = [];
+		public $contanierOptions = [];
 
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        parent::init();
+		/**
+		 * @inheritdoc
+		 */
+		public function init()
+		{
+			parent::init();
 
-        if( is_null($this->value) ) {
-            $this->value = Html::getAttributeValue( $this->model, $this->attribute );
-        }
+			if( is_null($this->value) ) {
+				$this->value = Html::getAttributeValue($this->model, $this->attribute);
+			}
 
-        if (( $this->value === '' || is_null( $this->value ) ) && !is_null( $this->default )) {
-            $this->value = $this->default;
-        }
-    }
+			if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) ) {
+				$this->value = $this->default;
+			}
+		}
 
-    public function run()
-    {
-        parent::run();
-        echo $this->renderInput();
-        SwitchControlAssets::register( $this->view );
-    }
+		public function run()
+		{
+			parent::run();
+			echo $this->renderInput();
+			SwitchControlAssets::register($this->view);
+		}
 
-    protected function renderInput()
-    {
-        $output = '';
-        foreach ($this->items as $item) {
+		protected function renderInput()
+		{
+			$output = '';
+			foreach($this->items as $item) {
 
-            if (!is_array( $item )) {
-                continue;
-            }
+				if( !is_array($item) ) {
+					continue;
+				}
 
-            $value = ArrayHelper::getValue( $item, 'value', null );
+				$value = ArrayHelper::getValue($item, 'value', null);
 
-            $this->options['value'] = $value;
+				$this->options['value'] = $value;
 
-            $checked = $value == $this->value;
+				$checked = $value == $this->value;
 
-            $input_name = Html::getInputName( $this->model, $this->attribute );
-            $input = Html::radio( $input_name, $checked, $this->options );
+				$input_name = Html::getInputName($this->model, $this->attribute);
+				$input = Html::radio($input_name, $checked, $this->options);
 
+				$label = ArrayHelper::getValue($item, 'label');
+				$itemsOptions = ArrayHelper::merge($this->itemsOptions, []);
 
-            $label = ArrayHelper::getValue( $item, 'label' );
-            $itemsOptions = ArrayHelper::merge( $this->itemsOptions, [] );
+				if( $checked ) {
+					Html::addCssClass($itemsOptions, 'active');
+				}
 
-            if ($checked) {
-                Html::addCssClass( $itemsOptions, 'active' );
-            }
+				$output .= Html::tag('div', $input . $label, $itemsOptions);
 
-            $output .= Html::tag( 'div', $input . $label, $itemsOptions );
+				$this->contanierOptions = ArrayHelper::merge([
+					'role' => "group",
+					'data-toggle' => 'buttons'
+				], $this->contanierOptions);
 
-            $this->contanierOptions = ArrayHelper::merge( [
-                'role'        => "group",
-                'data-toggle' => 'buttons'
-            ], $this->contanierOptions );
+				Html::addCssClass($this->contanierOptions, 'btn-group wt-switch');
+			}
 
-            Html::addCssClass($this->contanierOptions, 'btn-group wt-switch');
-        }
+			if( !empty($this->events) ) {
+				$css = '';
 
-        return Html::tag( 'div', $output, ArrayHelper::merge( $this->contanierOptions,
-            empty( $this->events ) ? [] : ['data-events' => $this->events] ) );
-    }
-}
+				foreach($this->events as $selector => $event) {
+					if( isset($event[$this->value]) && $event[$this->value] == 'hide' ) {
+						$css .= $selector . '{display:none;}';
+					}
+				}
+
+				$this->view->registerCss($css);
+			}
+
+			return Html::tag('div', $output, ArrayHelper::merge($this->contanierOptions, empty($this->events)
+				? []
+				: ['data-events' => $this->events]));
+		}
+	}

@@ -1,189 +1,202 @@
 <?php
-/**
- * В классе содержатся методы облегчающие работу с полями Active Form
- * @author Alex Kovalev <alex.kovalevv@gmail.com>
- */
+	/**
+	 * В классе содержатся методы облегчающие работу с полями Active Form
+	 * @author Alex Kovalev <alex.kovalevv@gmail.com>
+	 */
 
-namespace common\helpers;
-use dosamigos\tinymce\TinyMce;
+	namespace common\helpers;
 
-use yii;
-use yii\base\Exception;
-use yii\base\Model;
-use yii\bootstrap\ActiveForm;
-use yii\imperavi\Widget;
-use yii\helpers\ArrayHelper;
-use common\modules\lockers\widgets\controls\dropdown\DropdownControl;
-use common\modules\lockers\widgets\controls\switcher\SwitchControl;
+	use dosamigos\tinymce\TinyMce;
 
-/* @var $form \yii\bootstrap\ActiveForm */
+	use yii;
+	use yii\base\Exception;
+	use yii\base\Model;
+	use yii\bootstrap\ActiveForm;
+	use yii\imperavi\Widget;
+	use yii\helpers\ArrayHelper;
+	use common\modules\lockers\widgets\controls\dropdown\DropdownControl;
+	use common\modules\lockers\widgets\controls\switcher\SwitchControl;
+	use unclead\widgets\MultipleInput;
 
-/* @var $model \common\base\MultiModel */
-class CustomFields
-{
+	/* @var $form \yii\bootstrap\ActiveForm */
 
-    public $form;
-    public $model;
+	/* @var $model \common\base\MultiModel */
+	class CustomFields {
 
-    public function __construct( ActiveForm $form, Model $model )
-    {
-        $this->form = $form;
-        $this->model = $model;
-    }
+		public $form;
+		public $model;
 
-    public function textInput( $attribute, array $options = [] )
-    {
+		public function __construct(ActiveForm $form, Model $model)
+		{
+			$this->form = $form;
+			$this->model = $model;
+		}
 
-        if (empty( $this->model->$attribute )) {
-            $options['value'] = $this->getFieldValueDefault( $attribute );
-        }
+		public function textInput($attribute, array $options = [])
+		{
 
-        return $this->form->field( $this->model, $attribute,
-            $this->getTemplateActiveField( $attribute ) )->textInput( $options );
-    }
+			if( empty($this->model->$attribute) ) {
+				$options['value'] = $this->getFieldValueDefault($attribute);
+			}
 
-    public function textarea( $attribute, array $options = [] )
-    {
-        if (empty( $this->model->$attribute )) {
-            $options['value'] = $this->getFieldValueDefault( $attribute );
-        }
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->textInput($options);
+		}
 
-        return $this->form->field( $this->model, $attribute,
-            $this->getTemplateActiveField( $attribute ) )->textarea( $options );
-    }
+		public function multipleInput($attribute, array $options = [])
+		{
+			//
+			$options = array_merge([
+				'attributeOptions' => [
+					'enableClientValidation' => false,
+					'enableAjaxValidation' => false
+				],
+				'allowEmptyList' => false,
+				'enableGuessTitle' => true,
+				'min' => 1, // should be at least 1 rows
+				'addButtonPosition' => MultipleInput::POS_ROW, // show add button in the header
+			], $options);
 
-    public function dropdown( $type, $attribute, $items, array $options = [] )
-    {
-        $options['type'] = $type;
-        $options['default'] = $this->getFieldValueDefault( $attribute );
-        $options['items'] = $items;
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->widget(MultipleInput::className(), $options)->label(true);
+		}
 
-        return $this->form->field( $this->model, $attribute,
-            $this->getTemplateActiveField( $attribute ) )->widget( DropdownControl::classname(), $options);
-    }
+		public function textarea($attribute, array $options = [])
+		{
+			if( empty($this->model->$attribute) ) {
+				$options['value'] = $this->getFieldValueDefault($attribute);
+			}
 
-    public function editor( $attribute )
-    {
-         // TinyMce
-         return $this->form->field($this->model, $attribute,
-             $this->getTemplateActiveField( $attribute ))->widget(TinyMce::className(), [
-            'options' => ['rows' => 6],
-            'language' => 'ru',
-            'clientOptions' => [
-                'content_style' =>'body {color:#555 !important;font-size:14px !important;}',
-                'menubar' => false,
-                'plugins' => [
-                    "textcolor lists link anchor fullscreen emoticons template textpattern"
-                ],
-                'toolbar' => "bold italic underline strikethrough | blockquoute | textcolor textpattern emoticons | bullist numlist outdent indent | undo redo | alignleft aligncenter alignright alignjustify | link image fullscreen"
-            ]
-        ]);
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->textarea($options);
+		}
 
-        // Старый редактор
-        /*return $this->form->field( $this->model, $attribute,
-            $this->getTemplateActiveField( $attribute ) )->widget( Widget::className(), [
-            'plugins'     => ['fullscreen', 'fontcolor', 'video'],
-            'htmlOptions' => empty( $this->model->$attribute ) ? [
-                'value' => $this->getFieldValueDefault( $attribute )
-            ] : [],
-            'options'     => [
-                'minHeight'       => 150,
-                'maxHeight'       => 150,
-                'buttonSource'    => true,
-                'convertDivs'     => false,
-                'removeEmptyTags' => false,
-                'imageUpload'     => Yii::$app->urlManager->createUrl( ['/file-storage/upload-imperavi'] )
-            ]
-        ] );*/
-    }
+		public function dropdown($type, $attribute, $items, array $options = [])
+		{
+			$options['type'] = $type;
+			$options['default'] = $this->getFieldValueDefault($attribute);
+			$options['items'] = $items;
 
-    public function radio( $attribute, array $items = [], array $options = [] )
-    {
-        if (empty( $items )) {
-            $items = [
-                ['label' => 'Вкл.', 'value' => 1],
-                ['label' => 'Выкл.', 'value' => 0]
-            ];
-        }
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->widget(DropdownControl::classname(), $options);
+		}
 
-        if( isset($options['events']) ) {
-            foreach( $options['events'] as $key => $val ) {
-                if( is_integer($key) ) {
-                    $options['events'][$val] = [
-                        '1' => 'show',
-                        '0' => 'hide'
-                    ];
-                    unset($options['events'][$key]);
-                }
-            }
-        }
+		public function editor($attribute)
+		{
+			// TinyMce
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->widget(TinyMce::className(), [
+				'options' => ['rows' => 6],
+				'language' => 'ru',
+				'clientOptions' => [
+					'content_style' => 'body {color:#555 !important;font-size:14px !important;}',
+					'menubar' => false,
+					'plugins' => [
+						"textcolor lists link anchor fullscreen emoticons template textpattern"
+					],
+					'toolbar' => "bold italic underline strikethrough | blockquoute | textcolor textpattern emoticons | bullist numlist outdent indent | undo redo | alignleft aligncenter alignright alignjustify | link image fullscreen"
+				]
+			]);
 
-        return $this->form->field( $this->model, $attribute,
-            $this->getTemplateActiveField( $attribute ) )->widget( SwitchControl::classname(), ArrayHelper::merge([
-                'default'      => $this->getFieldValueDefault( $attribute ),
-                'items'        => $items
-            ], $options) );
-    }
+			// Старый редактор
+			/*return $this->form->field( $this->model, $attribute,
+				$this->getTemplateActiveField( $attribute ) )->widget( Widget::className(), [
+				'plugins'     => ['fullscreen', 'fontcolor', 'video'],
+				'htmlOptions' => empty( $this->model->$attribute ) ? [
+					'value' => $this->getFieldValueDefault( $attribute )
+				] : [],
+				'options'     => [
+					'minHeight'       => 150,
+					'maxHeight'       => 150,
+					'buttonSource'    => true,
+					'convertDivs'     => false,
+					'removeEmptyTags' => false,
+					'imageUpload'     => Yii::$app->urlManager->createUrl( ['/file-storage/upload-imperavi'] )
+				]
+			] );*/
+		}
 
-    public function checkbox( $attribute, array $options = [] )
-    {
-        return $this->radio( $attribute, [], $options );
-    }
+		public function radio($attribute, array $items = [], array $options = [])
+		{
+			if( empty($items) ) {
+				$items = [
+					['label' => 'Вкл.', 'value' => 1],
+					['label' => 'Выкл.', 'value' => 0]
+				];
+			}
 
-    /**
-     * @param $attribute
-     * @param array $items
-     * @param array $options
-     * @see yii\helpers\Html::activeCheckboxList()
-     * @return $this
-     */
-    public function checkboxList($attribute, array $items, array $options = []) {
+			if( isset($options['events']) ) {
+				foreach($options['events'] as $key => $val) {
+					if( is_integer($key) ) {
+						$options['events'][$val] = [
+							'1' => 'show',
+							'0' => 'hide'
+						];
+						unset($options['events'][$key]);
+					}
+				}
+			}
 
-        if (empty( $this->model->$attribute )) {
-            $this->model->$attribute = $this->getFieldValueDefault( $attribute );
-        }
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->widget(SwitchControl::classname(), ArrayHelper::merge([
+				'default' => $this->getFieldValueDefault($attribute),
+				'items' => $items
+			], $options));
+		}
 
-        return $this->form->field($this->model, $attribute,
-            $this->getTemplateActiveField( $attribute ))->checkboxlist($items, $options);
-    }
+		public function checkbox($attribute, array $options = [])
+		{
+			return $this->radio($attribute, [], $options);
+		}
 
-    public function hidden( $attribute, array $options = [] ) {
+		/**
+		 * @param $attribute
+		 * @param array $items
+		 * @param array $options
+		 * @see yii\helpers\Html::activeCheckboxList()
+		 * @return $this
+		 */
+		public function checkboxList($attribute, array $items, array $options = [])
+		{
 
-	    if (empty( $this->model->$attribute )) {
-		    $options['value'] = $this->getFieldValueDefault( $attribute );
-	    }
+			if( empty($this->model->$attribute) ) {
+				$this->model->$attribute = $this->getFieldValueDefault($attribute);
+			}
 
-        return $this->form->field( $this->model, $attribute)
-            ->hiddenInput($options)->label(false);
-    }
+			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->checkboxlist($items, $options);
+		}
 
-    public function getFieldValueDefault( $attribute )
-    {
-        if (method_exists( $this->model, 'attributeDefaults' )) {
-            $data = $this->model->attributeDefaults();
-            if (array_key_exists( $attribute, $data )) {
-                return $data[$attribute];
-            }
-        }
+		public function hidden($attribute, array $options = [])
+		{
 
-        return null;
-    }
+			if( empty($this->model->$attribute) ) {
+				$options['value'] = $this->getFieldValueDefault($attribute);
+			}
 
-    public function getTemplateActiveField( $attribute )
-    {
-        $template_data = [];
-        if (method_exists( $this->model, 'attributeInstructions' )) {
-            $data = $this->model->attributeInstructions();
+			return $this->form->field($this->model, $attribute)->hiddenInput($options)->label(false);
+		}
 
-            if (array_key_exists( $attribute, $data )) {
-                $template_data['inputTemplate'] = '{input}<a href="' . $data[$attribute] . '" class="btn btn-default how-get-this"
+		public function getFieldValueDefault($attribute)
+		{
+			if( method_exists($this->model, 'attributeDefaults') ) {
+				$data = $this->model->attributeDefaults();
+				if( array_key_exists($attribute, $data) ) {
+					return $data[$attribute];
+				}
+			}
+
+			return null;
+		}
+
+		public function getTemplateActiveField($attribute)
+		{
+			$template_data = [];
+			if( method_exists($this->model, 'attributeInstructions') ) {
+				$data = $this->model->attributeInstructions();
+
+				if( array_key_exists($attribute, $data) ) {
+					$template_data['inputTemplate'] = '{input}<a href="' . $data[$attribute] . '" class="btn btn-default how-get-this"
 					 title="Перейти к инструкции" target="_blank">Как получить?</a>';
-            }
-        }
+				}
+			}
 
-        $template_data['template'] = '{beginLabel}{labelTitle}{endLabel} <div class="control-group controls col-sm-10">{input}{hint}{error}</div>';
-        $template_data['labelOptions'] = ['class' => 'col-sm-2 control-label'];
+			$template_data['template'] = '{beginLabel}{labelTitle}{endLabel} <div class="control-group controls col-sm-10">{input}{hint}{error}</div>';
+			$template_data['labelOptions'] = ['class' => 'col-sm-2 control-label'];
 
-        return $template_data;
-    }
-}
+			return $template_data;
+		}
+	}
