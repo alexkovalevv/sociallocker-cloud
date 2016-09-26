@@ -51,16 +51,16 @@
 				'label' => 'Название замка',
 				'format' => 'raw',
 				'value' => function ($data) {
-					$delete_route = Url::toRoute('default/delete?id=' . $data->id);
+					$delete_route = Url::toRoute(['default/delete', 'id' => $data->id]);
 
 					if( $data->status == 'trash' ) {
-						$delete_route = Url::toRoute('default/hard-delete?id=' . $data->id);
+						$delete_route = Url::toRoute(['default/hard-delete', 'id' => $data->id]);
 					}
 
-					return Html::a($data->title, Url::toRoute('default/edit?id=' . $data->id . '&type=' . $data->type), [
+					return Html::a($data->title, Url::toRoute(['default/edit', 'id' => $data->id]), [
 						'title' => 'Перейти к редактированию' . $data->title,
 						'class' => 'locker-list-title'
-					]) . '<br>' . '[' . Html::a('Дублировать', Url::toRoute('default/edit?id=' . $data->id . '&type=' . $data->type), [
+					]) . '<br>' . '[' . Html::a('Дублировать', Url::toRoute(['default/edit', 'id' => $data->id]), [
 						'title' => 'Создать дубликат замка',
 						'style' => 'font-size:13px'
 					]) . " | " . Html::a('Удалить', $delete_route, [
@@ -93,12 +93,21 @@
 					$activate_button = '';
 
 					if( $data->status == 'public' ) {
-						$activate_button = '<a href="' . Url::toRoute('default/deactivate?id=' . $data->id) . '" class="btn btn-warning">Отключить</a>';
+						$activate_button = '<a href="' . Url::toRoute([
+								'default/deactivate',
+								'id' => $data->id
+							]) . '" class="btn btn-warning">Отключить</a>';
 					} elseif( $data->status == 'draft' ) {
-						$activate_button = '<a href="' . Url::toRoute('default/activate?id=' . $data->id) . '" class="btn btn-primary">Включить</a>';
+						$activate_button = '<a href="' . Url::toRoute([
+								'default/activate',
+								'id' => $data->id
+							]) . '" class="btn btn-primary">Включить</a>';
 					}
 
-					return '<a href="' . Url::toRoute('visability/edit?locker_id=' . $data->id) . '" class="btn btn-default">Настройки отображения</a> ' . $activate_button;
+					return '<a href="' . Url::toRoute([
+						'visability/edit',
+						'locker_id' => $data->id
+					]) . '" class="btn btn-default">Настройки отображения</a> ' . $activate_button;
 				}
 			],
 		],

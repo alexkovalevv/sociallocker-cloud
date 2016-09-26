@@ -88,6 +88,32 @@
 			]);
 		}
 
+		/**
+		 * Сраница получения кода отслеживания
+		 * @param $site_id
+		 * @return string
+		 * @throws NotFoundHttpException
+		 */
+		public function actionGetCode($site_id)
+		{
+			$model = Yii::$app->userSites->getSite($site_id);
+
+			if( empty($model) ) {
+				throw new NotFoundHttpException('Страница не найдена или произошла неизвестная ошибка.');
+			}
+
+			return $this->render('get-code', [
+				'model' => $model
+			]);
+		}
+
+		/**
+		 * Проверка прав владельца на сайт и подтверждении устновки кода
+		 * @param $site_id
+		 * @return string
+		 * @throws Exception
+		 * @throws NotFoundHttpException
+		 */
 		public function actionSiteVerify($site_id)
 		{
 			$model = $this->findModel($site_id);

@@ -2,6 +2,7 @@
 	use yii\helpers\Html;
 	use yii\grid\GridView;
 	use common\modules\sites\models\SitesForm;
+	use yii\helpers\Url;
 
 	/* @var $this yii\web\View */
 	/* @var $searchModel common\modules\sites\models\SitesSearche */
@@ -31,6 +32,22 @@
 				'format' => 'raw',
 				'value' => function ($data) {
 					return $data->url;
+				}
+			],
+			[
+				'label' => 'Код отслеживания',
+				'format' => 'raw',
+				'value' => function ($data) {
+					$link_options = ['class' => 'btn btn-default'];
+
+					if( $data->status !== SitesForm::STATUS_ACTIVE ) {
+						$link_options['class'] .= ' disabled';
+					}
+
+					return Html::a('Получить код отслеживания', Url::toRoute([
+						'default/get-code',
+						'site_id' => $data->id
+					]), $link_options);
 				}
 			],
 			[
