@@ -10,6 +10,7 @@
 	use common\modules\lockers\models\visability\EditConditions;
 	use common\modules\lockers\widgets\conditionEditor\ConditionEditor;
 	use Yii;
+	use yii\helpers\Json;
 	use yii\helpers\Url;
 	use yii\web\Controller;
 	use yii\web\NotFoundHttpException;
@@ -86,7 +87,7 @@
 			if( $model->saveMultiModel($type, null, true) ) {
 				$locker_id = Yii::$app->db->getLastInsertID();
 
-				return $this->redirect(['default/edit?type=' . $type . '&id=' . $locker_id]);
+				return $this->redirect(['default/edit', 'type' => $type, 'id' => $locker_id]);
 			} else {
 				Yii::$app->session->setFlash('alert', [
 					'body' => 'Возникла не известная ошибка при создании замка!',
@@ -99,7 +100,7 @@
 
 		public function actionEdit($id)
 		{
-			$lockers_model = $this->findModel($id);
+			$lockers_model = Yii::$app->locker->getLocker($id);
 
 			if( empty($lockers_model) ) {
 				return $this->redirect(['index']);
@@ -111,19 +112,13 @@
 			$multi_model->setMultiModel($lockers_model);
 
 			if( $multi_model->load(Yii::$app->request->post()) ) {
-				if( $multi_model->saveMultiModel($type, $this->findModel($id)) ) {
-					/*Yii::$app->session->setFlash( 'alert', [
-						'body'    => 'Настройки успешно обновлены!',
-						'options' => ['class' => 'alert alert-success']
-					] );*/
-
-					//return $this->refresh();
+				if( $multi_model->saveMultiModel($type, $lockers_model) ) {
 
 					$visability_model = EditConditions::getModel($id);
-					$redirect_url = ['visability/create?locker_id=' . $id];
+					$redirect_url = ['visability/create', 'locker_id' => $id];
 
 					if( !empty($visability_model) ) {
-						$redirect_url = ['visability/edit?locker_id=' . $id];
+						$redirect_url = ['visability/edit', 'locker_id' => $id];
 					}
 
 					$this->redirect($redirect_url);
@@ -140,7 +135,7 @@
 				'model_query' => $lockers_model,
 				'type' => $type,
 				'locker_id' => $id,
-				'settings' => Settings::get(null, true)
+				'settings' => Json::htmlEncode(Yii::$app->lockersSettings->getAll(), JSON_UNESCAPED_UNICODE)
 			]);
 		}
 
@@ -222,12 +217,12 @@
 
 		public function actionTerms()
 		{
-			echo Yii::$app->lockersSettings->get('terms_of_use_text');
+			echo Yii::$app->lockersSettings->getOne('terms_of_use_text');
 		}
 
 		public function actionPrivacy()
 		{
-			echo Yii::$app->lockersSettings->get('privacy_policy_text');
+			echo Yii::$app->lockersSettings->getOne('privacy_policy_text');
 		}
 
 		protected function initMultimodel($type)
@@ -258,10 +253,5 @@
 			}
 
 			return new LockersForm($model_list);
-		}
-
-		protected function findModel($id)
-		{
-			return Lockers::findModel($id);
 		}
 	}

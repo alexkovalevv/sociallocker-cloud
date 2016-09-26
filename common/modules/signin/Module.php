@@ -1,64 +1,57 @@
 <?php
 
-namespace common\modules\signin;
+	namespace common\modules\signin;
 
-use Yii;
+	use Yii;
 
-class Module extends \yii\base\Module
-{
-    public $controllerNamespace = 'common\modules\signin\controllers';
+	class Module extends \yii\base\Module {
 
-    public function init()
-    {
-        parent::init();
-    }
+		public $controllerNamespace = 'common\modules\signin\controllers';
 
-    /**
-     * Returns the connect handler options.
-     *
-     * @since 1.0.0
-     */
-    public static function getConnectOptions( $handlerName )
-    {
+		public function init()
+		{
+			parent::init();
+		}
 
-        switch ( $handlerName ) {
-            case 'vk':
-                return [
-                    'app_id' => Yii::$app->lockersSettings->get('vk_app_id'),
-                    'app_secret' => Yii::$app->lockersSettings->get('vk_app_secret'),
-                    'proxy' => Yii::getAlias('@proxyUrl') . '?opandaHandler=vk'
-                ];
-            case 'twitter':
-                $consumerKey = 'Fr5DrCse2hsNp5odQdJOexOOA';
-                $consumerSecret = 'jzNmDGYPZOGV10x2HmN8tYMDqnMTowycXFu4xTTLbw3VBVeFKm';
+		/**
+		 * Returns the connect handler options.
+		 *
+		 * @since 1.0.0
+		 */
+		public static function getConnectOptions($handlerName)
+		{
 
-                $optDefaultKeys = Yii::$app->lockersSettings->get('twitter_use_dev_keys', 'default');
+			switch( $handlerName ) {
+				case 'vk':
+					return [
+						'app_id' => '5337425',
+						'app_secret' => 'Mb69K5lzeDBBuss0W9je',
+						'proxy' => Yii::getAlias('@proxyUrl') . '?opandaHandler=vk'
+					];
+				case 'twitter':
+					$consumerKey = 'Fr5DrCse2hsNp5odQdJOexOOA';
+					$consumerSecret = 'jzNmDGYPZOGV10x2HmN8tYMDqnMTowycXFu4xTTLbw3VBVeFKm';
 
-                if ( 'default' !== $optDefaultKeys ) {
-                    $consumerKey = Yii::$app->lockersSettings->get('twitter_consumer_key');
-                    $consumerSecret = Yii::$app->lockersSettings->get('twitter_consumer_secret');
-                }
+					return [
+						'consumer_key' => $consumerKey,
+						'consumer_secret' => $consumerSecret,
+						'proxy' => Yii::getAlias('@proxyUrl') . '?opandaHandler=twitter'
+					];
 
-                return [
-                    'consumer_key' => $consumerKey,
-                    'consumer_secret' => $consumerSecret,
-                    'proxy' => Yii::getAlias('@proxyUrl')  . '?opandaHandler=twitter'
-                ];
+				case 'linkedin':
+					$clientId = "7774jogqfi9na8";
+					$clientSecret = "jWq5ZjG7g3gYqwbn";
 
-            case 'linkedin':
-                $clientId = Yii::$app->lockersSettings->get('linkedin_client_id');
-                $clientSecret = Yii::$app->lockersSettings->get('linkedin_client_secret');
+					return [
+						'client_id' => $clientId,
+						'client_secret' => $clientSecret,
+						'proxy' => Yii::getAlias('@proxyUrl')
+					];
 
-                return [
-                    'client_id' => $clientId,
-                    'client_secret' => $clientSecret,
-                    'proxy' => Yii::getAlias('@proxyUrl')
-                ];
-
-            case 'subscription':
-                return [
-                    'service' => Yii::$app->lockersSettings->get('subscription_to_service', 'database')
-                ];
-        }
-    }
-}
+				case 'subscription':
+					return [
+						'service' => Yii::$app->lockersSettings->getOne('subscription_to_service', 'database')
+					];
+			}
+		}
+	}

@@ -13,6 +13,7 @@
 	$this->params['breadcrumbs'][] = $this->title;
 
 	ItemsListAsset::register($this);
+
 ?>
 <div class="lockers-index">
 	<?php // echo $this->render('_search', ['model' => $searchModel]); ?>

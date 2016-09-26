@@ -30,7 +30,7 @@ class SubscriptionServices {
      * @return string
      */
     public static function getCurrentName() {
-        return Yii::$app->lockersSettings->get('subscription_to_service', 'none');
+        return Yii::$app->lockersSettings->getOne('subscription_to_service', 'none');
     }
     
     /**
@@ -74,7 +74,7 @@ class SubscriptionServices {
     public static function getServiceInfo( $name = null ) {
 
         $services = self::getSerivcesList();
-        $name = empty( $name ) ? Yii::$app->lockersSettings->get('subscription_to_service', 'none') : $name;
+        $name = empty( $name ) ? Yii::$app->lockersSettings->getOne('subscription_to_service', 'none') : $name;
         if ( !isset( $services[$name] ) ) $name = 'none';
 
         if ( isset( $services[$name] ) ) {

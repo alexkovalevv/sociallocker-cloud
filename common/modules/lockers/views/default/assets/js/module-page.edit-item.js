@@ -1,65 +1,67 @@
 /**
  * Created by Александр on 21.06.2016.
  */
-if ( !window.lockerEditor ) window.lockerEditor = {};
+if( !window.lockerEditor ) {
+	window.lockerEditor = {};
+}
 
-(function($){
+(function($) {
 
 	window.lockerEditor = {
 
-        presetModels: [
-            'BasicMetabox',
-            'VisabilityMetabox',
-            'SaveLockerMetabox',
-            'AdvancedMetabox',
-            'SubscribeMetabox',
-            'EmailFormSettings',
-            'SocialButtonsSettings',
-            'SigninButtonsSettings'
-        ],
+		presetModels: [
+			'BasicMetabox',
+			'VisabilityMetabox',
+			'SaveLockerMetabox',
+			'AdvancedMetabox',
+			'SubscribeMetabox',
+			'EmailFormSettings',
+			'SocialButtonsSettings',
+			'SigninButtonsSettings'
+		],
 		_modelFields: [],
-        lockerType: 'sociallocker',
-        lockerOptions: null,
-        buttonOrder: [],
+		lockerType: 'sociallocker',
+		lockerOptions: null,
+		buttonOrder: [],
 
 		init: function() {
-            if( window.lockerType ) {
-                this.lockerType = window.lockerType;
-            }
 
-			this.toLockContent = $('#opanda-preview' ).clone();
+			if( window.lockerType ) {
+				this.lockerType = window.lockerType;
+			}
 
-			$.pandalocker.hooks.add( 'opanda-lock', function(e, locker, sender){
-                console.log(locker);
+			this.toLockContent = __$onp('#opanda-preview').clone();
+
+			__$onp.pandalocker.hooks.add('opanda-lock', function(e, locker, sender) {
 				$('.onp-preview-loader').fadeOut();
 			});
 
-            $('.locker-public-button').click(function(){
-                var statusButtons = $('input[name="SaveLockerMetabox[status]"]'),
-                    statusPublicButton = $('input[name="SaveLockerMetabox[status]"][value="public"]');
+			$('.locker-public-button').click(function() {
+				var statusButtons = $('input[name="SaveLockerMetabox[status]"]'),
+					statusPublicButton = $('input[name="SaveLockerMetabox[status]"][value="public"]');
 
-                statusButtons.prop('checked', false);
-                statusButtons.parent('.btn').removeClass('active');
+				statusButtons.prop('checked', false);
+				statusButtons.parent('.btn').removeClass('active');
 
-                statusPublicButton.prop('checked', true);
-                statusPublicButton.parent().addClass('active');
+				statusPublicButton.prop('checked', true);
+				statusPublicButton.parent().addClass('active');
 
-                $(this).submit();
-            });
+				$(this).submit();
+			});
 
-            $.pandalocker.filters.add( window.lockerId + '.ajax-data', function( dataToPass ){
-                dataToPass.opandaContextData = {
-                    itemTitle: window.lockerTitle,
-                    pageUrl: window.location.href,
-                    itemId: window.lockerId
-                };
+			__$onp.pandalocker.filters.add(window.lockerId + '.ajax-data', function(dataToPass) {
+				dataToPass.opandaContextData = {
+					itemTitle: window.lockerTitle,
+					pageUrl: window.location.href,
+					itemId: window.lockerId
+				};
 
-                console.log(dataToPass);
-                return dataToPass;
-            });
+				console.log(dataToPass);
+				return dataToPass;
+			});
 
 			this.initSocialTabs();
-            this.setButtonsOrder();
+			this.setButtonsOrder();
 			this.recreatePreview();
 			this.trackInputChanges();
 		},
@@ -69,7 +71,7 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 			this.updateSocialTabs();
 
-			$(".onp-vertical-tabs ul").sortable().bind('sortupdate', function (e) {
+			$(".onp-vertical-tabs ul").sortable().bind('sortupdate', function(e) {
 				self.recreatePreview();
 			});
 		},
@@ -78,10 +80,10 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			var socialTabWrap = $(".onp-vertical-tabs");
 			var socialTabItem = $(".onp-vertical-tabs ul li");
 
-			socialTabItem.each(function(){
+			socialTabItem.each(function() {
 				var tab = $(this),
 					tabId = $(this).attr('id'),
-					buttonId = tabId.replace('tab-', '' ).replace('-', '_'),
+					buttonId = tabId.replace('tab-', '').replace('-', '_'),
 					activateButton = $('input[name*="[' + buttonId + '_available]"]:checked');
 
 				if( activateButton.val() == 1 ) {
@@ -99,126 +101,138 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 			var self = this,
 				fields = [];
 
-            if( this._modelFields.length ) return this._modelFields;
+			if( this._modelFields.length ) {
+				return this._modelFields;
+			}
 
 			for( m in this.presetModels ) {
-				$('[name^="' + this.presetModels[m] + '"]').each(function () {
-					fields.push($(this ).attr('name'));
-                    self._modelFields.push($(this ).attr('name'));
+				$('[name^="' + this.presetModels[m] + '"]').each(function() {
+					fields.push($(this).attr('name'));
+					self._modelFields.push($(this).attr('name'));
 				});
 			}
 
 			return fields;
 		},
 
-        /**
-         * Получает значение поля по имени
-         * @param fieldName
-         * @returns string|null
-         */
-        getFieldValByName: function(fieldName) {
-            var el, elName, fields = this.getAllFields();
+		/**
+		 * Получает значение поля по имени
+		 * @param fieldName
+		 * @returns string|null
+		 */
+		getFieldValByName: function(fieldName) {
+			var el, elName, fields = this.getAllFields();
 
-            for( f in fields ) {
-                el = $('[name^="' + fields[f] + '"]');
-                elName = fields[f].replace(/\w+\[(.*)\]/, '$1');
-                if( elName == fieldName ) return el.val();
-            }
+			for( f in fields ) {
+				el = $('[name^="' + fields[f] + '"]');
+				elName = fields[f].replace(/\w+\[(.*)\]/, '$1');
+				if( elName == fieldName ) {
+					return el.val();
+				}
+			}
 
-            return null;
-        },
+			return null;
+		},
 
 		trackInputChanges: function() {
 			var self = this,
 				fields = this.getAllFields();
 
 			for( f in fields ) {
-				$( '[name^="' + fields[f] + '"]').bind('change keyup',
-					function(){
-                        self.updateSocialTabs();
+				$('[name^="' + fields[f] + '"]').bind('change keyup',
+					function() {
+						self.updateSocialTabs();
 						self.refreshPreview();
 					}
 				);
 			}
 		},
 
-        setButtonsOrder: function() {
-            var buttonsOrder =  $('input[name*="buttons_order"]', '.social-options').val()
-                    ? $('input[name*="buttons_order"]', '.social-options').val().split(',')
-                    : null;
+		setButtonsOrder: function() {
+			var buttonsOrder = $('input[name*="buttons_order"]', '.social-options').val()
+				? $('input[name*="buttons_order"]', '.social-options').val().split(',')
+				: null;
 
-            if( !buttonsOrder || buttonsOrder[0] === "" )
-                return;
+			if( !buttonsOrder || buttonsOrder[0] === "" ) {
+				return;
+			}
 
-            var newOrder = [];
+			var newOrder = [];
 
-            for (var b in buttonsOrder) {
-                if( !buttonsOrder.hasOwnProperty(b) )
-                    continue;
-                newOrder.push($("#tab-" + buttonsOrder[b]).detach());
-            }
+			for( var b in buttonsOrder ) {
+				if( !buttonsOrder.hasOwnProperty(b) ) {
+					continue;
+				}
+				newOrder.push($("#tab-" + buttonsOrder[b]).detach());
+			}
 
-            for (var n in newOrder) {
-                if( !buttonsOrder.hasOwnProperty(b) )
-                    continue;
-                $(".onp-vertical-tabs ul").prepend(newOrder[n]);
-            }
-        },
+			for( var n in newOrder ) {
+				if( !buttonsOrder.hasOwnProperty(b) ) {
+					continue;
+				}
+				$(".onp-vertical-tabs ul").prepend(newOrder[n]);
+			}
+		},
 
 		updateButtonsOrder: function() {
 			var self = this;
 			self.buttonOrder = [];
-			$(".onp-vertical-tabs ul li").not('.disabled-button').each(function(){
-				self.buttonOrder.push( $(this).attr('id' ).replace('tab-', '') );
+			$(".onp-vertical-tabs ul li").not('.disabled-button').each(function() {
+				self.buttonOrder.push($(this).attr('id').replace('tab-', ''));
 			});
 
-            $('input[name*="buttons_order"]', '.social-options').val(self.buttonOrder.join(','));
+			$('input[name*="buttons_order"]', '.social-options').val(self.buttonOrder.join(','));
 		},
 
-        updateButtonActions: function() {
-            var actions = {};
+		updateButtonActions: function() {
+			var actions = {};
 
-            $('.action-activate-button').each(function() {
+			$('.action-activate-button').each(function() {
 
-                var isAvailableAction = $(this).find('input[type="radio"]:checked').val() !== "0",
-                    button = $(this).data('button'),
-                    action = $(this).data('action');
+				var isAvailableAction = $(this).find('input[type="radio"]:checked').val() !== "0",
+					button = $(this).data('button'),
+					action = $(this).data('action');
 
-                if( !action || !button ) return;
+				if( !action || !button ) {
+					return;
+				}
 
-                $('input[name*="' + button + '_actions"]', $(this).closest('.tab-pane')).val('');
+				$('input[name*="' + button + '_actions"]', $(this).closest('.tab-pane')).val('');
 
-                if( isAvailableAction ) {
-                    if( !$.isArray(actions[button]) ) actions[button] = [];
-                    actions[button].push(action);
-                }
-            });
+				if( isAvailableAction ) {
+					if( !$.isArray(actions[button]) ) {
+						actions[button] = [];
+					}
+					actions[button].push(action);
+				}
+			});
 
-            for (var a in actions) {
-                if( !actions.hasOwnProperty(a) )
-                    continue;
+			for( var a in actions ) {
+				if( !actions.hasOwnProperty(a) ) {
+					continue;
+				}
 
-                $('input[name*="' + a + '_actions"]', '.tab-pane').val(actions[a].join(','));
-            }
-        },
+				$('input[name*="' + a + '_actions"]', '.tab-pane').val(actions[a].join(','));
+			}
+		},
 
 		/**
 		 * Refreshes the preview after short delay.
 		 */
-		refreshPreview: function( force ) {
+		refreshPreview: function(force) {
 			var self = this;
 
-			if ( this.timerOn && !force ) {
+			if( this.timerOn && !force ) {
 				this.timerAgain = true;
 				return;
 			}
 
 			this.timerOn = true;
-			setTimeout(function(){
+			setTimeout(function() {
 
-				if (self.timerAgain) {
+				if( self.timerAgain ) {
 					self.timerAgain = false;
-					self.refreshPreview( true );
+					self.refreshPreview(true);
 				} else {
 					self.timerAgain = false;
 					self.timerOn = false;
@@ -231,7 +245,7 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 		updatePreviewOptions: function(callback) {
 			var self = this,
 				data = {},
-				setting = JSON.parse(window.lockersSettings ),
+				setting = window.lockersSettings,
 				fields = this.getAllFields();
 
 			for( f in fields ) {
@@ -240,14 +254,14 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 					elName = fields[f].replace(/\w+\[(.*)\]/, '$1');
 
 				if( el.attr('type') === 'radio' || el.attr('type') === 'checkbox' ) {
-					el.each( function () {
-						if ( $(this).prop("checked") ) {
-							if ( $(this).val () === "0" ) {
+					el.each(function() {
+						if( $(this).prop("checked") ) {
+							if( $(this).val() === "0" ) {
 								data[elName] = false;
-							} else if ( $(this).val () === "1" ) {
+							} else if( $(this).val() === "1" ) {
 								data[elName] = true;
 							} else {
-								data[elName] = $(this).val ();
+								data[elName] = $(this).val();
 							}
 						}
 					});
@@ -260,328 +274,355 @@ if ( !window.lockerEditor ) window.lockerEditor = {};
 
 			self.lockerOptions = self.mapLockerOptions(data);
 
-            self.prepareOptions();
+			self.prepareOptions();
 		},
 
-        prepareOptions: function () {
-            var self = this;
+		prepareOptions: function() {
+			var self = this;
 
-            this.lockerOptions.id = window.lockerId;
-            this.lockerOptions.lockerId = window.lockerId;
-            this.lockerOptions.demo = true;
+			this.lockerOptions.id = window.lockerId;
+			this.lockerOptions.lockerId = window.lockerId;
+			this.lockerOptions.demo = true;
 
-            if( this.lockerType == 'signinlocker' || this.lockerType == 'emaillocker' ) {
-                if( window.proxyUrl ) {
-                    this.lockerOptions.proxy = window.proxyUrl;
-                }
+			if( this.lockerType == 'signinlocker' || this.lockerType == 'emaillocker' ) {
+				if( window.proxyUrl ) {
+					this.lockerOptions.proxy = window.proxyUrl;
+				}
 
-                if( window.subscriptionService ) {
-                    if (!this.lockerOptions.subscribeActionOptions)
-                        this.lockerOptions.subscribeActionOptions = {};
+				if( window.subscriptionService ) {
+					if( !this.lockerOptions.subscribeActionOptions ) {
+						this.lockerOptions.subscribeActionOptions = {};
+					}
 
-                    this.lockerOptions.subscribeActionOptions['service'] = window.subscriptionService;
-                    this.lockerOptions.subscribeActionOptions['doubleOptin'] = this.getFieldValByName('subscribe_mode') === 'double-optin';
-                }
+					this.lockerOptions.subscribeActionOptions['service'] = window.subscriptionService;
+					this.lockerOptions.subscribeActionOptions['doubleOptin'] = this.getFieldValByName('subscribe_mode') === 'double-optin';
+				}
 
-                if( window.terms && window.privacy ) {
-                    this.lockerOptions.terms = window.terms;
-                    this.lockerOptions.termsPopup = {
-                        width:  570,
-                        height: 400
-                    };
-                    this.lockerOptions.privacyPolicy = window.privacy;
-                }
-            }
+				if( window.terms && window.privacy ) {
+					this.lockerOptions.terms = window.terms;
+					this.lockerOptions.termsPopup = {
+						width: 570,
+						height: 400
+					};
+					this.lockerOptions.privacyPolicy = window.privacy;
+				}
+			}
 
-            this.lockerOptions.groups = ["social-buttons"];
+			this.lockerOptions.groups = ["social-buttons"];
 
-            if( window.buttonsGroup ) {
-                this.lockerOptions.groups = window.buttonsGroup;
-            }
+			if( window.buttonsGroup ) {
+				this.lockerOptions.groups = window.buttonsGroup;
+			}
 
-            this.updateButtonsOrder();                      
-            
-            // Сортировка по умолчанию
-            if( this.lockerType == 'sociallocker' ) {
-                this.lockerOptions.socialButtons.order = [
-                    'facebook-like',
-                    'twitter-tweet',
-                    'google-plus'
-                ];
-                if( this.buttonOrder.length ) {
-                    this.lockerOptions.socialButtons.order = this.buttonOrder;
-                }
-            }
+			this.updateButtonsOrder();
 
-            // Сортировка по умолчанию
-            if( this.lockerType == 'signinlocker' ) {
-                this.lockerOptions.connectButtons.order = [
-                    'vk',
-                    'twitter',
-                    'google'
-                ];
-                
-                if( this.buttonOrder.length ) {
-                    this.lockerOptions.connectButtons.order = this.buttonOrder;
-                }
-                
-            }
+			// Сортировка по умолчанию
+			if( this.lockerType == 'sociallocker' ) {
+				this.lockerOptions.socialButtons.order = [
+					'facebook-like',
+					'twitter-tweet',
+					'google-plus'
+				];
+				if( this.buttonOrder.length ) {
+					this.lockerOptions.socialButtons.order = this.buttonOrder;
+				}
+			}
 
-            /** =================== Email замок =================== */
+			// Сортировка по умолчанию
+			if( this.lockerType == 'signinlocker' ) {
+				this.lockerOptions.connectButtons.order = [
+					'vk',
+					'twitter',
+					'google'
+				];
 
-            if( this.lockerType == 'emaillocker' ) {
-                var cfField = $('input[name*="custom_fields"]'),
-                    subscribeSbAvailable = $('input[name*="subscribe_allow_social"]:checked'),
-                    subscribeSbuttons = $('input[name*="subscribe_social_buttons"]:checked');
+				if( this.buttonOrder.length ) {
+					this.lockerOptions.connectButtons.order = this.buttonOrder;
+				}
 
-                if( subscribeSbAvailable.val() == "1" ) {
-                    if( subscribeSbuttons.length ) {
-                        this.lockerOptions.connectButtons.order = [];
-                        this.lockerOptions.groups = [
-                            "subscription",
-                            "connect-buttons"
-                        ];
+			}
 
-                        subscribeSbuttons.each(function() {
-                            var socialNetwork = $(this).val();
-                            self.lockerOptions.connectButtons[socialNetwork].action = 'subscribe';
-                            self.lockerOptions.connectButtons.order.push(socialNetwork);
-                        });
-                    }
-                }
+			/** =================== Email замок =================== */
 
-                this.lockerOptions.subscription.order = ['form'];
+			if( this.lockerType == 'emaillocker' ) {
+				var cfField = $('input[name*="custom_fields"]'),
+					subscribeSbAvailable = $('input[name*="subscribe_allow_social"]:checked'),
+					subscribeSbuttons = $('input[name*="subscribe_social_buttons"]:checked');
 
-                if( cfField.data('fields') ) {
-                    this.lockerOptions.subscription.form.fields = cfField.data('fields');
-                } else if( cfField.val() ) {
-                    var customFieldsData = JSON.parse(cfField.val()),
-                        customFields = [];
+				if( subscribeSbAvailable.val() == "1" ) {
+					if( subscribeSbuttons.length ) {
+						this.lockerOptions.connectButtons.order = [];
+						this.lockerOptions.groups = [
+							"subscription",
+							"connect-buttons"
+						];
 
-                    for( cf in customFieldsData ) {
-                        if( !customFieldsData.hasOwnProperty(cf) )
-                            continue;
-                        customFields[cf] = customFieldsData[cf].fieldOptions;
-                    }
+						subscribeSbuttons.each(function() {
+							var socialNetwork = $(this).val();
+							self.lockerOptions.connectButtons[socialNetwork].action = 'subscribe';
+							self.lockerOptions.connectButtons.order.push(socialNetwork);
+						});
+					}
+				}
 
-                    this.lockerOptions.subscription.form.fields = customFields;
-                }
-            }
+				this.lockerOptions.subscription.order = ['form'];
 
-            console.log( this.lockerOptions);
-        },
+				if( cfField.data('fields') ) {
+					this.lockerOptions.subscription.form.fields = cfField.data('fields');
+				} else if( cfField.val() ) {
+					var customFieldsData = JSON.parse(cfField.val()),
+						customFields = [];
+
+					for( cf in customFieldsData ) {
+						if( !customFieldsData.hasOwnProperty(cf) ) {
+							continue;
+						}
+						customFields[cf] = customFieldsData[cf].fieldOptions;
+					}
+
+					this.lockerOptions.subscription.form.fields = customFields;
+				}
+			}
+
+			console.log(this.lockerOptions);
+		},
 
 		recreatePreview: function() {
-            if( this.lockerType == 'signinlocker' ) {
-                this.updateButtonActions();
-            }
+			if( this.lockerType == 'signinlocker' ) {
+				this.updateButtonActions();
+			}
 
 			this.updatePreviewOptions();
 
 			var newContent = this.toLockContent.clone(),
-				oldContent = $("#opanda-preview");
+				oldContent = __$onp("#opanda-preview");
 
 			oldContent.after(newContent);
 			oldContent.remove();
 
+			/*var options = {
+			 lockers: [
+			 {
+			 dependPaths: ['http://sociallocker-service.dev*/
+			/*', 'http://test.sociallocker.ru*/
+			/*'],
+			 visabilityOptions: {
+			 type: 'inline',
+			 selector: '.content-to-lock',
+			 limit: 0,
+			 start: 0
+			 },
+			 lockerOptions: this.lockerOptions
+			 }
+			 ]
+			 };*/
+			console.log(newContent.find(".content-to-lock"));
 			newContent.find(".content-to-lock").pandalocker(this.lockerOptions);
 
 		},
 
-        mapLockerOptions: function(data) {
-            var map = {
-                demo:  'always',
-                theme: 'style',
-                lang:  'buttons_lang',
-                text:  {
-                    'header':  null,
-                    'message': null
-                },
-                overlap:       {
-                    mode:     'overlap',
-                    position: 'overlap_position'
-                },
-                effects:       {
-                    highlight: null
-                },
-                locker:        {
-                    timer:  null,
-                    close:  null,
-                    mobile: null
-                },
+		mapLockerOptions: function(data) {
+			var map = {
+				demo: 'always',
+				theme: 'style',
+				lang: 'buttons_lang',
+				text: {
+					'header': null,
+					'message': null
+				},
+				overlap: {
+					mode: 'overlap',
+					position: 'overlap_position'
+				},
+				effects: {
+					highlight: null
+				},
+				locker: {
+					timer: null,
+					close: null,
+					mobile: null
+				},
 
-                subscribeActionOptions:{
-                    listId: 'subscribe_list'
-                    //service:"database",
-                    //doubleOptin: 'subscribe_mode'
-                    //confirm:false
-                },
+				subscribeActionOptions: {
+					listId: 'subscribe_list'
+					//service:"database",
+					//doubleOptin: 'subscribe_mode'
+					//confirm:false
+				},
 
-                subscription: {
-                    form:{
-                        buttonText: 'form_button_text',
-                        noSpamText: 'form_after_button_text',
-                        type: 'form_type'
-                    }
-                },
+				subscription: {
+					form: {
+						buttonText: 'form_button_text',
+						noSpamText: 'form_after_button_text',
+						type: 'form_type'
+					}
+				},
 
-                connectButtons: {
-                    facebook: {
-                        actions: 'facebook_actions:array',
-                        appId: 'facebook_app_id',
-                        version: 'facebook_version'
-                    },
-                    twitter: {
-                        actions: 'twitter_actions:array',
-                        follow: {
-                            user: 'twitter_follow_user',
-                            notifications: 'twitter_follow_notifications'
-                        },
-                        tweet: {
-                            message: 'twitter_tweet_message'
-                        }
-                    },
-                    google: {
-                        actions: 'google_actions:array',
-                        clientId: 'google_client_id',
-                        channelId: 'google_youtube_subscribe_channel_id'
-                    },
-                    linkedin: {
-                        actions: 'linkedin_actions:array',
-                        clientId: 'linkedin_client_id',
-                        apiKey: 'linkedin_client_secret'
-                    },
-                    vk: {
-                        actions: 'vk_actions:array',
-                        appId: 'vk_app_id'
-                    }
-                },
+				connectButtons: {
+					facebook: {
+						actions: 'facebook_actions:array',
+						appId: 'facebook_app_id',
+						version: 'facebook_version'
+					},
+					twitter: {
+						actions: 'twitter_actions:array',
+						follow: {
+							user: 'twitter_follow_user',
+							notifications: 'twitter_follow_notifications'
+						},
+						tweet: {
+							message: 'twitter_tweet_message'
+						}
+					},
+					google: {
+						actions: 'google_actions:array',
+						clientId: 'google_client_id',
+						channelId: 'google_youtube_subscribe_channel_id'
+					},
+					linkedin: {
+						actions: 'linkedin_actions:array',
+						clientId: 'linkedin_client_id',
+						apiKey: 'linkedin_client_secret'
+					},
+					vk: {
+						actions: 'vk_actions:array',
+						appId: 'vk_app_id'
+					}
+				},
 
-                socialButtons: {
-                    counters: null,
-                    facebook: {
-                        appId:   'facebook_app_id',
-                        version: 'facebook_version',
-                        like:    {
-                            url:   'facebook_like_url',
-                            title: 'facebook_like_title'
-                        },
-                        share:   {
-                            shareDialog: 'facebook_share_dialog',
-                            url:         'facebook_share_url',
-                            title:       'facebook_share_title',
-                            name:        'facebook_share_message_name',
-                            caption:     'facebook_share_message_caption',
-                            description: 'facebook_share_message_description',
-                            image:       'facebook_share_message_image'
-                        }
-                    },
-                    twitter:  {
-                        tweet:  {
-                            url:         'twitter_tweet_url',
-                            text:        'twitter_tweet_text',
-                            title:       'twitter_tweet_title',
-                            doubleCheck: 'twitter_tweet_auth',
-                            via:         'twitter_tweet_via'
-                        },
-                        follow: {
-                            url:            'twitter_follow_url',
-                            title:          'twitter_follow_title',
-                            doubleCheck:    'twitter_follow_auth',
-                            hideScreenName: 'twitter_follow_hide_name'
-                        }
-                    },
-                    google:   {
-                        plus:  {
-                            url:   'google_plus_url',
-                            title: 'google_plus_title'
-                        },
-                        share: {
-                            url:   'google_share_url',
-                            title: 'google_share_title'
-                        }
-                    },
-                    youtube:  {
-                        subscribe: {
-                            channelId: 'google_youtube_channel_id',
-                            title:     'google_youtube_title'
-                        }
-                    },
-                    linkedin: {
-                        share: {
-                            url:   'linkedin_share_url',
-                            title: 'linkedin_share_title'
-                        }
-                    },
-                    vk:       {
-                        appId:       'vk_app_id',
-                        accessToken: 'vk_access_token',
-                        lang:        'buttons_lang',
-                        like:        {
-                            pageTitle:       'vk_like_message_title',
-                            pageDescription: 'vk_like_message_description',
-                            pageUrl:         'vk_like_url',
-                            pageImage:       'vk_like_message_image',
-                            text:            'vk_like_message_caption',
-                            title:           'vk_like_title',
-                            requireSharing:  'vk_like_require_sharing'
-                        },
-                        share:       {
-                            pageUrl:         'vk_share_url',
-                            pageTitle:       'vk_share_message_title',
-                            pageDescription: 'vk_share_description',
-                            pageImage:       'vk_share_message_image',
-                            title:           'vk_share_title'
-                        },
-                        subscribe:   {
-                            groupId: 'vk_subscribe_group_id',
-                            title:   'vk_subscribe_title'
+				socialButtons: {
+					counters: null,
+					facebook: {
+						appId: 'facebook_app_id',
+						version: 'facebook_version',
+						like: {
+							url: 'facebook_like_url',
+							title: 'facebook_like_title'
+						},
+						share: {
+							shareDialog: 'facebook_share_dialog',
+							url: 'facebook_share_url',
+							title: 'facebook_share_title',
+							name: 'facebook_share_message_name',
+							caption: 'facebook_share_message_caption',
+							description: 'facebook_share_message_description',
+							image: 'facebook_share_message_image'
+						}
+					},
+					twitter: {
+						tweet: {
+							url: 'twitter_tweet_url',
+							text: 'twitter_tweet_text',
+							title: 'twitter_tweet_title',
+							doubleCheck: 'twitter_tweet_auth',
+							via: 'twitter_tweet_via'
+						},
+						follow: {
+							url: 'twitter_follow_url',
+							title: 'twitter_follow_title',
+							doubleCheck: 'twitter_follow_auth',
+							hideScreenName: 'twitter_follow_hide_name'
+						}
+					},
+					google: {
+						plus: {
+							url: 'google_plus_url',
+							title: 'google_plus_title'
+						},
+						share: {
+							url: 'google_share_url',
+							title: 'google_share_title'
+						}
+					},
+					youtube: {
+						subscribe: {
+							channelId: 'google_youtube_channel_id',
+							title: 'google_youtube_title'
+						}
+					},
+					linkedin: {
+						share: {
+							url: 'linkedin_share_url',
+							title: 'linkedin_share_title'
+						}
+					},
+					vk: {
+						appId: 'vk_app_id',
+						accessToken: 'vk_access_token',
+						lang: 'buttons_lang',
+						like: {
+							pageTitle: 'vk_like_message_title',
+							pageDescription: 'vk_like_message_description',
+							pageUrl: 'vk_like_url',
+							pageImage: 'vk_like_message_image',
+							text: 'vk_like_message_caption',
+							title: 'vk_like_title',
+							requireSharing: 'vk_like_require_sharing'
+						},
+						share: {
+							pageUrl: 'vk_share_url',
+							pageTitle: 'vk_share_message_title',
+							pageDescription: 'vk_share_description',
+							pageImage: 'vk_share_message_image',
+							title: 'vk_share_title'
+						},
+						subscribe: {
+							groupId: 'vk_subscribe_group_id',
+							title: 'vk_subscribe_title'
 
-                        }
-                    },
-                    ok:       {
-                        share: {
-                            url:   'ok_share_url',
-                            title: 'ok_share_title'
-                        }
-                    },
-                    mail:     {
-                        share: {
-                            pageUrl:         'mail_share_url',
-                            pageDescription: 'mail_share_message_description',
-                            pageImage:       'mail_share_message_image',
-                            pageTitle:       'mail_share_message_title',
-                            title:           'mail_share_title'
-                        }
-                    }
-                }
-            };
+						}
+					},
+					ok: {
+						share: {
+							url: 'ok_share_url',
+							title: 'ok_share_title'
+						}
+					},
+					mail: {
+						share: {
+							pageUrl: 'mail_share_url',
+							pageDescription: 'mail_share_message_description',
+							pageImage: 'mail_share_message_image',
+							pageTitle: 'mail_share_message_title',
+							title: 'mail_share_title'
+						}
+					}
+				}
+			};
 
-            return this.pushOptionsToMap(map, data);
-        },
+			return this.pushOptionsToMap(map, data);
+		},
 
-        pushOptionsToMap: function(map, data) {
-            for( key in map ) {
-                if( $.type(map[key]) !== 'object' ) {
-                    if(map[key] !== null) {
-                        if( map[key].indexOf(':array') != -1 ) {
-                            map[key] = data[map[key].replace(':array', '')] ? data[map[key].replace(':array', '')].split(',') : null;
-                        } else {
-                            map[key] = data[map[key]] || null;
-                        }
-                    } else {
-                       map[key] = data[key] || null;
-                    }
-                } else {
-                    map[key] = this.pushOptionsToMap(map[key], data);
-                }
-            }
-            return map;
-        }
+		pushOptionsToMap: function(map, data) {
+			for( key in map ) {
+				if( $.type(map[key]) !== 'object' ) {
+					if( map[key] !== null ) {
+						if( map[key].indexOf(':array') != -1 ) {
+							map[key] = data[map[key].replace(':array', '')]
+								? data[map[key].replace(':array', '')].split(',')
+								: null;
+						} else {
+							map[key] = data[map[key]] || null;
+						}
+					} else {
+						map[key] = data[key] || null;
+					}
+				} else {
+					map[key] = this.pushOptionsToMap(map[key], data);
+				}
+			}
+			return map;
+		}
 
 	};
 
-	$(function(){
-		window.lockerEditor.init();
+	$(function() {
+		var initTimer = setInterval(function() {
+			if( __$onp && __$onp.pandalocker && __$onp.pandalocker.hooks ) {
+				clearInterval(initTimer);
+				window.lockerEditor.init();
+			}
+		}, 1000);
+
 	});
 })(jQuery);

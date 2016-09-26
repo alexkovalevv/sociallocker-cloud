@@ -28,7 +28,7 @@
 
 							if( self.find('input[type="radio"]:checked').val() == e ) {
 								if( events[selector][e] == 'hide' ) {
-									$(selector).fadeOut(function() {
+									$(selector).hide(function() {
 										$(this).hasClass('hidden') && $(this).removeClass('hidden');
 									});
 								} else if( events[selector][e] == 'show' ) {

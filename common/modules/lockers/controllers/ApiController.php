@@ -9,6 +9,7 @@
 	use common\modules\lockers\models\stats\LockersStatImpress;
 	use common\modules\lockers\models\stats\LockersStatUnlock;
 	use common\modules\lockers\models\visability\LockersVisability;
+	use common\modules\subscription\classes\SubscriptionServices;
 	use Yii;
 	use yii\web\Response;
 	use yii\helpers\ArrayHelper;
@@ -103,19 +104,71 @@
 			foreach($lockers as $locker) {
 
 				$visability_options = $locker->lockersVisability;
-				$locker_options = json_decode($locker->options, true);
+				$old_locker_options = json_decode($locker->options, true);
 
-				if( !empty($locker_options['buttons_order']) ) {
-					$locker_options['buttons_order'] = explode(',', $locker_options['buttons_order']);
+				if( !empty($old_locker_options['buttons_order']) ) {
+					$old_locker_options['buttons_order'] = explode(',', $old_locker_options['buttons_order']);
 				}
 
 				// создаем карту опций для замка
-				$locker_options = $this->mapLockerOptions($locker_options, $locker->type);
+				$locker_options = $this->mapLockerOptions($old_locker_options, $locker->type);
 
 				$locker_options['id'] = $locker->id;
+				$locker_options['proxy'] = Yii::getAlias('@proxyUrl');
+
+				if( $locker->type == 'emaillocker' || $locker->type == 'signinlocker' ) {
+					$subscription_service = Yii::$app->lockersSettings->getOne('subscription_to_service', 'none', ['locker_id' => $locker->id]);
+
+					if( !in_array($subscription_service, ['none', 'default']) ) {
+						$locker_options['subscribeActionOptions']['service'] = $subscription_service;
+
+						$subscribe_mode = ArrayHelper::getValue($old_locker_options, 'subscribe_mode', false);
+
+						if( $locker->type == 'emaillocker' || $subscribe_mode === true ) {
+							$double_option = $old_locker_options['subscribe_mode'] == 'double-optin';
+							$locker_options['subscribeActionOptions']['doubleOptin'] = $double_option;
+						}
+					}
+				}
+
+				$locker_options['groups'] = ['social-buttons'];
+
+				if( $locker->type === 'signinlocker' ) {
+					$locker_options['groups'] = ['connect-buttons'];
+					/*if( window.terms && window.privacy ) {
+						this.lockerOptions.terms = window.terms;
+						this.lockerOptions.termsPopup = {
+							width:  570,
+                        height: 400
+                    };
+                    this.lockerOptions.privacyPolicy = window.privacy;
+                }*/
+				} else if( $locker->type === 'emaillocker' ) {
+
+					$locker_options['groups'] = ['subscription'];
+					$sbcr_allow_social = ArrayHelper::getValue($old_locker_options, 'subscribe_allow_social', false);
+
+					if( $sbcr_allow_social === true ) {
+						$sbcr_social_buttons = ArrayHelper::getValue($old_locker_options, 'subscribe_social_buttons', []);
+
+						if( sizeof($sbcr_social_buttons) ) {
+							$locker_options['connectButtons']['order'] = [];
+							$locker_options['groups'] = ['subscription', 'connect-buttons'];
+
+							foreach($old_locker_options['subscribe_social_buttons'] as $val) {
+
+								$locker_options['connectButtons'][$val]['actions'][] = 'subscribe';
+								$locker_options['connectButtons']['order'][] = $val;
+							}
+						}
+					}
+
+					$locker_options['subscription']['order'] = ['form'];
+				}
 
 				if( !empty($visability_options->conditions) ) {
-					$locker_options['visibility'] = json_decode($visability_options->conditions);
+					$conditions = json_decode($visability_options->conditions, true);
+					$locker_options['locker']['visibility'] = $conditions;
 				}
 
 				if( $visability_options->way_lock == 'html' ) {
@@ -133,7 +186,8 @@
 				$options['lockers'][] = [
 					'dependPaths' => $dependPages,
 					'visabilityOptions' => [
-						'type' => $visability_options->lock_type,
+						'lockType' => $visability_options->lock_type,
+						'whenShow' => $visability_options->when_show,
 						'selector' => $visability_options->lock_selector,
 						'targetSelector' => $visability_options->target_selector,
 						'start' => $visability_options->delay,
@@ -148,7 +202,7 @@
 				$options_output = '{}';
 			}
 
-			$js = 'if( !window.onpwgt___options ) {window.onpwgt___options = ' . $options_output . ';}';
+			$js = 'if(!window._onpwgt)window._onpwgt={};window._onpwgt.options = ' . $options_output . ';';
 
 			echo $js;
 		}
@@ -193,6 +247,7 @@
 				'buttonText' => 'form_button_text',
 				'noSpamText' => 'form_after_button_text',
 				'type' => 'form_type',
+				'fields' => 'custom_fields'
 			];
 
 			if( $locker_type == 'signinlocker' ) {

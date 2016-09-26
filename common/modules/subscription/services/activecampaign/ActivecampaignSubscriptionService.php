@@ -1,232 +1,263 @@
 <?php
-namespace common\modules\subscription\services\activecampaign;
+	namespace common\modules\subscription\services\activecampaign;
 
-use Yii;
-use common\modules\subscription\classes\Subscription;
-use common\modules\subscription\classes\SubscriptionException;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+	use Yii;
+	use common\modules\subscription\classes\Subscription;
+	use common\modules\subscription\classes\SubscriptionException;
+	use GuzzleHttp\Client;
+	use GuzzleHttp\Exception\RequestException;
 
-class ActivecampaignSubscriptionService extends Subscription {
-    
-    public function request( $action, $method = 'GET', $data = array() ) {
-        
-        $apiKey = Yii::$app->lockersSettings->get('activecampaign_apikey', false);
+	class ActivecampaignSubscriptionService extends Subscription {
 
-        if( empty( $apiKey )) throw new SubscriptionException ('Не установлен API ключ.');
-        
-        $apiUrl= Yii::$app->lockersSettings->get('activecampaign_apiurl', false);
+		public function request($action, $method = 'GET', $data = [], array $contextData = [])
+		{
+			$condition = [];
 
-        if( empty( $apiUrl )) throw new SubscriptionException ('Не установлен API url.');
+			if( isset($contextData['lockerId']) ) {
+				$condition['locker_id'] = $contextData['lockerId'];
+			}
 
-        $getData = array(
-            'api_key' => $apiKey,
-            'api_action' => $action,
-            'api_output' => 'json'
-        );
+			$apiKey = Yii::$app->lockersSettings->getOne('activecampaign_apikey', false, $condition);
 
-        $getData = array_merge($getData, $data);
+			if( empty($apiKey) ) {
+				throw new SubscriptionException ('Не установлен API ключ.');
+			}
 
-        $apiUrl = rtrim($apiUrl, '/ ');
-        $url = $apiUrl . '/admin/api.php';
+			$apiUrl = Yii::$app->lockersSettings->getOne('activecampaign_apiurl', false, $condition);
 
-	    $client = new Client();
-	    try {
-		    $result = $client->request($method, $url, ['query' => $getData]);
-			$body = $result->getBody();
+			if( empty($apiUrl) ) {
+				throw new SubscriptionException ('Не установлен API url.');
+			}
 
-		    if (empty($body)) return array();
+			$getData = [
+				'api_key' => $apiKey,
+				'api_action' => $action,
+				'api_output' => 'json'
+			];
 
-		    $data = json_decode($body, true);
+			$getData = array_merge($getData, $data);
 
-		    if ($data === FALSE) {
-			    throw new SubscriptionException( 'Unexpected error occurred during connection to ActiveCampaign. ' . $body );
-		    }
+			$apiUrl = rtrim($apiUrl, '/ ');
+			$url = $apiUrl . '/admin/api.php';
 
-		    if ( $data['result_code'] === 0 && strpos( $data['result_message'], 'Nothing is returned') === false && strpos( $data['result_message'], 'ritornato niente') === false ) {
-			    throw new SubscriptionException( $data['result_message'] );
-		    }
+			$client = new Client();
+			try {
+				$result = $client->request($method, $url, ['query' => $getData]);
+				$body = $result->getBody();
 
-		    return $data;
-	    } catch (RequestException $e) {
-		    throw new SubscriptionException( 'Unexpected error occurred during connection to ActiveCampaign. ' . $e->getRequest());
-	    }
-    }
+				if( empty($body) ) {
+					return [];
+				}
 
-    /**
-     * Returns lists available to subscribe.
-     * 
-     * @since 1.0.0
-     * @return mixed[]
-     */
-    public function getLists() {
-        
-        $response = $this->request('list_list', 'GET', array('ids' => 'all'));
-        
-        $lists = array();
-        
-        foreach( $response as $key => $item ) {
-            if (!is_numeric($key)) continue;
-            
-            $lists[] = array(
-                'title' => $item['name'],
-                'value' => $item['id']
-            );
-        }
+				$data = json_decode($body, true);
 
-        return array(
-            'items' => $lists
-        ); 
-    }
+				if( $data === false ) {
+					throw new SubscriptionException('Unexpected error occurred during connection to ActiveCampaign. ' . $body);
+				}
 
-    /**
-     * Subscribes the person.
-     */
-    public function subscribe( $identityData, $listId, $doubleOptin, $contextData, $verified ) {
+				if( $data['result_code'] === 0 && strpos($data['result_message'], 'Nothing is returned') === false && strpos($data['result_message'], 'ritornato niente') === false ) {
+					throw new SubscriptionException($data['result_message']);
+				}
 
-        $email = $identityData['email'];
-        $fields = $identityData;
-        
-        $firstName = '';
-        $lastName = '';
-        
-        if ( !empty( $identityData['name'] ) ) $lastName = $identityData['name'];
-        if ( !empty( $identityData['family'] ) ) $lastName = $identityData['family'];
-        if ( empty( $firstName ) && !empty( $identityData['displayName'] ) )$firstName = $identityData['displayName'];
+				return $data;
+			} catch( RequestException $e ) {
+				throw new SubscriptionException('Unexpected error occurred during connection to ActiveCampaign. ' . $e->getRequest());
+			}
+		}
 
-        $fields = $this->refine( $fields );
-        unset( $fields['email'] );
-        
-        $response = $this->request('contact_view_email', 'GET', array('email' => $email));
-        $exists = isset( $response['id'] );
-        
-        $data = array();
-        
-        $data['email'] = $email;
-        $data['ip4'] = $_SERVER['REMOTE_ADDR'];
-        
-        if ( !empty( $firstName ) ) $data['first_name'] = $firstName;
-        if ( !empty( $lastName ) ) $data['last_name'] = $lastName;
-        
-        $data['status[' . $listId . ']'] = 1;
-        $data['instantresponders[' . $listId . ']'] = 1;
-        
-        foreach( $fields as $fieldKey => $fieldValue ) {
-            $data['field[%' . $fieldKey . '%,0]'] = $fieldValue;
-        }
-        
-        // already exits
-        
-        if ( $exists ) {
-            
-            $lists = explode('-', $response['listslist']);
+		/**
+		 * Returns lists available to subscribe.
+		 *
+		 * @since 1.0.0
+		 * @return mixed[]
+		 */
+		public function getLists()
+		{
 
-            if ( !in_array('' . $listId, $lists) ) {
-                
-                $data['id'] = $response['id'];
+			$response = $this->request('list_list', 'GET', ['ids' => 'all']);
 
-                $lists[] = $listId;
-                foreach($lists as $listId) {
-                    $data['p[' . $listId . ']'] = $listId;
-                }
-                
-                $response = $this->request('contact_edit', 'POST', $data);
+			$lists = [];
 
-            }
-            
-            return array('status' => 'subscribed');
-        }
+			foreach($response as $key => $item) {
+				if( !is_numeric($key) ) {
+					continue;
+				}
 
-        $data['p[' . $listId . ']'] = $listId;
+				$lists[] = [
+					'title' => $item['name'],
+					'value' => $item['id']
+				];
+			}
 
-        foreach( $fields as $fieldKey => $fieldValue ) {
-            $response['field[%' . $fieldKey . '%,0]'] = $fieldValue;
-        }
+			return [
+				'items' => $lists
+			];
+		}
 
-        $this->request('contact_add', 'POST', $data);
-        return array('status' => 'subscribed');
-    }
-    
-    /**
-     * Checks if the user subscribed.
-     */  
-    public function check( $identityData, $listId, $contextData ) { 
-        
-        return array('status' => 'subscribed');
-    }
-         
-    /**
-     * Returns custom fields.
-     */
-    public function getCustomFields( $listId ) {
-        
-        $response = $this->request('list_view', 'GET', array('id' => $listId));
+		/**
+		 * Subscribes the person.
+		 */
+		public function subscribe($identityData, $listId, $doubleOptin, $contextData, $verified)
+		{
 
-        if ( empty( $response['fields'] ) ) return array();
+			$email = $identityData['email'];
+			$fields = $identityData;
 
-        $customFields = array();
-        
-        $mappingRules = array(
-            'radio' => 'dropdown',
-            'listbox' => 'dropdown',
-            'textarea' => array('text', 'checkbox', 'hidden'),
-            'text' => array('text', 'checkbox', 'hidden')
-        );
+			$firstName = '';
+			$lastName = '';
 
-        foreach( $response['fields'] as $item ) {
-            $fieldType = $item['type'];
-                    
-            $pluginFieldType = isset( $mappingRules[$fieldType] ) 
-                    ? $mappingRules[$fieldType] 
-                    : strtolower( $fieldType );
+			if( !empty($identityData['name']) ) {
+				$lastName = $identityData['name'];
+			}
+			if( !empty($identityData['family']) ) {
+				$lastName = $identityData['family'];
+			}
+			if( empty($firstName) && !empty($identityData['displayName']) ) {
+				$firstName = $identityData['displayName'];
+			}
 
-            $can = array(
-                'changeType' => true,
-                'changeReq' => true,
-                'changeDropdown' => false,
-                'changeMask' => true
-            );
-            
-            $fieldOptions = array();
-            
-            if ( 'dropdown' === $pluginFieldType ) {
-                
-                foreach ( $item['options'] as $choice ) {
-                    $fieldOptions['choices'][] = $choice['value'];
-                }
-            }
-            
-            $fieldOptions['req'] = intval( $item['isrequired'] ) == 1;
+			$fields = $this->refine($fields);
+			unset($fields['email']);
 
-            $customFields[] = array(
-                
-                'fieldOptions' => $fieldOptions,
-                
-                'mapOptions' => array(
-                    'req' => intval( $item['isrequired'] ) == 1,
-                    'id' => $item['perstag'],
-                    'name' => $item['perstag'],
-                    'title' => sprintf('%s [%s]', $item['title'], $item['perstag'] ),
-                    'labelTitle' => $item['title'],
-                    'mapTo' => is_array($pluginFieldType) ? $pluginFieldType : array( $pluginFieldType ),
-                    'service' => $item
-                ),
-                
-                'premissions' => array(
-                    
-                    'can' => $can,
-                    'notices' => array(
-                        'changeReq' => 'You can change this checkbox in your ActiveCampaign account.',
-                        'changeDropdown' => 'Please visit your ActiveCampaign account to modify the choices.',
-                    ), 
-                )
-            );
-        }
+			$response = $this->request('contact_view_email', 'GET', ['email' => $email], $contextData);
+			$exists = isset($response['id']);
 
-        return $customFields;
-    }
-    
-    public function getNameFieldIds() {
-        return array( 'FIRSTNAME' => 'name', 'LASTNAME' => 'family' );
-    }
-}
+			$data = [];
+
+			$data['email'] = $email;
+			$data['ip4'] = $_SERVER['REMOTE_ADDR'];
+
+			if( !empty($firstName) ) {
+				$data['first_name'] = $firstName;
+			}
+			if( !empty($lastName) ) {
+				$data['last_name'] = $lastName;
+			}
+
+			$data['status[' . $listId . ']'] = 1;
+			$data['instantresponders[' . $listId . ']'] = 1;
+
+			foreach($fields as $fieldKey => $fieldValue) {
+				$data['field[%' . $fieldKey . '%,0]'] = $fieldValue;
+			}
+
+			// already exits
+
+			if( $exists ) {
+
+				$lists = explode('-', $response['listslist']);
+
+				if( !in_array('' . $listId, $lists) ) {
+
+					$data['id'] = $response['id'];
+
+					$lists[] = $listId;
+					foreach($lists as $listId) {
+						$data['p[' . $listId . ']'] = $listId;
+					}
+
+					$response = $this->request('contact_edit', 'POST', $data);
+				}
+
+				return ['status' => 'subscribed'];
+			}
+
+			$data['p[' . $listId . ']'] = $listId;
+
+			foreach($fields as $fieldKey => $fieldValue) {
+				$response['field[%' . $fieldKey . '%,0]'] = $fieldValue;
+			}
+
+			$this->request('contact_add', 'POST', $data);
+
+			return ['status' => 'subscribed'];
+		}
+
+		/**
+		 * Checks if the user subscribed.
+		 */
+		public function check($identityData, $listId, $contextData)
+		{
+
+			return ['status' => 'subscribed'];
+		}
+
+		/**
+		 * Returns custom fields.
+		 */
+		public function getCustomFields($listId)
+		{
+
+			$response = $this->request('list_view', 'GET', ['id' => $listId]);
+
+			if( empty($response['fields']) ) {
+				return [];
+			}
+
+			$customFields = [];
+
+			$mappingRules = [
+				'radio' => 'dropdown',
+				'listbox' => 'dropdown',
+				'textarea' => ['text', 'checkbox', 'hidden'],
+				'text' => ['text', 'checkbox', 'hidden']
+			];
+
+			foreach($response['fields'] as $item) {
+				$fieldType = $item['type'];
+
+				$pluginFieldType = isset($mappingRules[$fieldType])
+					? $mappingRules[$fieldType]
+					: strtolower($fieldType);
+
+				$can = [
+					'changeType' => true,
+					'changeReq' => true,
+					'changeDropdown' => false,
+					'changeMask' => true
+				];
+
+				$fieldOptions = [];
+
+				if( 'dropdown' === $pluginFieldType ) {
+
+					foreach($item['options'] as $choice) {
+						$fieldOptions['choices'][] = $choice['value'];
+					}
+				}
+
+				$fieldOptions['req'] = intval($item['isrequired']) == 1;
+
+				$customFields[] = [
+
+					'fieldOptions' => $fieldOptions,
+					'mapOptions' => [
+						'req' => intval($item['isrequired']) == 1,
+						'id' => $item['perstag'],
+						'name' => $item['perstag'],
+						'title' => sprintf('%s [%s]', $item['title'], $item['perstag']),
+						'labelTitle' => $item['title'],
+						'mapTo' => is_array($pluginFieldType)
+							? $pluginFieldType
+							: [$pluginFieldType],
+						'service' => $item
+					],
+					'premissions' => [
+
+						'can' => $can,
+						'notices' => [
+							'changeReq' => 'You can change this checkbox in your ActiveCampaign account.',
+							'changeDropdown' => 'Please visit your ActiveCampaign account to modify the choices.',
+						],
+					]
+				];
+			}
+
+			return $customFields;
+		}
+
+		public function getNameFieldIds()
+		{
+			return ['FIRSTNAME' => 'name', 'LASTNAME' => 'family'];
+		}
+	}

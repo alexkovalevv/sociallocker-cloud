@@ -63,7 +63,7 @@
 					'hidden_content',
 					'required',
 					'when' => function ($model) {
-						return $model->way_lock == 'html';
+						return $model->way_lock == 'html' && $model->lock_type == 'inline';
 					}
 				],
 				[

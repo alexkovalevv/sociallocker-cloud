@@ -1,371 +1,458 @@
 <?php
-namespace common\modules\signin;
+	namespace common\modules\signin;
 
-use yii;
-use common\modules\signin\handlers\twitter\TwitterHandler;
-use yii\base\Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+	use yii;
+	use common\modules\signin\handlers\twitter\TwitterHandler;
+	use yii\base\Exception;
+	use GuzzleHttp\Client;
+	use GuzzleHttp\Exception\RequestException;
 
-/**
- * The base class for all handlers of requests to the proxy.
- */
-class Handler {
-    
-    public $srorage;
-    
-    public function __construct( $options ) {
-        $this->options = $options;
-    }
+	/**
+	 * The base class for all handlers of requests to the proxy.
+	 */
+	class Handler {
 
-    /**
-     * Saves the value to the storage.
-     */
-    public function saveValue( $key, $name, $value ) {
-        if ( empty( $_SESSION[$key] ) ) $_SESSION[$key] = array();
-        $_SESSION[$key][$name] = $value;
-    }
-    
-    /**
-     * Get the value from the storage.
-     */
-    public function getValue( $key, $name, $default = null ) {
-        if ( empty( $_SESSION[$key] ) || empty( $_SESSION[$key][$name] ) ) return $default;
-        return $_SESSION[$key][$name];
-    }
-    
-    protected function normilizeValues( $values = array() ) {
-        if ( empty( $values) ) return $values;
-        if ( !is_array( $values ) ) $values = array( $values );
-        
-        foreach ( $values as $index => $value ) {
-            
-            $values[$index] = is_array( $value )
-                        ? $this->normilizeValues( $value ) 
-                        : $this->normilizeValue( $value );
-        }
-        
-        return $values;
-    }
-    
-    protected function normilizeValue( $value = null ) {
-        if ( 'false' === $value ) $value = false;
-        elseif ( 'true' === $value ) $value = true;
-        elseif ( 'null' === $value ) $value = null;
-        return $value;
-    }
-    
-    /**
-     * Process names of the identity data.
-     */
-    public function prepareDataToSave( $service, $itemId, $identityData ) {
-        
-        // move the values from the custom fields like FNAME, LNAME
-        
-        if ( !empty( $service ) ) {
-            $formType = Yii::$app->lockerMeta->get($itemId, 'form_type', 'email-form');
-            $strFieldsJson = Yii::$app->lockerMeta->get($itemId, 'custom_fields', null );
+		public $srorage;
 
-            if ( 'custom-form' == $formType && !empty( $strFieldsJson ) ) {
+		public function __construct($options)
+		{
+			$this->options = $options;
+		}
 
-                $fieldsData = json_decode( $strFieldsJson, true );      
-                $ids = $service->getNameFieldIds();
+		/**
+		 * Saves the value to the storage.
+		 */
+		public function saveValue($key, $name, $value)
+		{
+			if( empty($_SESSION[$key]) ) {
+				$_SESSION[$key] = [];
+			}
+			$_SESSION[$key][$name] = $value;
+		}
 
-                $newIdentityData = $identityData;
+		/**
+		 * Get the value from the storage.
+		 */
+		public function getValue($key, $name, $default = null)
+		{
+			if( empty($_SESSION[$key]) || empty($_SESSION[$key][$name]) ) {
+				return $default;
+			}
 
-                foreach( $identityData as $itemId => $itemValue ) {
+			return $_SESSION[$key][$name];
+		}
 
-                    foreach($fieldsData as $fieldData) {
-                        
-                        if ( !isset( $fieldData['mapOptions']['id'] ) ) continue;    
-                        if ( $fieldData['fieldOptions']['id'] !== $itemId ) continue;
+		protected function normilizeValues($values = [])
+		{
+			if( empty($values) ) {
+				return $values;
+			}
+			if( !is_array($values) ) {
+				$values = [$values];
+			}
 
-                        $mapId = $fieldData['mapOptions']['id'];
+			foreach($values as $index => $value) {
 
-                        if ( in_array( $fieldData['mapOptions']['mapTo'], array( 'separator', 'html', 'label' ) ) ) {
-                            unset($newIdentityData[$itemId]);
-                            continue;
-                        }
+				$values[$index] = is_array($value)
+					? $this->normilizeValues($value)
+					: $this->normilizeValue($value);
+			}
 
-                        foreach( $ids as $nameFieldId => $nameFieldType ) {
-                            if ( $mapId !== $nameFieldId ) continue;
-                            $newIdentityData[$nameFieldType] = $itemValue;
-                            unset($newIdentityData[$itemId]);
-                        }
-                    }
-                }  
+			return $values;
+		}
 
-                $identityData = $newIdentityData;
-                
-            }
-        }
-   
-        // splits the full name into 2 parts
-        
-        if ( isset( $identityData['fullname'] ) ) {
-            
-            $fullname = trim( $identityData['fullname'] );
-            unset( $identityData['fullname'] );
+		protected function normilizeValue($value = null)
+		{
+			if( 'false' === $value ) {
+				$value = false;
+			} elseif( 'true' === $value ) {
+				$value = true;
+			} elseif( 'null' === $value ) {
+				$value = null;
+			}
 
-            $parts = explode(' ', $fullname);
-            $nameParts = array();
+			return $value;
+		}
 
-            foreach( $parts as $part ) {
-                if ( trim($part) == '' ) continue;
-                $nameParts[] = $part;
-            } 
+		/**
+		 * Process names of the identity data.
+		 */
+		public function prepareDataToSave($service, $itemId, $identityData)
+		{
 
-            if ( count($nameParts) == 1 ) {
-                $identityData['name'] = $nameParts[0];
-            } else if ( count($nameParts) > 1) {
-                $identityData['name'] = $nameParts[0];
-                $identityData['displayName'] = implode(' ', $nameParts);
-                unset( $nameParts[0] );
-                $identityData['family'] = implode(' ', $nameParts);
-            }   
-        }
+			// move the values from the custom fields like FNAME, LNAME
 
-        return $identityData;
-    }
-    
-    /**
-     * Replaces keys of identity data of the view 'cf3' with the ids of custom fields in the mailing services.
-     */
-    public function mapToServiceIds( $service, $itemId, $identityData ) {
+			if( !empty($service) ) {
+				$formType = Yii::$app->locker->getOption($itemId, 'form_type', 'email-form');
+				$strFieldsJson = Yii::$app->locker->getOption($itemId, 'custom_fields', null);
 
-        $formType = Yii::$app->lockerMeta->get($itemId, 'form_type', 'email-form');
-        $strFieldsJson = Yii::$app->lockerMeta->get($itemId, 'custom_fields', null );
-        
-        if ( 'custom-form' !== $formType || empty( $strFieldsJson ) ) {
-            
-            $data = array();
-            if ( isset( $identityData['email'] ) ) $data['email'] = $identityData['email'];
-            if ( isset( $identityData['name'] ) ) $data['name'] = $identityData['name'];
-            if ( isset( $identityData['family'] ) ) $data['family'] = $identityData['family'];       
-            return $data;
-        }
-        
-        $fieldsData = json_decode( $strFieldsJson, true );
-        
-        $data = array();
-        foreach( $identityData as $itemId => $itemValue ) {
+				if( 'custom-form' == $formType && !empty($strFieldsJson) ) {
 
-            if ( in_array( $itemId, array('email', 'fullname', 'name', 'family', 'displayName') ) ) {
-                $data[$itemId] = $itemValue;
-                continue;
-            }
-            
-            foreach($fieldsData as $fieldData) {
-                
-                if ( $fieldData['fieldOptions']['id'] === $itemId ) {
-                    $mapId = $fieldData['mapOptions']['id'];
-                    $data[$mapId] = $service->prepareFieldValueToSave( $fieldData['mapOptions'], $itemValue );
-                }
-            }
-        }
-        
-        return $data;
-    }
-    
-    /**
-     * Replaces keys of identity data of the view 'cf3' with the labels the user enteres in the locker settings.
-     */
-    public function mapToCustomLabels( $service, $itemId, $identityData ) {
+					$fieldsData = json_decode($strFieldsJson, true);
+					$ids = $service->getNameFieldIds();
 
-        $formType = Yii::$app->lockerMeta->get($itemId, 'form_type', true);
-        $strFieldsJson = Yii::$app->lockerMeta->get($itemId, 'custom_fields', null );
-        
-        if ( 'custom-form' !== $formType || empty( $strFieldsJson ) ) return $identityData;
-        
-        $fieldsData = json_decode( $strFieldsJson, true );
+					$newIdentityData = $identityData;
 
-        $data = array();
-        foreach( $identityData as $itemId => $itemValue ) {
-            
-            if ( in_array( $itemId, array('email', 'fullname', 'name', 'family', 'displayName') ) ) {
-                $data[$itemId] = $itemValue;
-                continue;
-            }
-            
-            foreach($fieldsData as $fieldData) {
+					foreach($identityData as $itemId => $itemValue) {
 
-                if ( $fieldData['fieldOptions']['id'] !== $itemId ) continue;
-                $label = $fieldData['serviceOptions']['label'];
-                
-                if ( empty( $label ) ) continue 2;
-                $data['{' . $label . '}'] = $itemValue;
-                continue 2;
-            }
+						foreach($fieldsData as $fieldData) {
 
-            $data[$itemId] = $itemValue;
-        }
-        
-        return $data;
-    }
-    
-    /**
-     * Returns true if the user identity data is verified.
-     */
-    public function verifyUserData( $identityData, $serviceData ) {
-        $source = isset( $identityData['source'] ) ? $identityData['source'] : false;
-        if ( !$source || empty( $serviceData ) ) return false;
-        
-        switch( $source ) {
-            case 'facebook':
-                
-                if ( !isset( $serviceData['authResponse']['accessToken'] ) || empty( $serviceData['authResponse']['accessToken'] ) ) return false;
-                
-                $url = 'https://graph.facebook.com/me?access_token=' . $serviceData['authResponse']['accessToken'];
+							if( !isset($fieldData['mapOptions']['id']) ) {
+								continue;
+							}
+							if( $fieldData['fieldOptions']['id'] !== $itemId ) {
+								continue;
+							}
 
-                $client = new Client();
+							$mapId = $fieldData['mapOptions']['id'];
 
-                try {
-                    $result = $client->request('GET', $url);
-                    $body = $result->getBody();
+							if( in_array($fieldData['mapOptions']['mapTo'], ['separator', 'html', 'label']) ) {
+								unset($newIdentityData[$itemId]);
+								continue;
+							}
 
-                    if (empty($body)) return false;
+							foreach($ids as $nameFieldId => $nameFieldType) {
+								if( $mapId !== $nameFieldId ) {
+									continue;
+								}
+								$newIdentityData[$nameFieldType] = $itemValue;
+								unset($newIdentityData[$itemId]);
+							}
+						}
+					}
 
-                    $data = json_decode($body);
-                    if ( !isset( $data->email ) ) return false;
+					$identityData = $newIdentityData;
+				}
+			}
 
-                    $email = str_replace('\u0040', '@', $data->email);
-                    if ( $identityData['email'] !== $email ) return false;
+			// splits the full name into 2 parts
 
-                    return true;
+			if( isset($identityData['fullname']) ) {
 
-                } catch (RequestException $e) {
-                    return false;
-                }
+				$fullname = trim($identityData['fullname']);
+				unset($identityData['fullname']);
 
-            case 'twitter':
+				$parts = explode(' ', $fullname);
+				$nameParts = [];
 
-                if ( !isset( $serviceData['visitorId'] ) || empty( $serviceData['visitorId'] ) ) return false;
-                
-                $token = $this->getValue( $serviceData['visitorId'], 'twitter_token' );
-                $secret = $this->getValue( $serviceData['visitorId'], 'twitter_secret' );
-                        
-                if ( empty( $token ) || empty($secret) ) return false;
+				foreach($parts as $part) {
+					if( trim($part) == '' ) {
+						continue;
+					}
+					$nameParts[] = $part;
+				}
 
-                $options = Module::getConnectOptions( 'twitter' );
+				if( count($nameParts) == 1 ) {
+					$identityData['name'] = $nameParts[0];
+				} else if( count($nameParts) > 1 ) {
+					$identityData['name'] = $nameParts[0];
+					$identityData['displayName'] = implode(' ', $nameParts);
+					unset($nameParts[0]);
+					$identityData['family'] = implode(' ', $nameParts);
+				}
+			}
 
-                $handler = new TwitterHandler( $options, true );
+			return $identityData;
+		}
 
-                $response = $handler->getUserData( $serviceData['visitorId'], true );
+		/**
+		 * Replaces keys of identity data of the view 'cf3' with the ids of custom fields in the mailing services.
+		 */
+		public function mapToServiceIds($service, $itemId, $identityData)
+		{
 
-                if ( !isset( $response->email ) || empty( $response->email ) ) return false;
-                if ( $identityData['email'] !== $response->email ) return false;
-                
-                return true;
-            
-            case 'linkedin':
+			$formType = Yii::$app->locker->getOption($itemId, 'form_type', 'email-form');
+			$strFieldsJson = Yii::$app->locker->getOption($itemId, 'custom_fields', null);
 
-                if ( !isset( $serviceData['accessToken'] ) || empty( $serviceData['accessToken'] ) ) return false;
-                
-                $url = 'https://api.linkedin.com/v1/people/~:(emailAddress)?oauth2_access_token='.$serviceData['accessToken'];
+			if( 'custom-form' !== $formType || empty($strFieldsJson) ) {
 
-                $client = new Client();
+				$data = [];
+				if( isset($identityData['email']) ) {
+					$data['email'] = $identityData['email'];
+				}
+				if( isset($identityData['name']) ) {
+					$data['name'] = $identityData['name'];
+				}
+				if( isset($identityData['family']) ) {
+					$data['family'] = $identityData['family'];
+				}
 
-                try {
-                    $result = $client->request('GET', $url, array(
-                        'headers' => 'x-li-format: json'
-                    ));
-                    $body = $result->getBody();
+				return $data;
+			}
 
-                    if ( empty($body) ) return false;
+			$fieldsData = json_decode($strFieldsJson, true);
 
-                    $data = json_decode($body);
-                    if ( !isset( $data->emailAddress ) ) return false;
+			$data = [];
+			foreach($identityData as $itemId => $itemValue) {
 
-                    if ( $identityData['email'] !== $data->emailAddress ) return false;
-                    return true;
+				if( in_array($itemId, ['email', 'fullname', 'name', 'family', 'displayName']) ) {
+					$data[$itemId] = $itemValue;
+					continue;
+				}
 
-                } catch (RequestException $e) {
-                    return false;
-                }
-            case 'google':
-                
-                if ( !isset( $serviceData['access_token'] ) || empty( $serviceData['access_token'] ) ) return false;
-                
-                $url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' . $serviceData['access_token'];
+				foreach($fieldsData as $fieldData) {
 
-                $client = new Client();
+					if( $fieldData['fieldOptions']['id'] === $itemId ) {
+						$mapId = $fieldData['mapOptions']['id'];
+						$data[$mapId] = $service->prepareFieldValueToSave($fieldData['mapOptions'], $itemValue);
+					}
+				}
+			}
 
-                try {
-                    $result = $client->request('GET', $url);
-                    $body = $result->getBody();
+			return $data;
+		}
 
-                    if ( empty($body) ) return false;
+		/**
+		 * Replaces keys of identity data of the view 'cf3' with the labels the user enteres in the locker settings.
+		 */
+		public function mapToCustomLabels($service, $itemId, $identityData)
+		{
 
-                    $data = json_decode($body);
-                    if ( !isset( $data->email ) ) return false;
+			$formType = Yii::$app->locker->getOption($itemId, 'form_type', true);
+			$strFieldsJson = Yii::$app->locker->getOption($itemId, 'custom_fields', null);
 
-                    if ( $identityData['email'] !== $data->email ) return false;
+			if( 'custom-form' !== $formType || empty($strFieldsJson) ) {
+				return $identityData;
+			}
 
-                    return true;
+			$fieldsData = json_decode($strFieldsJson, true);
 
-                } catch (RequestException $e) {
-                    return false;
-                }
+			$data = [];
+			foreach($identityData as $itemId => $itemValue) {
 
-            case 'vk':
+				if( in_array($itemId, ['email', 'fullname', 'name', 'family', 'displayName']) ) {
+					$data[$itemId] = $itemValue;
+					continue;
+				}
 
-				if ( !isset( $serviceData['accessToken'] ) || empty( $serviceData['accessToken'] ) ) return false;
+				foreach($fieldsData as $fieldData) {
 
-	            $url = 'https://api.vk.com/method/users.get?access_token=' . $serviceData['accessToken'];
+					if( $fieldData['fieldOptions']['id'] !== $itemId ) {
+						continue;
+					}
+					$label = $fieldData['serviceOptions']['label'];
 
-                $client = new Client();
+					if( empty($label) ) {
+						continue 2;
+					}
+					$data['{' . $label . '}'] = $itemValue;
+					continue 2;
+				}
 
-                try {
-                    $result = $client->request('GET', $url);
-                    $body = $result->getBody();
+				$data[$itemId] = $itemValue;
+			}
 
-                    if ( empty($body) ) return false;
+			return $data;
+		}
 
-                    $data = json_decode($body);
-                    if ( !isset($serviceData['email']) ) return false;
-                    if ( $identityData['email'] !== $serviceData['email'] ) return false;
+		/**
+		 * Returns true if the user identity data is verified.
+		 */
+		public function verifyUserData($identityData, $serviceData)
+		{
+			$source = isset($identityData['source'])
+				? $identityData['source']
+				: false;
+			if( !$source || empty($serviceData) ) {
+				return false;
+			}
 
-                    return true;
+			switch( $source ) {
+				case 'facebook':
 
-                } catch (RequestException $e) {
-                    return false;
-                }
-        }
-        
-        return false;
-    }
-}
+					if( !isset($serviceData['authResponse']['accessToken']) || empty($serviceData['authResponse']['accessToken']) ) {
+						return false;
+					}
 
-/**
- * An exception which shows the error for public.
- */
-class HandlerException extends Exception {
-    
-    public function __construct ($message) {
-        if ( is_string( $message )) {
-            parent::__construct($message, 0, null);
-        } else {
-            echo 'Error: ';
-            print_r($message);
-            exit;
-        }
-    }
-}
+					$url = 'https://graph.facebook.com/me?access_token=' . $serviceData['authResponse']['accessToken'];
 
-/**
- * An exception which shows hides the error but saves it in the logs.
- */
-class HandlerInternalException extends HandlerException {
-    
-    protected $detailed;
-    
-    public function __construct ($message) {
-        parent::__construct($message, 0, null);
-        $this->detailed = $message;
-        $this->message = 'Unexpected error occurred. Please check the logs for more details.';
-    }
-    
-    public function getDetailed() {
-        return $this->detailed;
-    }
-}
+					$client = new Client();
+
+					try {
+						$result = $client->request('GET', $url);
+						$body = $result->getBody();
+
+						if( empty($body) ) {
+							return false;
+						}
+
+						$data = json_decode($body);
+						if( !isset($data->email) ) {
+							return false;
+						}
+
+						$email = str_replace('\u0040', '@', $data->email);
+						if( $identityData['email'] !== $email ) {
+							return false;
+						}
+
+						return true;
+					} catch( RequestException $e ) {
+						return false;
+					}
+
+				case 'twitter':
+
+					if( !isset($serviceData['visitorId']) || empty($serviceData['visitorId']) ) {
+						return false;
+					}
+
+					$token = $this->getValue($serviceData['visitorId'], 'twitter_token');
+					$secret = $this->getValue($serviceData['visitorId'], 'twitter_secret');
+
+					if( empty($token) || empty($secret) ) {
+						return false;
+					}
+
+					$options = Module::getConnectOptions('twitter');
+
+					$handler = new TwitterHandler($options, true);
+
+					$response = $handler->getUserData($serviceData['visitorId'], true);
+
+					if( !isset($response->email) || empty($response->email) ) {
+						return false;
+					}
+					if( $identityData['email'] !== $response->email ) {
+						return false;
+					}
+
+					return true;
+
+				case 'linkedin':
+
+					if( !isset($serviceData['accessToken']) || empty($serviceData['accessToken']) ) {
+						return false;
+					}
+
+					$url = 'https://api.linkedin.com/v1/people/~:(emailAddress)?oauth2_access_token=' . $serviceData['accessToken'];
+
+					$client = new Client();
+
+					try {
+						$result = $client->request('GET', $url, [
+							'headers' => 'x-li-format: json'
+						]);
+						$body = $result->getBody();
+
+						if( empty($body) ) {
+							return false;
+						}
+
+						$data = json_decode($body);
+						if( !isset($data->emailAddress) ) {
+							return false;
+						}
+
+						if( $identityData['email'] !== $data->emailAddress ) {
+							return false;
+						}
+
+						return true;
+					} catch( RequestException $e ) {
+						return false;
+					}
+				case 'google':
+
+					if( !isset($serviceData['access_token']) || empty($serviceData['access_token']) ) {
+						return false;
+					}
+
+					$url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' . $serviceData['access_token'];
+
+					$client = new Client();
+
+					try {
+						$result = $client->request('GET', $url);
+						$body = $result->getBody();
+
+						if( empty($body) ) {
+							return false;
+						}
+
+						$data = json_decode($body);
+						if( !isset($data->email) ) {
+							return false;
+						}
+
+						if( $identityData['email'] !== $data->email ) {
+							return false;
+						}
+
+						return true;
+					} catch( RequestException $e ) {
+						return false;
+					}
+
+				case 'vk':
+
+					if( !isset($serviceData['accessToken']) || empty($serviceData['accessToken']) ) {
+						return false;
+					}
+
+					$url = 'https://api.vk.com/method/users.get?access_token=' . $serviceData['accessToken'];
+
+					$client = new Client();
+
+					try {
+						$result = $client->request('GET', $url);
+						$body = $result->getBody();
+
+						if( empty($body) ) {
+							return false;
+						}
+
+						$data = json_decode($body);
+						if( !isset($serviceData['email']) ) {
+							return false;
+						}
+						if( $identityData['email'] !== $serviceData['email'] ) {
+							return false;
+						}
+
+						return true;
+					} catch( RequestException $e ) {
+						return false;
+					}
+			}
+
+			return false;
+		}
+	}
+
+	/**
+	 * An exception which shows the error for public.
+	 */
+	class HandlerException extends Exception {
+
+		public function __construct($message)
+		{
+			if( is_string($message) ) {
+				parent::__construct($message, 0, null);
+			} else {
+				echo 'Error: ';
+				print_r($message);
+				exit;
+			}
+		}
+	}
+
+	/**
+	 * An exception which shows hides the error but saves it in the logs.
+	 */
+	class HandlerInternalException extends HandlerException {
+
+		protected $detailed;
+
+		public function __construct($message)
+		{
+			parent::__construct($message, 0, null);
+			$this->detailed = $message;
+			$this->message = 'Unexpected error occurred. Please check the logs for more details.';
+		}
+
+		public function getDetailed()
+		{
+			return $this->detailed;
+		}
+	}
