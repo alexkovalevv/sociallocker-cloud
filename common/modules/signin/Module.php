@@ -26,7 +26,7 @@
 					return [
 						'app_id' => '5337425',
 						'app_secret' => 'Mb69K5lzeDBBuss0W9je',
-						'proxy' => Yii::getAlias('@proxyUrl') . '?opandaHandler=vk'
+						'proxy' => Yii::getAlias('@proxyUrl') . '/vk'
 					];
 				case 'twitter':
 					$consumerKey = 'Fr5DrCse2hsNp5odQdJOexOOA';
@@ -35,7 +35,7 @@
 					return [
 						'consumer_key' => $consumerKey,
 						'consumer_secret' => $consumerSecret,
-						'proxy' => Yii::getAlias('@proxyUrl') . '?opandaHandler=twitter'
+						'proxy' => Yii::getAlias('@proxyUrl') . '/twitter'
 					];
 
 				case 'linkedin':

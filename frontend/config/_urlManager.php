@@ -11,7 +11,8 @@
 			['pattern' => 'article/index', 'route' => 'article/index'],
 			['pattern' => 'article/attachment-download', 'route' => 'article/attachment-download'],
 			['pattern' => 'article/<slug>', 'route' => 'article/view'],
-			['pattern' => 'api/<client_id:\d+>/<site_id:\d+>/get-options.js', 'route' => 'lockers/api/get-options'],
+			['pattern' => 'api/<site_id:\d+>/get-options.js', 'route' => 'lockers/api/get-options'],
+			['pattern' => 'api/connect/<action>', 'route' => 'signin/connect/<action>'],
 			// Api
 			['class' => 'yii\rest\UrlRule', 'controller' => 'api/v1/article', 'only' => ['index', 'view', 'options']],
 			['class' => 'yii\rest\UrlRule', 'controller' => 'api/v1/user', 'only' => ['index', 'view', 'options']],

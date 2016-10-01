@@ -169,11 +169,10 @@
 
 		public function actionHardDelete($id)
 		{
-			$model = new Lockers();
-			$locker = $model->findOne($id);
+			$locker = Lockers::findOne($id);
 
 			if( empty($locker) ) {
-				return;
+				return $this->redirect(['trash']);
 			}
 
 			if( !empty($locker->lockersVisability) ) {
@@ -191,7 +190,7 @@
 			$locker = $model->findOne($id);
 
 			if( empty($locker) ) {
-				return;
+				return $this->redirect(['index']);
 			}
 
 			$locker->status = 'public';
@@ -206,7 +205,7 @@
 			$locker = $model->findOne($id);
 
 			if( empty($locker) ) {
-				return;
+				return $this->redirect(['index']);
 			}
 
 			$locker->status = 'draft';

@@ -17,10 +17,11 @@
 		 * @var string префикс
 		 */
 		public $cachePrefix = '_locker';
+
 		/**
 		 * @var int время хранения кеша
 		 */
-		public $cachingDuration = 60;
+		public $cachingDuration = 300;
 
 		/**
 		 * @var array values временное хранилище настроек
@@ -74,37 +75,111 @@
 		}
 
 		/**
-		 * Получает модель настроек замка
-		 * @param array $condition может быть передано user_id или locker_id
-		 * @return object|null
+		 * Получает все модели замков
+		 * @param array $filters условия получения
+		 * @param bool $all если, true получает замки независимо от сайта
+		 * @param bool $counter если, true возвращает не модель, а счетчик
+		 * @return mixed|null common\modules\lockers\models\lockers
 		 * @throws \Exception
 		 */
-		public function getModel($locker_id, $site_id = null)
+		public function getModels(array $filters, $all = false, $counter = false)
 		{
 			$db = Yii::$app->db;
 			$dep = new DbDependency();
 
-			$dep->sql = "SELECT MAX(updated_at) FROM lockers WHERE id = '{$locker_id}'";
+			if( !isset($filters['user_id']) || empty($filters['user_id']) ) {
+				$filters['user_id'] = Yii::$app->user->getId();
 
-			$result = $db->cache(function ($db) use ($locker_id, $site_id) {
-				$conditions = ['id' => $locker_id];
+				if( empty($filters['user_id']) ) {
+					return null;
+				}
+			}
 
-				if( !empty($site_id) ) {
-					$conditions['site_id'] = $site_id;
+			$dep->sql = "SELECT MAX(updated_at) FROM lockers WHERE user_id = '{$filters['user_id']}'";
+
+			$result = $db->cache(function ($db) use ($filters, $all, $counter) {
+
+				if( !$all && !isset($filters['site_id']) || empty($filters['site_id']) ) {
+					$filters['site_id'] = Yii::$app->userSites->getSelectedId();
 				}
 
-				return Lockers::find()->where($conditions)->one();
-			}, 1800, $dep);
+				if( $all ) {
+					unset($filters['site_id']);
+				}
+
+				if( $counter ) {
+					Lockers::find()->where($filters)->count();
+				}
+
+				if( ArrayHelper::getValue($filters, 'id', false) !== false ) {
+					return Lockers::find()->where($filters)->one();
+				}
+
+				return Lockers::find()->where($filters)->all();
+			}, $this->cachingDuration, $dep);
 
 			return $result;
 		}
 
-		public function getLocker($id, $site_id = null)
+		/**
+		 * Получает счетчик всех замков по текущему выбранному сайту
+		 * @param array $status статус замка: public, draft, trash
+		 * @return mixed|null common\modules\lockers\models\lockers
+		 */
+		public function getCount($status)
 		{
-			return $this->getModel($id, $site_id);
+			return $this->getModels(['status' => $status], false, true);
 		}
 
 		/**
+		 * Получает счетчик всех замков со всех сайтов
+		 * @param string $status статус замка: public, draft, trash
+		 * @return mixed|null common\modules\lockers\models\lockers
+		 */
+		public function getAllCounts($status)
+		{
+			return $this->getModels(['status' => $status], true, true);
+		}
+
+		/**
+		 * Получает все модели замки независимо от сайта
+		 * @param array $filters условия, по которым нужно получить модели
+		 * @return mixed|null common\modules\lockers\models\lockers
+		 */
+		public function getAllLockers(array $filters = [])
+		{
+			return $this->getModels($filters, true);
+		}
+
+		/**
+		 * Получает все модели замки текущего выбранного сайта
+		 * @param array $filters условия, по которым нужно получить модели
+		 * @return mixed|null common\modules\lockers\models\lockers
+		 */
+		public function getLockers(array $filters = [])
+		{
+			return $this->getModels($filters);
+		}
+
+		/**
+		 * Получает модель замка
+		 * @param integer $id
+		 * @param integer $site_id
+		 * @return mixed|null common\modules\lockers\models\lockers
+		 */
+		public function getLocker($id, $site_id = null)
+		{
+			$filters['id'] = $id;
+
+			if( empty($site_id) ) {
+				$filters['site_id'] = $site_id;
+			}
+
+			return $this->getModels($filters);
+		}
+
+		/**
+		 * Генерирует ключ кеш ключ
 		 * @param $key
 		 * @return array
 		 */

@@ -29,7 +29,7 @@
 	Yii::setAlias('@frontendSubscriptionUrl', env('FRONTEND_URL') . '/subscription');
 	Yii::setAlias('@backendSubscriptionUrl', env('BACKEND_URL') . '/subscription');
 
-	Yii::setAlias('@proxyUrl', env('FRONTEND_URL') . '/signin/connect/index');
+	Yii::setAlias('@proxyUrl', env('FRONTEND_URL') . '/api/connect');
 
 	/**
 	 * Setting url aliases

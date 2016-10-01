@@ -61,7 +61,7 @@
 			$identityData = $this->normilizeValues($identityData);
 
 			if( empty($identityData['email']) ) {
-				throw new HandlerException('Unable to subscribe. The email is not specified.');
+				throw new HandlerInternalException('Unable to subscribe. The email is not specified.');
 			}
 
 			// - service data
@@ -84,7 +84,7 @@
 				? $_REQUEST['opandaListId']
 				: null;
 			if( empty($listId) ) {
-				throw new HandlerException('Unable to subscribe. The list ID is not specified.');
+				throw new HandlerInternalException('Unable to subscribe. The list ID is not specified.');
 			}
 
 			// - double opt-in
@@ -199,7 +199,7 @@
 
 				return $result;
 			} catch( Exception $ex ) {
-				throw new HandlerException($ex->getMessage());
+				throw new HandlerInternalException($ex->getMessage());
 			}
 		}
 	}

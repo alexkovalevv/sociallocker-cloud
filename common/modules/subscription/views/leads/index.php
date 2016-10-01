@@ -55,7 +55,7 @@
 				'label' => 'Канал',
 				'format' => 'raw',
 				'value' => function ($data) {
-					return 'Добавлен через: <a href="' . Url::to(['/lockers/default/edit?id=' . $data->lead_item_id]) . '">' . $data->lead_item_title . '</a>';
+					return 'Добавлен через: <a href="' . Url::to(['/lockers/default/edit?id=' . $data->locker_id]) . '">' . $data->lead_item_title . '</a>';
 				}
 			],
 			'created_at:datetime',
@@ -72,7 +72,7 @@
 			],
 			//'lead_email_confirmed:email',
 			// 'lead_subscription_confirmed',
-			// 'lead_item_id',
+			// 'locker_id',
 			// 'lead_item_title',
 			// 'lead_referer:ntext',
 			// 'lead_confirmation_code',

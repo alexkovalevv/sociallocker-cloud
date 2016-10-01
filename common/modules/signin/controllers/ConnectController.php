@@ -6,16 +6,15 @@
 
 	namespace common\modules\signin\controllers;
 
+	use common\modules\signin\models\SigninOauthClients;
 	use common\modules\signin\models\SigninTemp;
 	use Yii;
 	use yii\base\Exception;
-	use yii\base\InvalidParamException;
+	use yii\helpers\ArrayHelper;
 	use yii\web\Controller;
 	use yii\web\HttpException;
 	use yii\web\Response;
-
 	use common\modules\signin\Module;
-
 	use common\modules\signin\handlers\vk\VkHandler;
 	use common\modules\signin\handlers\twitter\TwitterHandler;
 	use common\modules\signin\handlers\subscription\SubscriptionHandler;
@@ -28,30 +27,19 @@
 	class ConnectController extends Controller {
 
 		protected $sToken;
+		protected $oAuthClientId;
+		protected $network;
 
-		public function actionIndex()
+		public function init()
 		{
+			parent::init();
 
 			$headers = Yii::$app->response->headers;
 			$headers->add('Access-Control-Allow-Origin', '*');
 			$headers->add('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
-			$handler_data = isset($_REQUEST['opandaHandler'])
-				? $_REQUEST['opandaHandler']
-				: null;
-			if( is_null($handler_data) || $handler_data == 'index' )
-				return;
-
-			$handler = $handler_data;
-
-			if( strpos($handler_data, '-') !== false ) {
-				$handler_parts = explode('-', $handler_data);
-
-				$handler = $handler_parts[0];
-				$this->sToken = $handler_parts[1];
-			}
-
-			return $this->runAction($handler, $_REQUEST);
+			$this->sToken = Yii::$app->request->get('stoken');
+			$this->oAuthClientId = Yii::$app->request->get('oauth_client_id');
 		}
 
 		public function actionVk()
@@ -99,40 +87,55 @@
 			return $this->render('blank');
 		}
 
-		/**
-		 * Проверяет, авторизовался ли пользователь через хандлер или нет.
-		 * @return string
-		 */
-		public function actionCheckUserData()
+		public function actionOauthClientInfo()
 		{
-
-			$headers = Yii::$app->response->headers;
-			$headers->add('Access-Control-Allow-Origin', '*');
-			$headers->add('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-
-			/*if( !Yii::$app->request->isAjax ) {
-				throw new NotFoundHttpException('Страница не найдена');
-			}*/
-
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
-			$s_token = isset($_POST['s_token'])
-				? $_POST['s_token']
-				: null;
+			if( !empty($this->oAuthClientId) ) {
+				$network = Yii::$app->request->get('network');
 
-			if( empty($s_token) ) {
-				return ['error' => 'Переданы некорректные параметры'];
+				return SigninOauthClients::getClientInfo(['oauth_client_id' => $this->oAuthClientId], $network)
+					? : ['error' => 'Клиента или данных о клиенте не существует.'];
 			}
 
-			$data = SigninTemp::getTempData($s_token);
-
-			if( !empty($data) ) {
-				SigninTemp::removeTempData($s_token);
-
-				return $data;
+			if( !empty($this->sToken) ) {
+				return SigninOauthClients::getClientInfoByToken($this->sToken)
+					? : ['error' => 'Клиента или данных о клиенте не существует.'];
 			}
 
-			return ['error' => 'Пользователь отклонил авторизацию или в ходе выполнения авторизации возникла неизвестная ошибка.'];
+			return ['error' => 'Переданы некорректные параметры запроса'];
+		}
+
+		public function actionSaveClientInfo()
+		{
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			$oauth_client_id = Yii::$app->request->post('oauth_client_id');
+			$stoken = Yii::$app->request->post('stoken');
+			$network = Yii::$app->request->post('network');
+
+			if( empty($oauth_client_id) && empty($stoken) ) {
+				return ['error' => 'Переданы некорректные параметры запроса'];
+			}
+
+			$user_info = [
+				'email' => ArrayHelper::getValue($_POST, 'email'),
+				'uid' => ArrayHelper::getValue($_POST, 'uid'),
+				'display_name' => ArrayHelper::getValue($_POST, 'display_name'),
+				'first_name' => ArrayHelper::getValue($_POST, 'first_name'),
+				'last_name' => ArrayHelper::getValue($_POST, 'last_name'),
+				'profile_url' => ArrayHelper::getValue($_POST, 'profile_url'),
+				'avatar_url' => ArrayHelper::getValue($_POST, 'avatar_url')
+			];
+
+			$result = SigninOauthClients::saveClientInfo($oauth_client_id, $stoken, $network, $user_info);
+
+			if( !empty($result) ) {
+				return SigninOauthClients::getClientInfo(['oauth_client_id' => $result], $network)
+					? : ['error' => 'Клиента или данных о клиенте не существует.'];
+			}
+
+			return ['error' => 'Данные о клиенте не были сохранены из-за неизвестной ошибки.'];
 		}
 
 		/**
@@ -147,10 +150,12 @@
 
 			try {
 				$handler->sToken = $this->sToken;
+				$handler->oAuthClientId = $this->oAuthClientId;
 
 				return $handler->handleRequest();
 			} catch( HandlerInternalException $ex ) {
-				return ['error' => $ex->getMessage(), 'detailed' => $ex->getDetailed()];
+				Yii::$app->response->format = Response::FORMAT_HTML;
+				throw new HttpException('400', $ex->getDetailed());
 			} catch( HandlerException $ex ) {
 				return ['error' => $ex->getMessage()];
 			} catch( Exception $ex ) {

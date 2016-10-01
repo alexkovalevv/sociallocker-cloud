@@ -12,7 +12,7 @@
 	$this->params['breadcrumbs'][] = ['label' => 'Мои сайты', 'url' => ['index']];
 	$this->params['breadcrumbs'][] = $this->title;
 
-	$js = '<script>!function(a,b,c){b[c]={client_id:' . $model->user_id . ',site_id: ' . $model->id . '};var d=a.getElementsByTagName("script")[0],e=a.createElement("script"),f=function(){d.parentNode.insertBefore(e,d)};e.type="text/javascript",e.async=!1,e.src="//cdn.sociallocker.ru/service/loader.js","[object Opera]"==b.opera?a.addEventListener("DOMContentLoaded",f,!1):f()}(document,window,"_onpwgt");</script>';
+	$js = '<script>!function(a,b,c){b[c]={site_id: ' . $model->id . '};var d=a.getElementsByTagName("script")[0],e=a.createElement("script"),f=function(){d.parentNode.insertBefore(e,d)};e.type="text/javascript",e.async=!1,e.src="//cdn.sociallocker.ru/service/loader.js","[object Opera]"==b.opera?a.addEventListener("DOMContentLoaded",f,!1):f()}(document,window,"_onpwgt");</script>';
 	//$js_output = htmlentities($js);
 ?>
 <div class="sites-create-step2">

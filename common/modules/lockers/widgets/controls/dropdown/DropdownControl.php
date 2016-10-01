@@ -1,203 +1,215 @@
 <?php
-/**
- * Выпадающий список с возможностью добавления иконки и краткого описания
- * к внутреннему элементу списка.
- * @author Alex Kovalevv <alex.kovalevv@gmail.com>
- * @copyright Copyright &copy; Alex Kovalev, sociallocker.ru, 2016
- * @package yii2-widgets
- * @version 1.0.0
- */
-namespace common\modules\lockers\widgets\controls\dropdown;
+	/**
+	 * Выпадающий список с возможностью добавления иконки и краткого описания
+	 * к внутреннему элементу списка.
+	 * @author Alex Kovalevv <alex.kovalevv@gmail.com>
+	 * @copyright Copyright &copy; Alex Kovalev, sociallocker.ru, 2016
+	 * @package yii2-widgets
+	 * @version 1.0.0
+	 */
+	namespace common\modules\lockers\widgets\controls\dropdown;
 
-use Yii;
-use yii\base\Exception;
-use yii\base\Model;
-use yii\base\Widget;
-use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
+	use Yii;
+	use yii\base\Exception;
+	use yii\base\Model;
+	use yii\base\Widget;
+	use yii\helpers\Html;
+	use yii\helpers\ArrayHelper;
 
-/*
- * Пример использования:
-==================================================================
-$form->field($model, 'subscription_to_service')->widget(
-	DropdownControl::classname(), [
-		'type'      => 'ddslick',
-		'default'   => 'aweber',
-		'items'     => [
-			[
-				'value'  => 'aweber',
-				'text' => 'Aweber',
-				'imageSrc'  => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/aweber.png',
-				'imageHoverSrc' => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/aweber.png',
-				'description'  => 'Синхронизировать формы подписки с сервисом Aweber'
-			],
-			[
-				'value'  => 'mailchimp',
-				'text' => 'Mailchimp',
-				'imageSrc'  => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/mailchimp.png',
-				'imageHoverSrc' => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/mailchimp.png',
-				'description'  => 'Синхронизировать формы подписки с сервисом Aweber',
+	/*
+	 * Пример использования:
+	==================================================================
+	$form->field($model, 'subscription_to_service')->widget(
+		DropdownControl::classname(), [
+			'type'      => 'ddslick',
+			'default'   => 'aweber',
+			'items'     => [
+				[
+					'value'  => 'aweber',
+					'text' => 'Aweber',
+					'imageSrc'  => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/aweber.png',
+					'imageHoverSrc' => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/aweber.png',
+					'description'  => 'Синхронизировать формы подписки с сервисом Aweber'
+				],
+				[
+					'value'  => 'mailchimp',
+					'text' => 'Mailchimp',
+					'imageSrc'  => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/gray/mailchimp.png',
+					'imageHoverSrc' => 'https://cconp.s3.amazonaws.com/optinpanda/mailing-services/colored/mailchimp.png',
+					'description'  => 'Синхронизировать формы подписки с сервисом Aweber',
+				]
 			]
 		]
-	]
-);
-==================================================================
-$form->field($model, 'subscription_to_service')->widget(
-	DropdownControl::classname(), [
-		'type'      => 'default',
-		'default'   => 'aweber',
-		'items'     => [
-			[
-				'value'  => 'aweber',
-				'text' => 'Aweber'
-			],
-			[
-				'value'  => 'mailchimp',
-				'text' => 'Mailchimp'
+	);
+	==================================================================
+	$form->field($model, 'subscription_to_service')->widget(
+		DropdownControl::classname(), [
+			'type'      => 'default',
+			'default'   => 'aweber',
+			'items'     => [
+				[
+					'value'  => 'aweber',
+					'text' => 'Aweber'
+				],
+				[
+					'value'  => 'mailchimp',
+					'text' => 'Mailchimp'
+				]
 			]
 		]
-	]
-);
-==================================================================
-*/
+	);
+	==================================================================
+	*/
 
-class DropdownControl extends Widget
-{
-	/**
-	 * @var $name имя поля
-	 */
-	protected $name;
+	class DropdownControl extends Widget {
 
-	/**
-	 * @var $value значение поля
-	 */
-	protected $value;
+		/**
+		 * @var $name имя поля
+		 */
+		protected $name;
 
-	/**
-	 * @var int $id идентификатор поля
-	 */
-	protected $id;
+		/**
+		 * @var $value значение поля
+		 */
+		protected $value;
 
-	/**
-	 * @var string $type тип выпадающего списка, это может быть default, ddslick
-	 * default обычное выпадающее меню
-	 * ddslic  выпадающий список может содержать иконки и короткое описание
-	 * button  кнопка при нажатии на которую, открывается выдающий список
-	 */
-	public $type = "default";
+		/**
+		 * @var int $id идентификатор поля
+		 */
+		protected $id;
 
-	public $model;
+		/**
+		 * @var string $type тип выпадающего списка, это может быть default, ddslick
+		 * default обычное выпадающее меню
+		 * ddslic  выпадающий список может содержать иконки и короткое описание
+		 * button  кнопка при нажатии на которую, открывается выдающий список
+		 */
+		public $type = "default";
 
-	public $attribute;
+		public $model;
 
-	/**
-	 * @var boolean если true, использует ajax для получания $items.
-	 */
-	public $ajax = false;
+		public $attribute;
 
-    /**
-     * @var string если ajax true, можно задать callback.
-     * В параметр callback нужно передать событие для тригера, например: fieldsEditor.load
-     */
-    public $callback;
+		/**
+		 * @var boolean если true, использует ajax для получания $items.
+		 */
+		public $ajax = false;
 
-	/**
-	 * @var array|string элементы массива. Если используется ajax, сюда передается url
-	 */
-	public $items;
+		/**
+		 * @var string если ajax true, можно задать callback.
+		 * В параметр callback нужно передать событие для тригера, например: fieldsEditor.load
+		 */
+		public $callback;
 
-	/**
-	 * @var string название поля
-	 */
-	public $label;
+		/**
+		 * @var array|string элементы массива. Если используется ajax, сюда передается url
+		 */
+		public $items;
 
-	/**
-	 * @var string короткое описание поля
-	 */
-	public $hint;
+		/**
+		 * @var string название поля
+		 */
+		public $label;
 
-	/**
-	 * @var string значение по умолчанию
-	 */
-	public $default = null;
+		/**
+		 * @var string короткое описание поля
+		 */
+		public $hint;
 
-	/**
-	 * @var boolean $liveSearch поиск по списку
-	 */
-	public $liveSearch = false;
+		/**
+		 * @var string значение по умолчанию
+		 */
+		public $default = null;
 
-	/**
-	 * @var string $style стиль кнопки, класс бутстрап кнопок.
-	 */
-	public $style = 'btn-default';
+		/**
+		 * @var boolean $liveSearch поиск по списку
+		 */
+		public $liveSearch = false;
 
-	/**
-	 * @var int $width ширина поля
-	 */
-	public $width = 450;
+		/**
+		 * @var string $style стиль кнопки, класс бутстрап кнопок.
+		 */
+		public $style = 'btn-default';
 
-	/**
-	 * @var array $labelOptions опции текстовой метки.
-	 * ['class' => 'one-label', 'id' => 'two-label']
-	 */
-	public $itemOptions = [];
+		/**
+		 * @var int $width ширина поля
+		 */
+		public $width = 450;
 
-	/**
-	 * @inheritdoc
-	 */
-	public function init()
-	{
-		parent::init();
+		/**
+		 * @var array $labelOptions опции текстовой метки.
+		 * ['class' => 'one-label', 'id' => 'two-label']
+		 */
+		public $itemOptions = [];
 
-		if( $this->type === "ddslick" && $this->ajax ) {
-			throw new Exception('Параметр ajax не доступен для выпадающего списка с типом ddslick(' . $this->attribute . ').');
+		/**
+		 * @inheritdoc
+		 */
+		public function init()
+		{
+			parent::init();
+
+			if( $this->type === "ddslick" && $this->ajax ) {
+				throw new Exception('Параметр ajax не доступен для выпадающего списка с типом ddslick(' . $this->attribute . ').');
+			}
+
+			if( empty($this->items) && $this->ajax ) {
+				throw new Exception('Не передан атрибут items(' . $this->attribute . ').');
+			}
+
+			if( empty($this->items) && !is_array($this->items) && !$this->ajax ) {
+				throw new Exception('Не передан атрибут items или атрибут не является массивом (' . $this->attribute . ').');
+			}
+
+			/*if( !is_string($this->callback) ) {
+				throw new Exception('Атрибут callback должен быть строкой (' . $this->attribute . ').');
+			}*/
+
+			$this->view = $this->getView();
+			$this->liveSearch = $this->liveSearch
+				? 1
+				: 0;
+
+			$this->name = !empty($this->model)
+				? Html::getInputName($this->model, $this->attribute)
+				: $this->attribute;
+
+			$this->id = !empty($this->model)
+				? Html::getInputId($this->model, $this->attribute)
+				: $this->attribute;
+
+			$this->value = !empty($this->model)
+				? Html::getAttributeValue($this->model, $this->attribute)
+				: null;
+
+			if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) ) {
+				$this->value = $this->default;
+			}
+
+			DropdownControlAssets::register($this->view);
 		}
 
-		if( empty($this->items) && $this->ajax ) {
-			throw new Exception('Не передан атрибут items(' . $this->attribute . ').');
-		}
+		public function run()
+		{
+			parent::run();
 
-		if( empty($this->items) && !is_array($this->items) && !$this->ajax ) {
-			throw new Exception('Не передан атрибут items или атрибут не является массивом (' . $this->attribute . ').');
-		}
-
-        /*if( !is_string($this->callback) ) {
-            throw new Exception('Атрибут callback должен быть строкой (' . $this->attribute . ').');
-        }*/
-
-		$this->view = $this->getView();
-		$this->liveSearch = $this->liveSearch ? 1 : 0;
-		$this->name = Html::getInputName($this->model, $this->attribute);
-		$this->id   = Html::getInputId($this->model, $this->attribute);
-		$this->value = Html::getAttributeValue($this->model, $this->attribute);
-
-		if( ($this->value === '' || is_null($this->value)) && !is_null($this->default) )
-			$this->value = $this->default;
-
-		DropdownControlAssets::register($this->view);
-	}
-
-	public function run()
-	{
-		parent::run();
-
-		if( $this->type === 'ddslick' ) {
-			echo $this->renderDdslick();
-		} else {
-			echo $this->renderDefault();
-		}
-	}
-
-	protected function renderDdslick()
-	{
-		foreach( $this->items as $key => $item ) {
-			if( $item['value'] === $this->value ) {
-				$this->items[$key]['selected'] = true;
+			if( $this->type === 'ddslick' ) {
+				echo $this->renderDdslick();
+			} else {
+				echo $this->renderDefault();
 			}
 		}
-		$ddData = json_encode($this->items);
 
-		$js = <<<JS
+		protected function renderDdslick()
+		{
+			foreach($this->items as $key => $item) {
+				if( $item['value'] === $this->value ) {
+					$this->items[$key]['selected'] = true;
+				}
+			}
+			$ddData = json_encode($this->items);
+
+			$js = <<<JS
 		(function($){
 			$(function(){
 	           $('.wt-dropdown-ddslick').ddslick({
@@ -223,42 +235,41 @@ class DropdownControl extends Widget
     	})(jQuery);
 JS;
 
-		$this->view->registerJs($js);
+			$this->view->registerJs($js);
 
-		Html::addCssClass($this->itemOptions, 'wt-dropdown-ddslick');
-		$this->itemOptions = ArrayHelper::merge($this->itemOptions, ['id' => $this->id]);
+			Html::addCssClass($this->itemOptions, 'wt-dropdown-ddslick');
+			$this->itemOptions = ArrayHelper::merge($this->itemOptions, ['id' => $this->id]);
 
-		$output = Html::tag('div', '', $this->itemOptions);
-		$output .= Html::hiddenInput($this->name, $this->value, [
-			'class' => 'wt-dropdown-ddslick-result'
-		]);
+			$output = Html::tag('div', '', $this->itemOptions);
+			$output .= Html::hiddenInput($this->name, $this->value, [
+				'class' => 'wt-dropdown-ddslick-result'
+			]);
 
-		return $output;
-	}
-
-	protected function renderDefault()
-	{
-		$items = [];
-
-		if( !$this->ajax ) {
-			$item_hints = [];
-			foreach( $this->items as $item ) {
-				$items[$item['value']] = $item['text'];
-				$item_hints[$item['value']] = ArrayHelper::getValue( $item, 'hint' );
-			}
-			$this->itemOptions['data-item-hints'] = $item_hints;
-		} else {
-            $ajaxUrl = $this->items;
-
-            $items['none'] = '--- идет поиск ---';
-            Html::addCssClass($this->itemOptions, 'wt-dropdown-ajax');
-            $this->itemOptions['data-ajax-url'] = $ajaxUrl;
-            $this->itemOptions['data-ajax-callback'] = $this->callback;
-            $this->itemOptions['data-value'] = $this->value;
-
+			return $output;
 		}
 
-		$js = <<<JS
+		protected function renderDefault()
+		{
+			$items = [];
+
+			if( !$this->ajax ) {
+				$item_hints = [];
+				foreach($this->items as $item) {
+					$items[$item['value']] = $item['text'];
+					$item_hints[$item['value']] = ArrayHelper::getValue($item, 'hint');
+				}
+				$this->itemOptions['data-item-hints'] = $item_hints;
+			} else {
+				$ajaxUrl = $this->items;
+
+				$items['none'] = '--- идет поиск ---';
+				Html::addCssClass($this->itemOptions, 'wt-dropdown-ajax');
+				$this->itemOptions['data-ajax-url'] = $ajaxUrl;
+				$this->itemOptions['data-ajax-callback'] = $this->callback;
+				$this->itemOptions['data-value'] = $this->value;
+			}
+
+			$js = <<<JS
 		(function($){
 			$(function(){
 			   $('.wt-dropdown-select').selectpicker({
@@ -270,11 +281,10 @@ JS;
     	})(jQuery);
 JS;
 
-		$this->view->registerJs($js);
+			$this->view->registerJs($js);
 
+			Html::addCssClass($this->itemOptions, 'wt-dropdown-select');
 
-		Html::addCssClass($this->itemOptions, 'wt-dropdown-select');
-
-		return Html::dropDownList($this->name, $this->value, $items, $this->itemOptions);
+			return Html::dropDownList($this->name, $this->value, $items, $this->itemOptions);
+		}
 	}
-}

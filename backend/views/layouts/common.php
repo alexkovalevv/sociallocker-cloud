@@ -5,6 +5,9 @@
 	use backend\assets\BackendAsset;
 	use backend\widgets\Menu;
 	use common\models\TimelineEvent;
+	use common\modules\lockers\widgets\controls\dropdown\DropdownControl;
+	use common\modules\lockers\models\stats\StatUnlocksSearch;
+	use common\modules\sites\models\SitesForm;
 	use yii\helpers\ArrayHelper;
 	use yii\helpers\Html;
 	use yii\helpers\Url;
@@ -30,7 +33,40 @@
 					<span class="icon-bar"></span>
 				</a>
 
-				<div class="navbar-custom-menu">
+				<div class="choice-sites-area" style="display: inline-block;padding-top:8px;">
+					<?php
+						$userSites = Yii::$app->userSites->getSites(['status' => SitesForm::STATUS_ACTIVE]);
+						$list = [];
+						$selected_site = null;
+
+						foreach($userSites as $site) {
+
+							if( empty($site->url) ) {
+								continue;
+							}
+
+							if( $site->selected === SitesForm::SELECTED ) {
+								$selected_site = $site->id;
+							}
+
+							$list[] = [
+								'value' => $site->id,
+								'text' => $site->url
+
+							];
+						}
+
+						echo DropdownControl::widget([
+							'attribute' => 'choice_sites_dropdown',
+							'items' => $list,
+							'default' => $selected_site
+						]);
+
+						//$('.wt-dropdown-select')
+					?>
+					<a href="<?php echo Url::to(['/sites/default/create']) ?>" class="btn btn-default">Добавить</a>
+				</div>
+				<div class=" navbar-custom-menu">
 					<ul class="nav navbar-nav">
 						<li id="timeline-notifications" class="notifications-menu">
 							<a href="<?php echo Url::to(['/timeline-event/index']) ?>">
@@ -148,13 +184,13 @@
 							'label' => 'Основное',
 							'options' => ['class' => 'header']
 						],
-						[
+						/*[
 							'label' => Yii::t('backend', 'События'),
 							'icon' => '<i class="fa fa-bar-chart-o"></i>',
 							'url' => ['/timeline-event/index'],
 							'badge' => TimelineEvent::find()->today()->count(),
 							'badgeBgClass' => 'label-success',
-						],
+						],*/
 						/*[
 							'label'=>Yii::t('backend', 'Content'),
 							'url' => '#',
@@ -170,12 +206,12 @@
 							]
 						],*/
 
-						[
+						/*[
 							'label' => Yii::t('backend', 'Пользователи'),
 							'icon' => '<i class="fa fa-users"></i>',
 							'url' => ['/user/index'],
 							'visible' => Yii::$app->user->can('administrator')
-						],
+						],*/
 						[
 							'label' => 'Мои сайты',
 							'url' => ['/sites/default/index'],
@@ -194,9 +230,9 @@
 							'icon' => '<i class="fa fa-envelope-o" aria-hidden="true"></i>'
 						],
 						[
-							'label' => 'Отметки',
-							'url' => ['#'],
-							'badge' => '1684',
+							'label' => 'Уведомления',
+							'url' => ['/lockers/stats/events'],
+							'badge' => StatUnlocksSearch::getCount(),
 							'badgeBgClass' => 'label-primary',
 							'icon' => '<i class="fa fa-share-alt" aria-hidden="true"></i>'
 						],
@@ -211,7 +247,7 @@
 
 							]
 						],
-						[
+						/*[
 							'label' => Yii::t('backend', 'Other'),
 							'url' => '#',
 							'icon' => '<i class="fa fa-cogs"></i>',
@@ -268,7 +304,7 @@
 									'badgeBgClass' => 'label-danger',
 								],
 							]
-						]
+						]*/
 					]
 				]) ?>
 			</section>

@@ -53,18 +53,6 @@
 		}
 
 		/**
-		 * Displays a single Sites model.
-		 * @param integer $id
-		 * @return mixed
-		 */
-		public function actionView($id)
-		{
-			return $this->render('view', [
-				'model' => $this->findModel($id),
-			]);
-		}
-
-		/**
 		 * Creates a new Sites model.
 		 * If creation is successful, the browser will be redirected to the 'view' page.
 		 * @return mixed
@@ -173,26 +161,15 @@
 			}
 		}
 
-		/**
-		 * Updates an existing Sites model.
-		 * If update is successful, the browser will be redirected to the 'view' page.
-		 * @param integer $id
-		 * @return mixed
-		 */
-		public function actionUpdate($id)
+		public function actionChoice($site_id)
 		{
-			$model = $this->findModel($id);
-
-			if( $model->load(Yii::$app->request->post()) && $model->save() ) {
-				$id = Yii::$app->db->getLastInsertID();
-
-				return $this->redirect(['view', 'id' => $id]);
-			} else {
-				return $this->render('update', [
-					'model' => $model,
-				]);
+			if( !Yii::$app->userSites->setSelected($site_id) ) {
+				throw new NotFoundHttpException('Не возможно выбрать сайт, так как он неактивен или не существует!');
 			}
+
+			return $this->goBack(Yii::$app->request->getReferrer());
 		}
+
 
 		/**
 		 * Deletes an existing Sites model.

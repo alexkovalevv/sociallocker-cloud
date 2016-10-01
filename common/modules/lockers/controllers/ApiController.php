@@ -5,17 +5,17 @@
 	 */
 	namespace common\modules\lockers\controllers;
 
-	use common\modules\lockers\models\lockers\Lockers;
-	use common\modules\lockers\models\stats\LockersStatImpress;
-	use common\modules\lockers\models\stats\LockersStatUnlock;
-	use common\modules\lockers\models\visability\LockersVisability;
-	use common\modules\subscription\classes\SubscriptionServices;
 	use Yii;
 	use yii\web\Response;
 	use yii\helpers\ArrayHelper;
 	use yii\helpers\Json;
 	use yii\web\Controller;
 	use yii\web\NotFoundHttpException;
+	use common\modules\lockers\models\lockers\Lockers;
+	use common\modules\lockers\models\stats\StatImpress;
+	use common\modules\lockers\models\stats\StatUnlocks;
+	use common\modules\lockers\models\visability\LockersVisability;
+	use common\modules\subscription\classes\SubscriptionServices;
 
 	class ApiController extends Controller {
 
@@ -54,7 +54,7 @@
 			switch( $param['stats']['eventName'] ) {
 				case 'impress':
 
-					$impress_model = new LockersStatImpress();
+					$impress_model = new StatImpress();
 					$impress_model->locker_id = $param['context']['lockerId'];
 					$impress_model->aggregate_date = date('d.m.Y');
 					$impress_model->site_url = $param['context']['domain'];
@@ -68,7 +68,7 @@
 					return ['success' => 'Данные успешно обновлены'];
 					break;
 				case 'unlock':
-					$unlock_model = new LockersStatUnlock();
+					$unlock_model = new StatUnlocks();
 					$unlock_model->locker_id = ArrayHelper::getValue($param['context'], 'lockerId');
 					$unlock_model->button_name = ArrayHelper::getValue($param['stats'], 'buttonName');
 					$unlock_model->network_user_id = ArrayHelper::getValue($param['stats'], 'userId', 0);
@@ -88,7 +88,7 @@
 			return $param;
 		}
 
-		public function actionGetOptions($client_id, $site_id)
+		public function actionGetOptions($site_id)
 		{
 			$headers = Yii::$app->response->headers;
 			$headers->add('Access-Control-Allow-Origin', '*');
@@ -96,10 +96,11 @@
 			Yii::$app->response->format = Response::FORMAT_HTML;
 
 			$options = [];
-			$lockers = Lockers::find()->where([
-				'user_id' => $client_id,
+
+			$lockers = Yii::$app->locker->getLockers([
+				'site_id' => $site_id,
 				'status' => 'public'
-			])->all();
+			]);
 
 			foreach($lockers as $locker) {
 
@@ -135,14 +136,6 @@
 
 				if( $locker->type === 'signinlocker' ) {
 					$locker_options['groups'] = ['connect-buttons'];
-					/*if( window.terms && window.privacy ) {
-						this.lockerOptions.terms = window.terms;
-						this.lockerOptions.termsPopup = {
-							width:  570,
-                        height: 400
-                    };
-                    this.lockerOptions.privacyPolicy = window.privacy;
-                }*/
 				} else if( $locker->type === 'emaillocker' ) {
 
 					$locker_options['groups'] = ['subscription'];

@@ -23,7 +23,7 @@
 	 * @property integer $updated_at
 	 * @property integer $lead_email_confirmed
 	 * @property integer $lead_subscription_confirmed
-	 * @property integer $lead_item_id
+	 * @property integer $locker_id
 	 * @property string $lead_item_title
 	 * @property string $lead_referer
 	 * @property string $lead_confirmation_code
@@ -56,7 +56,7 @@
 			return [
 				[['user_id', 'lead_email'], 'required'],
 				[['user_id'], 'safe'],
-				[['user_id', 'lead_email_confirmed', 'lead_subscription_confirmed', 'lead_item_id'], 'integer'],
+				[['user_id', 'lead_email_confirmed', 'lead_subscription_confirmed', 'locker_id'], 'integer'],
 				[['lead_referer', 'lead_temp'], 'string'],
 				[['lead_display_name', 'lead_item_title'], 'string', 'max' => 255],
 				[['lead_name', 'lead_family'], 'string', 'max' => 100],
@@ -80,7 +80,7 @@
 				'updated_at' => 'Обновлен',
 				'lead_email_confirmed' => 'Email подтвержден',
 				'lead_subscription_confirmed' => 'Подписка подтверждена',
-				'lead_item_id' => 'ID замка',
+				'locker_id' => 'ID замка',
 				'lead_item_title' => 'Заголовок замка',
 				'lead_referer' => 'Откуда пришел',
 				'lead_confirmation_code' => 'Код подтверждения',
@@ -176,7 +176,7 @@
 					? json_encode($temp)
 					: null;
 				$this->lead_email = $email;
-				$this->lead_item_id = $lockerId;
+				$this->locker_id = $lockerId;
 				$this->lead_item_title = $itemTitle;
 				$this->lead_referer = $pageUrl;
 				//$this->lead_ip = Yii::$app->request->getUserIP();
@@ -399,23 +399,18 @@
 			return self::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
 		}*/
 
-		public static function getCount($cache = true)
+		public static function getCount()
 		{
-			$count = null;
-			$cacheKey = self::getCacheKey();
+			$lockers = Yii::$app->locker->getLockers();
+			$range = [];
 
-			if( $cache ) {
-				$count = Yii::$app->cache->get($cacheKey);
-
-				if( $count && ($count === '0' || !empty($count)) ) {
-					return intval($count);
-				}
+			foreach($lockers as $locker) {
+				$range[] = $locker->id;
 			}
 
-			$count = self::find()->where(['user_id' => Yii::$app->user->identity->id])->count();
-			Yii::$app->cache->get($cacheKey, $count, 60 * 5);
-
-			return $count;
+			return Leads::find()->where([
+				'locker_id' => $range
+			])->count();
 		}
 
 		public static function updateCount()

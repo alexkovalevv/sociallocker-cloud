@@ -39,13 +39,17 @@
 				'format' => 'raw',
 				'value' => function ($data) {
 					$link_options = ['class' => 'btn btn-default'];
+					$link_route = 'default/get-code';
+					$link_text = 'Получить код отслеживания';
 
 					if( $data->status !== SitesForm::STATUS_ACTIVE ) {
-						$link_options['class'] .= ' disabled';
+						$link_route = 'default/site-verify';
+						$link_text = 'Подключить сайт';
+						$link_options['class'] = 'btn btn-warning';
 					}
 
-					return Html::a('Получить код отслеживания', Url::toRoute([
-						'default/get-code',
+					return Html::a($link_text, Url::toRoute([
+						$link_route,
 						'site_id' => $data->id
 					]), $link_options);
 				}

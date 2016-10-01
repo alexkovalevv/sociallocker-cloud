@@ -13,6 +13,8 @@
 	class Handler {
 
 		public $srorage;
+		public $sToken;
+		public $oAuthClientId;
 
 		public function __construct($options)
 		{
