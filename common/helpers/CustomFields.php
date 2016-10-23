@@ -37,6 +37,14 @@
 
 			if( empty($this->model->$attribute) ) {
 				$options['value'] = $this->getFieldValueDefault($attribute);
+
+				if( is_array($options['value']) ) {
+					$options['value'] = json_encode($options['value']);
+				}
+			}
+
+			if( is_array($this->model->$attribute) ) {
+				$this->model->$attribute = json_encode($this->model->$attribute);
 			}
 
 			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->textInput($options);
@@ -63,6 +71,14 @@
 		{
 			if( empty($this->model->$attribute) ) {
 				$options['value'] = $this->getFieldValueDefault($attribute);
+
+				if( is_array($options['value']) ) {
+					$options['value'] = json_encode($options['value']);
+				}
+			}
+
+			if( is_array($this->model->$attribute) ) {
+				$this->model->$attribute = json_encode($this->model->$attribute);
 			}
 
 			return $this->form->field($this->model, $attribute, $this->getTemplateActiveField($attribute))->textarea($options);
@@ -165,6 +181,14 @@
 
 			if( empty($this->model->$attribute) ) {
 				$options['value'] = $this->getFieldValueDefault($attribute);
+
+				if( is_array($options['value']) ) {
+					$options['value'] = json_encode($options['value']);
+				}
+			}
+
+			if( is_array($this->model->$attribute) ) {
+				$this->model->$attribute = json_encode($this->model->$attribute);
 			}
 
 			return $this->form->field($this->model, $attribute)->hiddenInput($options)->label(false);

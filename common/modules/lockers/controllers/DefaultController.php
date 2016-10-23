@@ -17,7 +17,7 @@
 
 	use common\modules\lockers\models\lockers\LockersForm;
 	use common\modules\lockers\models\lockers\Lockers;
-	use common\modules\lockers\models\search\LockersSearch;
+	use common\modules\lockers\models\lockers\search\LockersSearch;
 	use common\modules\lockers\models\settings\Settings;
 
 	use common\modules\lockers\models\lockers\metaboxes\AdvancedMetabox;
@@ -100,7 +100,7 @@
 
 		public function actionEdit($id)
 		{
-			$lockers_model = Yii::$app->locker->getLocker($id);
+			$lockers_model = Yii::$app->lockers->getLocker($id);
 
 			if( empty($lockers_model) ) {
 				return $this->redirect(['index']);
@@ -135,7 +135,7 @@
 				'model_query' => $lockers_model,
 				'type' => $type,
 				'locker_id' => $id,
-				'settings' => Json::htmlEncode(Yii::$app->lockersSettings->getAll(), JSON_UNESCAPED_UNICODE)
+				'settings' => Json::htmlEncode(Yii::$app->lockers->getSettings(), JSON_UNESCAPED_UNICODE)
 			]);
 		}
 
@@ -216,12 +216,12 @@
 
 		public function actionTerms()
 		{
-			echo Yii::$app->lockersSettings->getOne('terms_of_use_text');
+			echo Yii::$app->lockers->getTerms();
 		}
 
 		public function actionPrivacy()
 		{
-			echo Yii::$app->lockersSettings->getOne('privacy_policy_text');
+			echo Yii::$app->lockers->getPolice();
 		}
 
 		protected function initMultimodel($type)

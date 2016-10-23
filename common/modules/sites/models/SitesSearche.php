@@ -41,7 +41,9 @@
 		 */
 		public function search($params)
 		{
-			$query = Sites::find();
+			$user_id = Yii::$app->user->getId();
+
+			$query = Sites::find()->where(['user_id' => $user_id]);
 
 			// add conditions that should always apply here
 

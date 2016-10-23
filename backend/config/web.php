@@ -33,11 +33,14 @@
 				'enableAutoLogin' => true,
 				'as afterLogin' => 'common\behaviors\LoginTimestampBehavior'
 			],
-			'lockersSettings' => [
-				'class' => 'common\modules\lockers\components\LockersSettings'
+			'settings' => [
+				'class' => 'backend\components\Settings'
 			],
-			'locker' => [
-				'class' => 'common\modules\lockers\components\Locker'
+			'lockers' => [
+				'class' => 'backend\components\Lockers'
+			],
+			'subscription' => [
+				'class' => 'backend\components\Subscription'
 			],
 			'userSites' => [
 				'class' => 'common\modules\sites\components\UserSites'

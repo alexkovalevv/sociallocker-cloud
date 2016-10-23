@@ -17,6 +17,9 @@
 	 */
 	class StatImpress extends \yii\db\ActiveRecord {
 
+		public $metric_value;
+		public $order_date;
+
 		/**
 		 * @inheritdoc
 		 */
@@ -31,12 +34,12 @@
 		public function rules()
 		{
 			return [
-				[['locker_id', 'site_url', 'page_url_hash', 'page_url'], 'required'],
+				[['locker_id', 'page_url_hash', 'page_url'], 'required'],
 				[['locker_id', 'impress', 'aggregate_date'], 'safe'],
 				[['page_url'], 'string'],
+				[['page_title'], 'string', 'max' => 255],
 				[['page_url_hash'], 'string', 'max' => 32],
-				[['site_url'], 'string', 'max' => 255],
-				[['site_url', 'page_url'], 'url']
+				[['page_url'], 'url'],
 			];
 		}
 
@@ -50,7 +53,6 @@
 				'locker_id' => 'ID замка',
 				'impress' => 'Просмотров',
 				'aggregate_date' => 'Дата',
-				'site_url' => 'Сайт',
 				'page_url_hash' => 'Хеш страницы',
 				'page_url' => 'Страница',
 			];
@@ -61,14 +63,14 @@
 
 			if( $this->validate() ) {
 				Yii::$app->db->createCommand("INSERT INTO {{%lockers_stat_impress}}(
-				locker_id,
-				impress,
-				aggregate_date,
-				site_url,
-				page_url_hash,
-				page_url
-			) VALUES ('$this->locker_id','1', CURDATE(), '$this->site_url', '$this->page_url_hash', '$this->page_url')
-			ON DUPLICATE KEY UPDATE impress=impress+1")->execute();
+					locker_id,
+					impress,
+					aggregate_date,
+					page_title,
+					page_url_hash,
+					page_url
+				) VALUES ('$this->locker_id','1', CURDATE(), '$this->page_title', '$this->page_url_hash', '$this->page_url')
+				ON DUPLICATE KEY UPDATE impress=impress+1")->execute();
 
 				return true;
 			}

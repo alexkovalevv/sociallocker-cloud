@@ -5,7 +5,7 @@
 
 use common\helpers\CustomFields;
 use yii\bootstrap\ActiveForm;
-use common\modules\subscription\classes\SubscriptionServices;
+use common\modules\subscription\common\classes\SubscriptionServices;
 use yii\helpers\Url;
 ?>
 

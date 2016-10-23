@@ -1,6 +1,7 @@
 <?php
 	namespace common\modules\signin\handlers\vk;
 
+	use common\modules\signin\HandlerException;
 	use common\modules\signin\HandlerInternalException;
 	use Yii;
 	use yii\helpers\ArrayHelper;
@@ -39,14 +40,14 @@
 				throw new HandlerInternalException('Не известный тип запроса.');
 			}
 
-			$this->doCallback();
+			return $this->doCallback();
 		}
 
 		public function doCallback()
 		{
 
 			if( $this->isDenied ) {
-				return Yii::$app->response->redirect(['signin/connect/blank']);
+				return null;
 			}
 
 			if( empty($this->requestCode) ) {
@@ -63,10 +64,10 @@
 			$vk = new VK($appId, $appSercret);
 			$redirect_url = ArrayHelper::getValue($this->options, 'proxy');
 
-			if( !empty($this->oAuthClientId) ) {
-				$redirect_url .= '?oauth_client_id=' . $this->oAuthClientId;
-			} else if( !empty($this->sToken) ) {
-				$redirect_url .= '?stoken=' . $this->sToken;
+			if( !empty($this->oauth_client_id) ) {
+				$redirect_url .= '?oauth_client_id=' . $this->oauth_client_id;
+			} else if( !empty($this->s_token) ) {
+				$redirect_url .= '?s_token=' . $this->s_token;
 			}
 
 			$access_token = $vk->getAccessToken($this->requestCode, $redirect_url);
@@ -76,7 +77,7 @@
 			}
 
 			$request = $vk->api('users.get', [
-				'fields' => 'photo_400_orig'
+				'fields' => 'photo_50'
 			]);
 
 			if( isset($user_info['error']) ) {
@@ -95,17 +96,17 @@
 			$last_name = ArrayHelper::getValue($result, 'last_name');
 
 			$user_info = [
+				'access_token' => ArrayHelper::getValue($access_token, 'access_token'),
+				'source' => 'vk',
 				'email' => ArrayHelper::getValue($access_token, 'email'),
 				'uid' => ArrayHelper::getValue($result, 'uid'),
 				'display_name' => $first_name . ' ' . $last_name,
 				'first_name' => $first_name,
 				'last_name' => $last_name,
-				'avatar_url' => ArrayHelper::getValue($result, 'photo_400_orig')
+				'avatar_url' => ArrayHelper::getValue($result, 'photo_50')
 			];
 
-			SigninOauthClients::saveClientInfo($this->oAuthClientId, $this->sToken, 'vk', $user_info);
-
-			return Yii::$app->response->redirect(['signin/connect/blank']);
+			return $user_info;
 		}
 	}
 

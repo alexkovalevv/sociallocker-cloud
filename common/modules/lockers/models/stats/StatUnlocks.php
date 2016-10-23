@@ -4,17 +4,19 @@
 
 	use Yii;
 	use yii\behaviors\TimestampBehavior;
-	use yii\db\ActiveRecord;
-	use yii\db\Expression;
 
 	/**
 	 * This is the model class for table "{{%lockers_stat_unlock}}".
 	 *
 	 * @property integer $id
 	 * @property integer $locker_id
-	 * @property string $button_name
-	 * @property integer $network_user_id
-	 * @property string $channel
+	 * @property string $channel_name
+	 * @property string $channel_value
+	 * @property string $group_actions
+	 * @property string $service
+	 * @property integer $oauth_client_id
+	 * @property string $page_title
+	 * @property string $page_url
 	 * @property string $referrer
 	 * @property string $user_agent
 	 * @property string $ip
@@ -22,29 +24,27 @@
 	 * @property integer $created_at
 	 * @property integer $updated_at
 	 */
-	class StatUnlocks extends ActiveRecord {
+	class StatUnlocks extends \yii\db\ActiveRecord {
+
+		public $metric_name;
+		public $metric_value;
+		public $order_date;
+
+		public function behaviors()
+		{
+			return [
+				TimestampBehavior::className(),
+			];
+		}
 
 		/**
 		 * @inheritdoc
 		 */
 		public static function tableName()
 		{
-			return '{{%lockers_stat_unlock}}';
+			return '{{%lockers_stat_unlocks}}';
 		}
 
-		public function behaviors()
-		{
-			return [
-				'timestamp' => [
-					'class' => TimestampBehavior::className(),
-					'attributes' => [
-						ActiveRecord::EVENT_BEFORE_INSERT => 'created_at',
-						ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_at',
-					],
-					'value' => new Expression('NOW()'),
-				],
-			];
-		}
 
 		/**
 		 * @inheritdoc
@@ -52,12 +52,13 @@
 		public function rules()
 		{
 			return [
-				[['locker_id', 'button_name', 'network_user_id', 'user_agent', 'ip'], 'required'],
-				[['locker_id', 'network_user_id', 'status'], 'integer'],
-				[['channel', 'referrer'], 'string'],
+				[['locker_id', 'service'], 'required'],
+				[['locker_id', 'oauth_client_id'], 'integer'],
 				[['created_at', 'updated_at'], 'safe'],
-				[['button_name'], 'string', 'max' => 15],
-				[['user_agent'], 'string', 'max' => 255],
+				[['referrer', 'page_url'], 'string'],
+				[['page_url_hash'], 'string', 'max' => 32],
+				[['service'], 'string', 'max' => 15],
+				[['page_title', 'user_agent'], 'string', 'max' => 255],
 				[['ip'], 'string', 'max' => 100],
 			];
 		}

@@ -212,7 +212,7 @@ if( !window.lockerEditor ) {
 					continue;
 				}
 
-				$('input[name*="' + a + '_actions"]', '.tab-pane').val(actions[a].join(','));
+				$('input[name*="' + a + '_actions"]', '.tab-pane').val(JSON.stringify(actions[a]));
 			}
 		},
 

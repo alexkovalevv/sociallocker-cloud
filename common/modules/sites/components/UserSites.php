@@ -47,7 +47,7 @@
 		 */
 		public function getSiteByLockerId($locker_id)
 		{
-			$locker = Yii::$app->locker->getLocker($locker_id);
+			$locker = Yii::$app->lockers->getLocker($locker_id);
 
 			if( empty($locker->site_id) ) {
 				return null;

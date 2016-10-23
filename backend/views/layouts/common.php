@@ -6,14 +6,16 @@
 	use backend\widgets\Menu;
 	use common\models\TimelineEvent;
 	use common\modules\lockers\widgets\controls\dropdown\DropdownControl;
-	use common\modules\lockers\models\stats\StatUnlocksSearch;
+	use common\modules\lockers\models\stats\search\StatUnlocksSearch;
 	use common\modules\sites\models\SitesForm;
+	use common\modules\subscription\backend\models\LeadsSearch;
 	use yii\helpers\ArrayHelper;
 	use yii\helpers\Html;
 	use yii\helpers\Url;
 	use yii\widgets\Breadcrumbs;
 
 	$bundle = BackendAsset::register($this);
+
 ?>
 <?php $this->beginContent('@backend/views/layouts/base.php'); ?>
 	<div class="wrapper">
@@ -85,11 +87,16 @@
                             </span>
 							</a>
 							<ul class="dropdown-menu">
-								<li class="header"><?php echo Yii::t('backend', 'You have {num} log items', ['num' => \backend\models\SystemLog::find()->count()]) ?></li>
+								<li class="header"><?php echo Yii::t('backend', 'You have {num} log items', [
+										'num' => \backend\models\SystemLog::find()->count()
+									]) ?></li>
 								<li>
 									<!-- inner menu: contains the actual data -->
 									<ul class="menu">
-										<?php foreach(\backend\models\SystemLog::find()->orderBy(['log_time' => SORT_DESC])->limit(5)->all() as $logEntry): ?>
+										<?php foreach(\backend\models\SystemLog::find()
+											              ->orderBy(['log_time' => SORT_DESC])
+											              ->limit(5)
+											              ->all() as $logEntry): ?>
 											<li>
 												<a href="<?php echo Yii::$app->urlManager->createUrl([
 													'/log/view',
@@ -218,18 +225,6 @@
 							'icon' => '<i class="fa fa-home" aria-hidden="true"></i>'
 						],
 						[
-							'label' => 'Общая статистика',
-							'url' => ['/lockers/default/index'],
-							'icon' => '<i class="fa fa-area-chart" aria-hidden="true"></i>'
-						],
-						[
-							'label' => 'Email подписчики',
-							'url' => ['/subscription/leads/index'],
-							'badge' => \common\modules\subscription\models\Leads::getCount(),
-							'badgeBgClass' => 'label-warning',
-							'icon' => '<i class="fa fa-envelope-o" aria-hidden="true"></i>'
-						],
-						[
 							'label' => 'Уведомления',
 							'url' => ['/lockers/stats/events'],
 							'badge' => StatUnlocksSearch::getCount(),
@@ -237,17 +232,46 @@
 							'icon' => '<i class="fa fa-share-alt" aria-hidden="true"></i>'
 						],
 						[
-							'label' => 'Мои замки',
+							'label' => 'Email подписчики',
+							'url' => ['/leads/index'],
+							'badge' => LeadsSearch::getCount(),
+							'badgeBgClass' => 'label-warning',
+							'icon' => '<i class="fa fa-envelope-o" aria-hidden="true"></i>'
+						],
+						[
+							'label' => 'Общая статистика',
+							'url' => ['/lockers/stats/index'],
+							'icon' => '<i class="fa fa-area-chart" aria-hidden="true"></i>'
+						],
+						[
+							'label' => 'Виджеты',
 							'icon' => '<i class="fa fa-lock"></i>',
 							'url' => ['#'],
 							'items' => [
-								['label' => 'Все замки', 'url' => ['/lockers/default/index']],
-								['label' => 'Создать замок', 'url' => ['/lockers/default/change-locker']],
-								['label' => 'Общие настройки', 'url' => ['/lockers/settings/index']],
-
+								[
+									'label' => 'Социальный замок',
+									'url' => ['/lockers/default/index', 'locker_type' => 'sociallocker']
+								],
+								[
+									'label' => 'Замок авторизации',
+									'url' => ['/lockers/default/index', 'locker_type' => 'signinlocker']
+								],
+								[
+									'label' => 'Email замок',
+									'url' => ['/lockers/default/index', 'locker_type' => 'emaillocker']
+								]
 							]
 						],
-						/*[
+						[
+							'label' => 'Настройки',
+							'icon' => '<i class="fa fa-cogs" aria-hidden="true"></i>',
+							'url' => ['#'],
+							'items' => [
+								['label' => 'Общие настройки', 'url' => ['/settings/general']],
+								['label' => 'Замки для контента', 'url' => ['/settings/lockers']]
+							]
+						],
+						[
 							'label' => Yii::t('backend', 'Other'),
 							'url' => '#',
 							'icon' => '<i class="fa fa-cogs"></i>',
@@ -304,7 +328,7 @@
 									'badgeBgClass' => 'label-danger',
 								],
 							]
-						]*/
+						]
 					]
 				]) ?>
 			</section>

@@ -6,52 +6,35 @@
 
 	class Module extends \yii\base\Module {
 
-		public $controllerNamespace = 'common\modules\signin\controllers';
+		//public $controllerNamespace = 'common\modules\signin\controllers';
+
+		public $params = [
+			'allow_services' => ['vk', 'twitter', 'linkedin', 'lead', 'subscription']
+		];
 
 		public function init()
 		{
+			$this->params['handlers_path'] = 'common\modules\signin\handlers';
+
+			$this->params['handlers_options'] = [
+				'vk' => [
+					'app_id' => '5337425',
+					'app_secret' => 'Mb69K5lzeDBBuss0W9je',
+					'proxy' => Yii::getAlias('@frontendUrl') . '/api/connect/vk'
+				],
+				'twitter' => [
+					'consumer_key' => 'Fr5DrCse2hsNp5odQdJOexOOA',
+					'consumer_secret' => 'jzNmDGYPZOGV10x2HmN8tYMDqnMTowycXFu4xTTLbw3VBVeFKm',
+					'proxy' => Yii::getAlias('@frontendUrl') . '/api/connect/twitter'
+				],
+				'linkedin' => [
+					'client_id' => "7774jogqfi9na8",
+					'client_secret' => "jWq5ZjG7g3gYqwbn",
+					'proxy' => Yii::getAlias('@frontendUrl') . '/api/connect/linkedin'
+				]
+
+			];
+
 			parent::init();
-		}
-
-		/**
-		 * Returns the connect handler options.
-		 *
-		 * @since 1.0.0
-		 */
-		public static function getConnectOptions($handlerName)
-		{
-
-			switch( $handlerName ) {
-				case 'vk':
-					return [
-						'app_id' => '5337425',
-						'app_secret' => 'Mb69K5lzeDBBuss0W9je',
-						'proxy' => Yii::getAlias('@proxyUrl') . '/vk'
-					];
-				case 'twitter':
-					$consumerKey = 'Fr5DrCse2hsNp5odQdJOexOOA';
-					$consumerSecret = 'jzNmDGYPZOGV10x2HmN8tYMDqnMTowycXFu4xTTLbw3VBVeFKm';
-
-					return [
-						'consumer_key' => $consumerKey,
-						'consumer_secret' => $consumerSecret,
-						'proxy' => Yii::getAlias('@proxyUrl') . '/twitter'
-					];
-
-				case 'linkedin':
-					$clientId = "7774jogqfi9na8";
-					$clientSecret = "jWq5ZjG7g3gYqwbn";
-
-					return [
-						'client_id' => $clientId,
-						'client_secret' => $clientSecret,
-						'proxy' => Yii::getAlias('@proxyUrl')
-					];
-
-				case 'subscription':
-					return [
-						'service' => Yii::$app->lockersSettings->getOne('subscription_to_service', 'database')
-					];
-			}
 		}
 	}

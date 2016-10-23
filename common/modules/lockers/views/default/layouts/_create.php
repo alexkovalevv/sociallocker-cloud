@@ -5,7 +5,6 @@
 	 */
 
 	use common\modules\lockers\assets\ItemEditAsset;
-	use common\modules\subscription\classes\SubscriptionServices;
 
 	/* @var $this yii\web\View */
 	/* @var integer $id */
@@ -45,7 +44,7 @@ JS;
 		window.onpwgt___options = {};
 		if(!window.bizpanda) window.bizpanda = {};
 		window.lockerId = {$locker_id};
-		window.lockerTitle = '{$model->getModel('basic')->title}';
+		window.lockerTitle = '{$models->getModel('basic')->title}';
 		window.lockersSettings = {$settings};
 		window.lockerType = '{$type}';
 		window.buttonsGroup = {$buttons_group};
@@ -59,15 +58,20 @@ JS;
 JS;
 	}
 
-	$subscription_service = SubscriptionServices::getCurrentName();
+	$subscription_service_name = Yii::$app->lockers->getCurrentSubscriptionServiceName();
 
-	if( !in_array($subscription_service, ['none', 'default']) && in_array($type, ['signinlocker', 'emaillocker']) ) {
+	if( !in_array($subscription_service_name, ['none', 'default']) && in_array($type, [
+			'signinlocker',
+			'emaillocker'
+		])
+	) {
 		$output .= <<<JS
-			window.subscriptionService = '{$subscription_service}';
+
+			window.subscriptionService = '{$subscription_service_name}';
 JS;
 	}
 
-	if( Yii::$app->lockersSettings->getOne('terms_enabled') && in_array($type, ['signinlocker', 'emaillocker']) ) {
+	if( Yii::$app->lockers->getTerms() && in_array($type, ['signinlocker', 'emaillocker']) ) {
 		$output .= <<<JS
 			window.terms = '{$terms_url}';
 			window.privacy = '{$privacy_url}';

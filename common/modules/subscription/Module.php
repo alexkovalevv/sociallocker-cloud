@@ -1,14 +1,14 @@
 <?php
 
-namespace common\modules\subscription;
-use Yii;
+	namespace common\modules\subscription;
 
-class Module extends \yii\base\Module
-{
-    public $controllerNamespace = 'common\modules\subscription\controllers';
+	use Yii;
 
-    public function init()
-    {
-        parent::init();
-    }
-}
+	class Module extends \yii\base\Module {
+
+		public function init()
+		{
+			$this->params['confirmation_url'] = '@frontendUrl/api/client/subscribe_confirmation';
+			parent::init();
+		}
+	}

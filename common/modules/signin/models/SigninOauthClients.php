@@ -2,11 +2,11 @@
 
 	namespace common\modules\signin\models;
 
-	use common\modules\signin\HandlerInternalException;
 	use Yii;
 	use yii\base\InvalidParamException;
 	use yii\behaviors\TimestampBehavior;
 	use yii\helpers\ArrayHelper;
+	use common\modules\signin\HandlerInternalException;
 
 	/**
 	 * This is the model class for table "{{%signin_oauth_clients}}".
@@ -28,6 +28,7 @@
 		{
 			return '{{%signin_oauth_clients}}';
 		}
+
 
 		public function behaviors()
 		{
@@ -148,9 +149,18 @@
 				throw new InvalidParamException('Аргументы network и user_info не должны быть пустыми.');
 			}
 
-			$client_info = SigninOauthClientInfo::find()->where([
+			$conditions = [
 				'network_user_id' => ArrayHelper::getValue($user_info, 'uid')
-			])->one();
+			];
+
+			if( $oauth_client_id ) {
+				$conditions = [
+					'oauth_client_id' => $oauth_client_id,
+					'network' => $network
+				];
+			}
+
+			$client_info = SigninOauthClientInfo::find()->where($conditions)->one();
 
 			if( !empty($client_info) ) {
 
@@ -199,7 +209,12 @@
 
 				$client_info_model->network = $network;
 				$client_info_model->network_user_id = ArrayHelper::getValue($user_info, 'uid');
-				$client_info_model->email = ArrayHelper::getValue($user_info, 'email');
+
+				$email = ArrayHelper::getValue($user_info, 'email');
+
+				if( !empty($email) ) {
+					$client_info_model->email = $email;
+				}
 
 				unset($user_info['uid']);
 				unset($user_info['email']);

@@ -2,10 +2,9 @@
 	namespace common\modules\signin\handlers\twitter;
 
 	use common\modules\signin\HandlerInternalException;
-	use common\modules\signin\models\SigninOauthClients;
 	use common\modules\signin\models\SigninTemp;
 	use common\modules\signin\models\SigninUserAccess;
-	use common\modules\subscription\classes\LeadsHelper;
+
 	use yii;
 	use common\modules\signin\Handler;
 	use common\modules\signin\HandlerException;
@@ -64,10 +63,10 @@
 			switch( $requestType ) {
 
 				case 'init':
-					$this->doInit($visitorId);
+					return $this->doInit($visitorId);
 					break;
 				case 'callback':
-					$this->doCallback($visitorId);
+					return $this->doCallback($visitorId);
 					break;
 			}
 		}
@@ -96,10 +95,10 @@
 				$extendUrlParams .= '&follow_to=' . $this->followTo;
 			}
 
-			if( !empty($this->oAuthClientId) ) {
-				$extendUrlParams .= '&oauth_client_id=' . $this->oAuthClientId;
-			} else if( !empty($this->sToken) ) {
-				$extendUrlParams .= '?stoken=' . $this->sToken;
+			if( !empty($this->oauth_client_id) ) {
+				$extendUrlParams .= '&oauth_client_id=' . $this->oauth_client_id;
+			} else if( !empty($this->s_token) ) {
+				$extendUrlParams .= '?s_token=' . $this->s_token;
 			}
 
 			return $proxy . $prefix . 'request_type=callback' . $extendUrlParams . '&visitor_id=' . $visitorId;
@@ -142,8 +141,9 @@
 			}
 
 			$denied = isset($_REQUEST['denied']);
+
 			if( $denied ) {
-				return Yii::$app->response->redirect(['signin/connect/blank']);
+				return null;
 			}
 
 			$response_package = [];
@@ -216,6 +216,7 @@
 				: '';
 
 			$user_info = [
+				'source' => 'twitter',
 				'visitor_id' => $visitorId,
 				'screen_name' => ArrayHelper::getValue($response_package['user_info'], 'screen_name'),
 				'email' => ArrayHelper::getValue($response_package['user_info'], 'email'),
@@ -223,12 +224,11 @@
 				'display_name' => $display_name,
 				'first_name' => $first_name,
 				'last_name' => $last_name,
+				'profile_url' => 'https://twitter.com/' . ArrayHelper::getValue($response_package['user_info'], 'screen_name'),
 				'avatar_url' => ArrayHelper::getValue($response_package['user_info'], 'profile_image_url_https')
 			];
 
-			SigninOauthClients::saveClientInfo($this->oAuthClientId, $this->sToken, 'twitter', $user_info);
-
-			return Yii::$app->response->redirect(['signin/connect/blank']);
+			return $user_info;
 		}
 
 		protected function getTwitterOAuth($visitorId = null, $token = null, $secret = null)
@@ -299,11 +299,6 @@
 		{
 			$oauth = $this->getTwitterOAuth($visitorId);
 
-			$contextData = isset($_POST['opandaContextData'])
-				? $_POST['opandaContextData']
-				: [];
-			$contextData = $this->normilizeValues($contextData);
-
 			$followTo = $this->followTo;
 			if( empty($followTo) ) {
 				throw new HandlerInternalException("Не указано имя пользователя");
@@ -342,12 +337,7 @@
 		{
 			$oauth = $this->getTwitterOAuth($visitorId);
 
-			$contextData = isset($_POST['opandaContextData'])
-				? $_POST['opandaContextData']
-				: [];
-			$contextData = $this->normilizeValues($contextData);
-
-			$message = $this->tweetMessage;
+			$message = urldecode($this->tweetMessage);
 			if( empty($message) ) {
 				throw new HandlerInternalException("Не указано сообщение для публикации.");
 			}
@@ -363,7 +353,7 @@
 					return ['success' => true];
 				}
 
-				return ['error' => $response->errors[0]->message];
+				throw new HandlerInternalException($response->errors[0]->message);
 			}
 
 			return $response;
