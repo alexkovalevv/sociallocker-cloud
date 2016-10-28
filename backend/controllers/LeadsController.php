@@ -2,13 +2,12 @@
 
 	namespace backend\controllers;
 
+	use common\modules\subscription\backend\models\LeadsExport;
+	use common\modules\subscription\backend\models\LeadsRecord;
 	use Yii;
 	use yii\web\Controller;
 	use yii\web\NotFoundHttpException;
 	use yii\filters\VerbFilter;
-	use backend\models\BackendLeads;
-	use backend\models\search\BackendLeadsSearch;
-	use backend\models\LeadsExport;
 	use common\modules\lockers\models\lockers\Lockers;
 
 	class LeadsController extends Controller {
@@ -35,11 +34,9 @@
 
 		public function actionIndex()
 		{
-			$searchModel = new BackendLeadsSearch();
-			$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+			$dataProvider = LeadsRecord::user()->searchLeads();
 
 			return $this->render('index', [
-				'searchModel' => $searchModel,
 				'dataProvider' => $dataProvider,
 			]);
 		}

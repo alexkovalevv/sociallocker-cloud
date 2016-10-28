@@ -5,6 +5,7 @@
 	 */
 
 	use common\modules\lockers\assets\ItemEditAsset;
+	use yii\helpers\Url;
 
 	/* @var $this yii\web\View */
 	/* @var integer $id */
@@ -44,13 +45,13 @@ JS;
 		window.onpwgt___options = {};
 		if(!window.bizpanda) window.bizpanda = {};
 		window.lockerId = {$locker_id};
-		window.lockerTitle = '{$models->getModel('basic')->title}';
+		window.lockerTitle = '{$model->getModel('basic')->title}';
 		window.lockersSettings = {$settings};
 		window.lockerType = '{$type}';
 		window.buttonsGroup = {$buttons_group};
 JS;
 
-	$proxyUrl = Yii::getAlias('@proxyUrl');
+	$proxyUrl = Url::to(['@proxyUrl'], true);
 
 	if( in_array($type, ['signinlocker', 'emaillocker']) && !empty($proxyUrl) ) {
 		$output .= <<<JS

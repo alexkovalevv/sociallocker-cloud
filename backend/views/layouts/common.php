@@ -8,14 +8,13 @@
 	use common\modules\lockers\widgets\controls\dropdown\DropdownControl;
 	use common\modules\lockers\models\stats\search\StatUnlocksSearch;
 	use common\modules\sites\models\SitesForm;
-	use common\modules\subscription\backend\models\LeadsSearch;
+	use common\modules\subscription\backend\models\LeadsRecord;
 	use yii\helpers\ArrayHelper;
 	use yii\helpers\Html;
 	use yii\helpers\Url;
 	use yii\widgets\Breadcrumbs;
 
 	$bundle = BackendAsset::register($this);
-
 ?>
 <?php $this->beginContent('@backend/views/layouts/base.php'); ?>
 	<div class="wrapper">
@@ -234,7 +233,7 @@
 						[
 							'label' => 'Email подписчики',
 							'url' => ['/leads/index'],
-							'badge' => LeadsSearch::getCount(),
+							'badge' => LeadsRecord::user()->getCountLeads(),
 							'badgeBgClass' => 'label-warning',
 							'icon' => '<i class="fa fa-envelope-o" aria-hidden="true"></i>'
 						],

@@ -16,8 +16,8 @@
 	SettingsAsset::register($this);
 
 	$form = ActiveForm::begin([
-		/*'enableClientValidation' => false,
-		'enableAjaxValidation' => false*/
+		/*'enableClientValidation' => true,*/
+		/*'enableAjaxValidation' => true*/
 	]);
 
 	// Настройка полей ActiveForm под требования проекта
@@ -25,7 +25,10 @@
 
 	$tabs = [];
 
-	$active_tab = false;
+	if( empty($active_tab) ) {
+		throw new \yii\base\InvalidConfigException('Не передан обязательный параметр active_tab');
+	}
+
 	foreach($models->getModels() as $model_name => $model) {
 
 		if( is_array($view_path) && isset($view_path[$model_name]) ) {
@@ -44,14 +47,12 @@
 			'label' => $model->title,
 			'encode' => false,
 			'content' => require($get_view_path),
-			'active' => ($active_tab === false),
+			'active' => ($active_tab === $model_name),
 			'options' => [
 				'id' => 'tab-' . $model_name
 			]
-
+		
 		];
-
-		$active_tab = true;
 	}
 ?>
 	<div class="row">

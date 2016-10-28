@@ -6,8 +6,8 @@
 
 	namespace frontend\modules\api\controllers;
 
-	use common\modules\subscription\frontend\models\LeadForm;
-	use common\modules\subscription\frontend\models\SubscriptionForm;
+	use common\modules\subscription\frontend\models\LeadCorrector;
+	use common\modules\subscription\frontend\models\SubscriptionCorrector;
 	use Yii;
 	use yii\helpers\ArrayHelper;
 	use yii\web\Controller;
@@ -100,31 +100,12 @@
 		{
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
-			$data = Yii::$app->request->post();
+			$model = new SubscriptionCorrector();
 
-			if( !isset($data['context_data']) || !isset($data['identity_data']) ) {
-				return ['error' => 'Не переданы обязательные параметры'];
-			}
-
-			$locker_id = isset($data['context_data']['locker_id'])
-				? $data['context_data']['locker_id']
-				: null;
-
-			$locker = Yii::$app->lockers->getLocker($locker_id);
-
-			if( empty($locker) ) {
-				return ['error' => 'Замка с locker_id {' . $locker_id . '} не существует!'];
-			}
-
-			$model = new SubscriptionForm();
-
-			$data['context_data']['user_id'] = $locker->user_id;
-			$data['context_data']['site_id'] = $locker->site_id;
-
-			$model->setAttributes($data);
+			$model->setAttributes(Yii::$app->request->post());
 
 			if( $model->save(true) ) {
-				return ['success' => 'Данные успешно сохранены'];
+				return ['status' => $model->status];
 			}
 
 			return $model->error;
@@ -138,44 +119,33 @@
 		{
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
-			$data = Yii::$app->request->post();
+			$locker_id = Yii::$app->request->post('locker_id');
 
-			$locker_id = isset($data['context_data'])
-				? $data['context_data']
-				: null;
+			if( !empty($locker_id) ) {
 
-			$locker = Yii::$app->lockers->getLocker($locker_id);
+				$social = Yii::$app->request->post('social', false);
+				$source = Yii::$app->request->post('source');
 
-			if( empty($locker) ) {
-				return ['error' => 'Замка с locker_id {' . $locker_id . '} не существует!'];
+				if( $social && !empty($source) ) {
+					$lead_available = Yii::$app->lockers->getOption($locker_id, $source . '_lead_available', true);
+
+					if( !$lead_available ) {
+						return false;
+					}
+				}
+
+				$model = new LeadCorrector();
+
+				$model->setAttributes(Yii::$app->request->post());
+
+				if( !$model->save(true) ) {
+					return ['error' => 'Не удалось сохранить лид из-за ошибки.'];
+				}
+
+				return $model->error;
 			}
 
-			$source = isset($data['source'])
-				? $data['source']
-				: null;
-
-			if( empty($source) ) {
-				return ['error' => 'Не передан обязательный атрибут source'];
-			}
-
-			$lead_available = Yii::$app->lockers->getOption($locker->locker_id, $source . '_lead_available', true);
-
-			if( !$lead_available ) {
-				return false;
-			}
-
-			$model = new LeadForm();
-
-			$data['context_data']['user_id'] = $locker->user_id;
-			$data['context_data']['site_id'] = $locker->site_id;
-
-			$model->setAttributes($data);
-
-			if( $model->save(true) ) {
-				return ['success' => 'Данные успешно сохранены'];
-			}
-
-			return $model->error;
+			return null;
 		}
 
 		/**

@@ -2,6 +2,8 @@
 	/**
 	 * Require core files
 	 */
+	use yii\helpers\Url;
+
 	require_once(__DIR__ . '/../helpers.php');
 
 	/**
@@ -26,9 +28,6 @@
 	 * Modules url
 	 */
 	Yii::setAlias('@lockersUrl', env('FRONTEND_URL') . '/lockers');
-	Yii::setAlias('@frontendSubscriptionUrl', env('FRONTEND_URL') . '/subscription');
-	Yii::setAlias('@backendSubscriptionUrl', env('BACKEND_URL') . '/subscription');
-
 	Yii::setAlias('@proxyUrl', env('FRONTEND_URL') . '/api/client');
 
 	/**

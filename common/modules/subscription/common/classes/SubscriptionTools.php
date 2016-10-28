@@ -10,38 +10,6 @@
 
 	class SubscriptionTools {
 
-		public function normilizeValues($values = [])
-		{
-			if( empty($values) ) {
-				return $values;
-			}
-			if( !is_array($values) ) {
-				$values = [$values];
-			}
-
-			foreach($values as $index => $value) {
-
-				$values[$index] = is_array($value)
-					? $this->normilizeValues($value)
-					: $this->normilizeValue($value);
-			}
-
-			return $values;
-		}
-
-		public function normilizeValue($value = null)
-		{
-			if( 'false' === $value ) {
-				$value = false;
-			} elseif( 'true' === $value ) {
-				$value = true;
-			} elseif( 'null' === $value ) {
-				$value = null;
-			}
-
-			return $value;
-		}
-
 		/**
 		 * Process names of the identity data.
 		 */
@@ -51,8 +19,8 @@
 			// move the values from the custom fields like FNAME, LNAME
 
 			if( !empty($service) ) {
-				$formType = Yii::$app->lockers->getOption($itemId, 'form_type', 'email-form');
-				$strFieldsJson = Yii::$app->lockers->getOption($itemId, 'custom_fields', null);
+				$formType = Yii::$app->locker->getOption($itemId, 'form_type', 'email-form');
+				$strFieldsJson = Yii::$app->locker->getOption($itemId, 'custom_fields', null);
 
 				if( 'custom-form' == $formType && !empty($strFieldsJson) ) {
 
@@ -129,8 +97,8 @@
 		public function mapToServiceIds($service, $itemId, $identityData)
 		{
 
-			$formType = Yii::$app->lockers->getOption($itemId, 'form_type', 'email-form');
-			$strFieldsJson = Yii::$app->lockers->getOption($itemId, 'custom_fields', null);
+			$formType = Yii::$app->locker->getOption($itemId, 'form_type', 'email-form');
+			$strFieldsJson = Yii::$app->locker->getOption($itemId, 'custom_fields', null);
 
 			if( 'custom-form' !== $formType || empty($strFieldsJson) ) {
 
@@ -176,8 +144,8 @@
 		public function mapToCustomLabels($service, $itemId, $identityData)
 		{
 
-			$formType = Yii::$app->lockers->getOption($itemId, 'form_type', true);
-			$strFieldsJson = Yii::$app->lockers->getOption($itemId, 'custom_fields', null);
+			$formType = Yii::$app->locker->getOption($itemId, 'form_type', true);
+			$strFieldsJson = Yii::$app->locker->getOption($itemId, 'custom_fields', null);
 
 			if( 'custom-form' !== $formType || empty($strFieldsJson) ) {
 				return $identityData;

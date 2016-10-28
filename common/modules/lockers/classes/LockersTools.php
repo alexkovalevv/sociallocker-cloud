@@ -41,15 +41,17 @@
 				$mapData['subscribeActionOptions'] = [
 					'listId' => 'subscribe_list',
 					//'service' => 'database',
-					'doubleOptin' => 'subscribe_mode'
+					//'doubleOptin' => 'subscribe_mode'
 				];
 			}
 
-			$mapData['form'] = [
-				'buttonText' => 'form_button_text',
-				'noSpamText' => 'form_after_button_text',
-				'type' => 'form_type',
-				'fields' => 'custom_fields'
+			$mapData['subscription'] = [
+				'form' => [
+					'buttonText' => 'form_button_text',
+					'noSpamText' => 'form_after_button_text',
+					'type' => 'form_type',
+					'fields' => ['value' => 'custom_fields', 'map_filter' => [$this, 'getCustomFields']]
+				]
 			];
 
 			if( $locker_type == 'signinlocker' ) {
@@ -192,22 +194,46 @@
 		 */
 		protected function recursivePushOptions($map, $data)
 		{
-			foreach($map as $key => $val) {
-				if( !is_array($val) ) {
-					if( !empty($val) ) {
-						$map[$key] = isset($data[$val])
-							? $data[$val]
+			foreach($map as $consumer_option_name => $provider_option) {
+				$available_filter = false;
+				$filter_name = null;
+
+				if( is_array($provider_option) && array_key_exists('map_filter', $provider_option) ) {
+					$filter_name = $provider_option['map_filter'];
+					$provider_option = $provider_option['value'];
+					$available_filter = true;
+				}
+
+				if( !is_array($provider_option) ) {
+
+					if( !empty($provider_option) ) {
+						$map[$consumer_option_name] = isset($data[$provider_option])
+							? $data[$provider_option]
 							: null;
 					} else {
-						$map[$key] = isset($data[$key])
-							? $data[$key]
+						$map[$consumer_option_name] = isset($data[$consumer_option_name])
+							? $data[$consumer_option_name]
 							: null;
 					}
+
+					if( $available_filter ) {
+						$map[$consumer_option_name] = call_user_func_array($filter_name, [$map[$consumer_option_name]]);
+					}
 				} else {
-					$map[$key] = $this->recursivePushOptions($map[$key], $data);
+					$map[$consumer_option_name] = $this->recursivePushOptions($map[$consumer_option_name], $data);
 				}
 			}
 
 			return $map;
+		}
+
+		public function getCustomFields($fields)
+		{
+			$format_items = [];
+			foreach($fields as $field) {
+				$format_items[] = $field['fieldOptions'];
+			}
+
+			return $format_items;
 		}
 	}

@@ -9,6 +9,7 @@
 	use common\modules\lockers\classes\LockersTools;
 	use Yii;
 	use yii\helpers\ArrayHelper;
+	use yii\helpers\Url;
 	use yii\web\Controller;
 	use yii\web\Response;
 
@@ -99,13 +100,13 @@
 
 					if( $unlock_model->save(true) ) {
 						$interal_error = false;
-						$locker = Yii::$app->lockers->getLocker($locker_id);
+						$locker = Yii::$app->locker->getLocker($locker_id);
 
 						$actions[] = $channel_name;
 
 						if( !empty($locker) && $locker->type === 'signinlocker' ) {
 							$actions = [];
-							$group_actions = Yii::$app->lockers->getOption($locker_id, $service_name . '_actions');
+							$group_actions = Yii::$app->locker->getOption($locker_id, $service_name . '_actions');
 
 							if( !empty($group_actions) && is_array($group_actions) ) {
 								foreach($group_actions as $group_action) {
@@ -154,7 +155,7 @@
 
 			$options = [];
 
-			$lockers = Yii::$app->lockers->getLockers([
+			$lockers = Yii::$app->locker->getLockers([
 				'site_id' => $site_id,
 				'status' => 'public'
 			]);
@@ -173,7 +174,7 @@
 				$locker_options = $locker_tools->mapLockerOptions($old_locker_options, $locker->type);
 
 				$locker_options['id'] = $locker->id;
-				$locker_options['proxy'] = Yii::getAlias('@proxyUrl');
+				$locker_options['proxy'] = Url::to(['@proxyUrl'], true);
 
 				if( $locker->type == 'emaillocker' || $locker->type == 'signinlocker' ) {
 					$service_name = Yii::$app->settings->getUserOption($locker->user_id, 'subscription_to_service');
@@ -184,8 +185,14 @@
 						$subscribe_mode = ArrayHelper::getValue($old_locker_options, 'subscribe_mode', false);
 
 						if( $locker->type == 'emaillocker' || $subscribe_mode === true ) {
-							$double_option = $old_locker_options['subscribe_mode'] == 'double-optin';
+							$double_option = in_array($old_locker_options['subscribe_mode'], [
+								'quick-double-optin',
+								'double-optin'
+							]);
 							$locker_options['subscribeActionOptions']['doubleOptin'] = $double_option;
+
+							$confirm = $old_locker_options['subscribe_mode'] == 'double-optin';
+							$locker_options['subscribeActionOptions']['confirm'] = $confirm;
 						}
 					}
 				}
@@ -235,6 +242,8 @@
 				}
 
 				$options['lockers'][] = [
+					'id' => $locker->id,
+					'type' => $locker->type,
 					'dependPaths' => $dependPages,
 					'visabilityOptions' => [
 						'lockType' => $visability_options->lock_type,

@@ -71,7 +71,7 @@
 			'settings' => [
 				'class' => 'frontend\components\Settings'
 			],
-			'lockers' => [
+			'locker' => [
 				'class' => 'frontend\components\Lockers'
 			],
 			'subscription' => [

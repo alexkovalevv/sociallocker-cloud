@@ -3,8 +3,15 @@
 
 	use Yii;
 	use yii\base\Model;
+	use yii\bootstrap\Html;
+	use yii\helpers\HtmlPurifier;
 
 	class SubscribeSettingForm extends Model {
+
+		const SCENARIO_DATABASE = 'database';
+		const SCENARIO_MAILCHIMP = 'mailchimp';
+		const SCENARIO_PECHKINMAIL = 'pechkinmail';
+		const SCENARIO_UNISENDER = 'unisender';
 
 		public $title = 'Подписка';
 
@@ -47,14 +54,43 @@
 			return [
 				[
 					[
+						'service_sender_email',
+						'service_sender_name',
+						'service_confirm_email_subject',
+						'service_confirm_email_body',
+					],
+					'required',
+					'on' => self::SCENARIO_DATABASE
+				],
+				[
+					[
+						'mailchimp_apikey'
+					],
+					'required',
+					'on' => self::SCENARIO_MAILCHIMP
+				],
+				[
+					[
+						'pechkinmail_username',
+						'pechkinmail_password'
+					],
+					'required',
+					'on' => self::SCENARIO_PECHKINMAIL
+				],
+				[
+					[
+						'unisender_api_key'
+					],
+					'required',
+					'on' => self::SCENARIO_UNISENDER
+				],
+				[
+					[
 						'subscription_to_service',
 						'service_sender_name',
 						'service_confirm_email_subject',
 						'service_confirm_email_body',
 						'unisender_api_key',
-						'smartresponder_api_id',
-						'smartresponder_api_secret',
-						'smartresponder_api_key',
 						'pechkinmail_username',
 						'pechkinmail_password',
 						'mailchimp_apikey',
@@ -79,25 +115,48 @@
 				],
 				[
 					[
-						'smartresponder_availible_md5',
 						'mailchimp_welcome',
 					],
 					'integer'
 				],
 				[
 					[
-						'smartresponder_availible_md5',
 						'mailchimp_welcome'
 					],
 					'filter',
 					'filter' => function ($value) {
-						return empty($value)
-							? false
-							: true;
+						return !empty($value);
+					}
+				],
+				[
+					'service_confirm_email_body',
+					'filter',
+					'filter' => function ($html) {
+						return HtmlPurifier::process($html);
 					}
 				],
 				['service_sender_email', 'email']
 			];
+		}
+
+		public function beforeValidate()
+		{
+			$scenarios = [
+				self::SCENARIO_DATABASE,
+				self::SCENARIO_MAILCHIMP,
+				self::SCENARIO_PECHKINMAIL,
+				self::SCENARIO_UNISENDER
+			];
+
+			$service = isset($this->attributes['subscription_to_service']) && empty($this->attributes['subscription_to_service'])
+				? $this->attributes['subscription_to_service']
+				: null;
+
+			if( in_array($service, $scenarios) ) {
+				$this->scenario = $this->attributes['subscription_to_service'];
+			}
+
+			return parent::beforeValidate();
 		}
 
 		/**
@@ -112,10 +171,6 @@
 				'service_confirm_email_subject' => 'Тема письма',
 				'service_confirm_email_body' => 'Текст письма',
 				'unisender_api_key' => 'API ключ',
-				'smartresponder_availible_md5' => 'Использовать MD5 шифрование',
-				'smartresponder_api_id' => 'API ID',
-				'smartresponder_api_secret' => 'Секретный код API',
-				'smartresponder_api_key' => 'API ключ',
 				'pechkinmail_username' => 'Ваш логин',
 				'pechkinmail_password' => 'Ваш пароль',
 				'mailchimp_apikey' => 'API ключ',
@@ -148,10 +203,6 @@
 				'service_confirm_email_subject' => '',
 				'service_confirm_email_body' => 'Используйте шорткод [link], чтобы вставить ссылку для подтверждения.',
 				'unisender_api_key' => 'Пожалуйста, введите ваш api ключ в Unisender',
-				'smartresponder_availible_md5' => 'Если Вкл, все запросы к сервису SmartResponder будут использовать протокол повышенной безопасности.',
-				'smartresponder_api_id' => 'Введите ваш api id в Smartresponder.',
-				'smartresponder_api_secret' => 'Введите ваш секрытный ключ api в Smartresponder.',
-				'smartresponder_api_key' => 'Введите ваш api ключ в Smartresponder.',
 				'pechkinmail_username' => 'Введите ваш логин в сервисе PechkinMail.',
 				'pechkinmail_password' => 'Введите Ваш пароль в сервисе PechkinMail.',
 				'mailchimp_apikey' => 'API ключ вашего аккаунта в MailChimp.',
@@ -182,7 +233,7 @@
 		public function attributeDefaults()
 		{
 			return [
-				'subscription_to_service' => 'default',
+				'subscription_to_service' => 'database',
 				'service_sender_email' => Yii::$app->user->identity->email,
 				'service_sender_name' => 'Социальный замок',
 				'service_confirm_email_subject' => 'Подтвердите ваш email адрес',

@@ -8,7 +8,7 @@
 
 		public function init()
 		{
-			$this->params['confirmation_url'] = '@frontendUrl/api/client/subscribe_confirmation';
+			$this->params['confirmation_url'] = '@frontendUrl/api/subscription/confirmation';
 			parent::init();
 		}
 	}

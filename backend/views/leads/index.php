@@ -8,7 +8,6 @@
 	use common\helpers\LeadsTools;
 
 	/* @var $this yii\web\View */
-	/* @var $searchModel common\modules\subscription\common\models\LeadsSearch */
 	/* @var $dataProvider yii\data\ActiveDataProvider */
 
 	$this->title = 'Подписчики';
@@ -27,7 +26,6 @@
 	<?php Pjax::begin(); ?>
 	<?= GridView::widget([
 		'dataProvider' => $dataProvider,
-		//'filterModel' => $searchModel,
 		'columns' => [
 			['class' => 'yii\grid\CheckboxColumn'],
 			[

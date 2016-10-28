@@ -6,7 +6,7 @@
 
 	abstract class Subscription {
 
-		protected $service_settings = [];
+		protected $settings = [];
 
 		public $name;
 		public $title;
@@ -35,10 +35,11 @@
 
 			foreach($require_settings as $attr) {
 				if( !array_key_exists($attr, $service_settings) || empty($service_settings[$attr]) ) {
-					throw new InvalidConfigException('Не установлен обязательный атрибут {' . $attr . '} настроек сервиса.');
+					throw new
+					InvalidConfigException('Не установлен обязательный атрибут {' . $attr . '} настроек сервиса.');
 				}
 
-				$this->service_settings[$attr] = $service_settings[$attr];
+				$this->settings[$attr] = $service_settings[$attr];
 			}
 		}
 

@@ -1,12 +1,9 @@
 <?php
 	namespace common\helpers;
 
+	use common\modules\subscription\common\models\LeadsFields;
 	use Yii;
-	use yii\base\InvalidConfigException;
-	use backend\models\BackendLeads;
-	use common\models\LeadsFields;
 	use common\helpers\Avatars;
-	use yii\base\Exception;
 
 	class LeadsTools {
 

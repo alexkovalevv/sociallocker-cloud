@@ -1,13 +1,16 @@
 <?php
 	/**
-	 * Класс для работы с данными лидов
+	 * Класс для работы записи и получения данными лидов
 	 * @author Alex Kovalev <alex.kovalevv@gmail.com>
+	 * @package subscription
 	 */
 
 	namespace common\modules\subscription\common\models;
 
+	use Yii;
 	use yii\base\InvalidConfigException;
 	use yii\behaviors\TimestampBehavior;
+	use yii\data\ActiveDataProvider;
 
 	/**
 	 * This is the model class for table "leads".
@@ -36,16 +39,7 @@
 		const SUBSCRIPTION_CONFIRMED = 2;
 		const SUBSCRIPTION_NOTCONFIRMED = 1;
 
-		// Настройка доступа к модели. Если true модель является безопасной для использования.
-		private $create = false;
-
-		//public $user_id;
-		//public $site_id;
-
-		public static function tableName()
-		{
-			return '{{%subscription_leads}}';
-		}
+		public $identity_data;
 
 		public function behaviors()
 		{
@@ -54,14 +48,31 @@
 			];
 		}
 
+		public static function tableName()
+		{
+			return '{{%subscription_leads}}';
+		}
+
 		public function rules()
 		{
 			return [
-				[['email', 'user_id', 'site_id'], 'required'],
+				[['email', 'user_id', 'site_id', 'locker_id', 'page_url',], 'required'],
 				[['email'], 'email'],
 				[['email'], 'string', 'max' => 90],
 				[['email_confirmed', 'subscription_confirmed', 'locker_id', 'user_id', 'site_id'], 'integer'],
+				[
+					'temp',
+					'filter',
+					'filter' => function ($array) {
+						if( !is_array($array) ) {
+							return $array;
+						}
+
+						return @json_encode($array);
+					}
+				],
 				[['temp', 'page_url', 'locker_title'], 'string'],
+				['page_url', 'url'],
 				[['display_name', 'page_title'], 'string', 'max' => 255],
 				[['first_name', 'last_name'], 'string', 'max' => 100],
 				[['confirmation_code'], 'string', 'max' => 32],
@@ -69,92 +80,47 @@
 		}
 
 		/**
-		 * Конструктор класса, его основная роль не допустить ошибок при сохранении
-		 * и получении данных от установленного пользователя. Конструктор регламентирует, что
-		 * при использовании, какого-либо метода этой модели, всегда будет установен атрибут user_id
-		 * Пример работы с конструктором.
-		 * $leads_model = Leads::create($user_id, $site_id);
-		 * $leads_model->getAll();
-		 *
-		 * @param $user_id
-		 * @param null $site_id
-		 * @return static
-		 * @throws InvalidConfigException
+		 * @return $this
 		 */
-
-		public static function create($user_id = null, $site_id = null)
+		public function modelCreate()
 		{
-			$model = new static;
-			$model = static::beforeCreate($model, $user_id, $site_id);
-
-			if( empty($model->user_id) ) {
-				throw new InvalidConfigException('Не передан обязательный атрибут user_id');
-			}
-
-			$model->create = true;
-
-			return $model;
-		}
-
-		public static function beforeCreate($model, $user_id = null, $site_id = null)
-		{
-			$model->user_id = $user_id;
-			$model->site_id = $site_id;
-
-			return $model;
-		}
-
-
-		/**
-		 * Устанавливает существующую модель, делая ее безопасной для работы
-		 * @param Leads $model
-		 * @return object $this
-		 */
-		public function setModel(Leads $model)
-		{
-			$model->create = true;
-
-			return $model;
-		}
-
-		public function checkAcess()
-		{
-			if( !$this->create ) {
-				throw new InvalidConfigException('Экземляр класса должен быть создан через конструктор create');
-			}
+			return $this;
 		}
 
 		/**
 		 * Получает модель лида
-		 * @param $leadId
+		 * @param int $lead_id идентификатор лида
 		 * @return array|null|\yii\db\ActiveRecord
 		 */
 
-		public function get($leadId)
+		public function getLead($lead_id)
 		{
-			if( empty($leadId) ) {
+			if( empty($lead_id) ) {
 				return null;
 			}
 
-			$this->checkAcess();
-
-			return $this->findOne($leadId);
+			return self::findOne($lead_id);
 		}
 
 		/**
-		 * Получает моделть лида
+		 * Получает модель лида по атрибуту email
 		 * @param $email
 		 * @return object yii\db\ActiveRecord
 		 */
-		public function getByEmail($email)
+		public function getLeadByEmail($email)
 		{
+			if( empty($this->user_id) ) {
+				throw new InvalidConfigException("Не передан обязательный атрибут user_id");
+			}
+
 			if( empty($email) ) {
 				return null;
 			}
 
 			$conditions['email'] = $email;
+			$conditions['user_id'] = $this->user_id;
 
-			$result = $this->setQuery($conditions)->one();
+			$result = self::findOne($conditions);
 
 			return $result;
 		}
@@ -164,39 +130,132 @@
 		 * @param $email
 		 * @return object yii\db\ActiveRecord
 		 */
-		public function getAll(array $conditions = [])
+		public function getLeads(array $conditions = [])
 		{
-			return $this->setQuery($conditions)->all();
+			if( !empty($this->user_id) ) {
+				$conditions['user_id'] = $this->user_id;
+			}
+
+			if( !empty($this->site_id) ) {
+				$conditions['site_id'] = $this->site_id;
+			}
+
+			return self::findAll($conditions);
 		}
 
 		/**
 		 *
 		 * Формирует запрос на получение моделей
 		 * @param array $conditions
-		 * @return object yii\db\ActiveRecord
+		 * @return ActiveDataProvider
 		 */
-		protected function setQuery(array $conditions = [])
+		public function searchLeads(array $conditions = [])
 		{
-			$this->checkAcess();
 
-			$conditions['user_id'] = $this->user_id;
+			if( !empty($this->user_id) ) {
+				$conditions['user_id'] = $this->user_id;
+			}
 
 			if( !empty($this->site_id) ) {
 				$conditions['site_id'] = $this->site_id;
 			}
 
-			return $this->find()->where($conditions);
+			$query = self::find()->where($conditions);
+
+			$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+			]);
+
+			return $dataProvider;
 		}
 
 		/**
-		 * Проверяем доступ к классу перед сохранением
-		 * @return bool
-		 * @throws InvalidConfigException
+		 * Получает общее число лидов
+		 * @param $user_id
+		 * @param $site_id
+		 * @return int|null
 		 */
-		public function beforeSave()
+		public function getCountLeads()
 		{
-			$this->checkAcess();
+			$data_provider = $this->searchLeads();
 
-			return true;
+			return $data_provider->getTotalCount();
 		}
+
+		/**
+		 * Сохраняет лид в базу данных
+		 * @param bool $validate
+		 * @param object $model \yii\db\ActiveRecord
+		 * @return bool|int|null
+		 */
+		public function leadSave($validate = false)
+		{
+			if( $validate && !$this->validate() ) {
+				return false;
+			}
+
+			if( empty($this->display_name) ) {
+				if( !empty($this->first_name) && !empty($this->last_name) ) {
+					$this->display_name = $this->first_name . ' ' . $this->last_name;
+				} elseif( !empty($this->first_name) ) {
+					$this->display_name = $this->first_name;
+				} elseif( !empty($this->last_name) ) {
+					$this->display_name = $this->last_name;
+				} else {
+					$this->display_name = "";
+				}
+			}
+
+			if( !$this->save() ) {
+				return false;
+			}
+
+			// saving extra fields
+			$fields = [];
+
+			foreach($this->identity_data as $item_name => $item_value) {
+				if( in_array($item_name, ['email', 'first_name', 'last_name', 'display_name']) ) {
+					continue;
+				}
+
+				$fields[trim($item_name, '{}')] = [
+					'value' => $item_value,
+					'custom' => (strpos($item_name, '{') === 0)
+						? 1
+						: 0
+				];
+			}
+
+			if( !empty($fields) ) {
+				$leads_fields_model = new LeadsFields();
+				if( $model = $leads_fields_model->findOne($this->id) ) {
+					$model->fields_value = json_encode($fields);
+				} else {
+					$leads_fields_model->lead_id = $this->id;
+					$leads_fields_model->fields_value = json_encode($fields);
+				}
+
+				if( !$leads_fields_model->save(true) ) {
+					return false;
+				}
+			}
+
+			return $this->id;
+		}
+
+		/**
+		 * @param object $model common\models\Leads
+		 * @param $code
+		 * @return bool
+		 */
+		/*public function setConfirmationCode($model, $code)
+		{
+			if( empty($model) ) {
+				return false;
+			}
+
+			$model->lead_confirmation_code = $code;
+
+			return $model->save(true);
+		}*/
 	}

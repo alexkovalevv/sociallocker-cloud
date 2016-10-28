@@ -6,14 +6,10 @@
 
 	class Module extends \yii\base\Module {
 
-		//public $controllerNamespace = 'common\modules\signin\controllers';
-
-		public $params = [
-			'allow_services' => ['vk', 'twitter', 'linkedin', 'lead', 'subscription']
-		];
-
 		public function init()
 		{
+			$this->params['allow_services'] = ['vk', 'twitter', 'linkedin', 'facebook', 'google'];
+
 			$this->params['handlers_path'] = 'common\modules\signin\handlers';
 
 			$this->params['handlers_options'] = [

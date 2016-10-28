@@ -1,15 +1,17 @@
 <?php
 	namespace common\modules\subscription\common\services\database;
 
-	use Codeception\Lib\Interfaces\ActiveRecord;
-	use common\modules\subscription\common\classes\Subscription;
-	use common\modules\subscription\common\classes\SubscriptionException;
-	use common\modules\subscription\model\LeadForm;
-	use common\modules\subscription\common\models\Leads;
-	use League\Flysystem\Exception;
 	use Yii;
+	use yii\base\Model;
+	use yii\db\ActiveRecord;
 	use yii\helpers\ArrayHelper;
 	use yii\helpers\Url;
+
+	use common\modules\subscription\common\classes\Subscription;
+	use common\modules\subscription\common\classes\SubscriptionException;
+	use common\modules\subscription\common\models\Leads;
+	use common\modules\subscription\frontend\models\LeadCorrector;
+	use common\modules\subscription\frontend\models\LeadsRecord;
 
 	class DatabaseSubscriptionService extends Subscription {
 
@@ -46,37 +48,31 @@
 				'verified' => $verified
 			];
 
-			//$lead = OPanda_Leads::getByEmail($email);
+			$user_id = ArrayHelper::getValue($context_data, 'user_id');
 
-			$leads_model = Leads::create();
-			$lead = $leads_model->getByEmail($email);
+			$leads_model = LeadsRecord::user($user_id)->modelCreate();
+			$lead = $leads_model->getLeadByEmail($email);
 
-			// already exists
+			// если лид уже существует
 			if( !empty($lead) ) {
-
-				if( $lead->lead_subscription_confirmed ) {
+				if( $lead->subscription_confirmed === Leads::SUBSCRIPTION_CONFIRMED ) {
 					return ['status' => 'subscribed'];
 				}
 
 				$lead->temp = $temp;
-
-				$this->sendConfirmation($lead, $context_data);
+				$this->sendConfirmation($lead);
 
 				return ['status' => 'pending'];
 			}
 
-			$lead_form = new LeadForm();
+			// создаем форматируем данные лида перед сохранением
+			$lead_form = new LeadCorrector();
 
 			$lead_form->identity_data = $context_data;
-			$lead_form->context_data = $context_data;
-			$lead_form->double_optin = $double_optin;
+			$lead_form->context_data = $identity_data;
 
-			if( $lead_form->extractData(true) ) {
-				throw new SubscriptionException('Ошибка при валидации данных модели');
-			}
-
-			//создать лид
-			$this->sendConfirmation($lead_form, $context_data);
+			//создать лид и выслать подтверждение
+			$this->sendConfirmation($lead_form);
 
 			return ['status' => 'pending'];
 		}
@@ -86,7 +82,23 @@
 		 */
 		public function check($list_id, $identity_data, $context_data)
 		{
-			return ['status' => 'subscribed'];
+			$email = ArrayHelper::getValue($identity_data, 'email');
+
+			if( empty($email) ) {
+				throw new SubscriptionException('Email адрес не существует.');
+			}
+
+			$user_id = ArrayHelper::getValue($context_data, 'user_id');
+
+			$lead = LeadsRecord::user($user_id)->getLeadByEmail($email);
+
+			if( !empty($lead) ) {
+				if( $lead->subscription_confirmed === Leads::SUBSCRIPTION_CONFIRMED ) {
+					return ['status' => 'subscribed'];
+				}
+			}
+
+			return ['status' => 'pending'];
 		}
 
 		/**
@@ -94,52 +106,50 @@
 		 * @param $context_data
 		 * @throws SubscriptionException
 		 */
-		public function sendConfirmation(ActiveRecord $lead, $context_data)
+		public function sendConfirmation(Model $lead)
 		{
 
-			if( empty($context_data['locker_id']) ) {
-				throw new SubscriptionException('Invalid request. Please contact the OnePress support.');
+			$code = $lead->confirmation_code;
+
+			if( empty($code) ) {
+				$code = Yii::$app->getSecurity()->generateRandomString(32);
+				$lead->confirmation_code = $code;
 			}
 
-			$locker_id = (int)$context_data['locker_id'];
+			$email_body = $this->settings['service_confirm_email_body'];
 
-			$reply_to_email = $this->service_settings['service_sender_email'];
-			$reply_to_name = $this->service_settings['service_sender_name'];
-			$email_subject = $this->service_settings['service_confirm_email_subject'];
-			$email_body = $this->service_settings['service_confirm_email_body'];
+			$link = $this->getConfirmationLink($lead, $code);
+			$email_body = str_replace('[link]', '<a href="' . $link . '" target="_blank">Подтвердить подписку</a>', $email_body);
 
-			$link = $this->getConfirmationLink($lead, $context_data);
-			$email_body = str_replace('[link]', '<a href="' . $link . '" target="_blank">' . $link . '</a>', $email_body);
-
-			Yii::$app->mailer->compose()
+			$mailer = Yii::$app->mailer;
+			$message = $mailer->compose()
 				->setTo($lead->email)
 				->setFrom(Yii::$app->params['robotEmail'])
-				->setReplyTo([$reply_to_email => $reply_to_name])
-				->setSubject($email_subject)
-				->setTextBody($email_body)
-				->send();
+				->setReplyTo([$this->settings['service_sender_email'] => $this->settings['service_sender_name']])
+				->setSubject($this->settings['service_confirm_email_subject'])
+				->setHtmlBody($email_body);
+
+			if( !$message->send() ) {
+				throw new SubscriptionException('Не удалось отправить письмо подтверждения из-за неизвестной ошибки.');
+			}
 
 			if( !$lead->save(true) ) {
+				$errors = $lead->getErrors();
 				throw new SubscriptionException('Не удалось сохранить лид из-за ошибки.');
 			}
 		}
 
-		public function getConfirmationLink($lead)
+		public function getConfirmationLink(Model $lead, $code)
 		{
 			$url = Yii::$app->getModule('subscription')->params['confirmation_url'];
-			$code = $lead->confirmation_code;
-
-			if( empty($code) ) {
-				$code = Yii::$app->getSecurity()->generateRandomString();
-				$lead->confirmation_code = $code;
-			}
 
 			return Url::to([
 				$url,
 				'confirm' => 1,
-				'email' => urlencode($lead->lead_email),
+				'locker_id' => $lead->locker_id,
+				'email' => urlencode($lead->email),
 				'confirmation_code' => $code
-			]);
+			], true);
 		}
 
 		/**
