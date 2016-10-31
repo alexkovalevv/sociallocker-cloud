@@ -47,7 +47,7 @@
 					? : Yii::$app->cache->get($cacheKey);
 				if( $value === false ) {
 					if( $model = Lockers::findOne($id) ) {
-						foreach(json_decode($model->options) as $name => $val) {
+						foreach(json_decode($model->options, true) as $name => $val) {
 							$this->values[$id . $name] = $val;
 							Yii::$app->cache->set($this->getCacheKey($id . $name), $val, $cachingDuration === false
 								? $this->cachingDuration
@@ -63,7 +63,7 @@
 				}
 			} else {
 				if( $model = Lockers::findOne($id) ) {
-					$model_value = json_decode($model->options);
+					$model_value = json_decode($model->options, true);
 					$value = isset($model_value[$key])
 						? $model_value[$key]
 						: $default;

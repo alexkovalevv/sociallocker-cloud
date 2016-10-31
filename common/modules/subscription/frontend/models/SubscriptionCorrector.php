@@ -52,6 +52,7 @@
 						'context_data',
 						'identity_data',
 						'list_id',
+						'service',
 						'double_optin',
 						'locker_id',
 						'email'
@@ -136,26 +137,19 @@
 			}
 		}
 
-		public function setService($value)
+		public function getService_name()
 		{
-			if( empty($value) || !is_string($value) ) {
-				return;
+			if( empty($this->service) || !is_string($this->service) ) {
+				return null;
 			}
 
 			$service_name = Yii::$app->subscription->getCurrentServiceName($this->user_id);
 
-			if( empty($service_name) || $value !== $service_name ) {
+			if( empty($service_name) || $this->service !== $service_name ) {
 				throw new InvalidConfigException('Не установлен сервис подписки {' . $service_name . '}');
 			}
 
-			$this->_temp['service'] = $value;
-		}
-
-		public function getService()
-		{
-			return isset($this->_temp['service'])
-				? $this->_temp['service']
-				: null;
+			return $this->service;
 		}
 
 		public function getLocker_id()
@@ -234,18 +228,18 @@
 					}
 				}
 
+				$service = Yii::$app->subscription->getService($this->user_id, $this->service_name);
+
 				$subscription_tools = new SubscriptionTools();
-				$identity_data = $subscription_tools->prepareDataToSave($this->service, $this->locker_id, $this->identity_data);
-				$service_ready_data = $subscription_tools->mapToServiceIds($this->service, $this->locker_id, $identity_data);
+				$identity_data = $subscription_tools->prepareDataToSave($service, $this->locker_id, $this->identity_data);
+				$service_ready_data = $subscription_tools->mapToServiceIds($service, $this->locker_id, $identity_data);
 				//$identity_data = $subscription_tools->mapToCustomLabels($this->service, $this->locker_id, $identity_data);
 
 				$context_data = $this->context_data;
-
+				
 				$context_data['user_id'] = $this->user_id;
 				$context_data['site_id'] = $this->site_id;
 				$context_data['locker_title'] = $this->locker_title;
-
-				$service = Yii::$app->subscription->getService($this->user_id, $this->service);
 
 				// creating subscription service
 
