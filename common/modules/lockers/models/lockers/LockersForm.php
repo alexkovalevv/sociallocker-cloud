@@ -42,7 +42,7 @@
 				return false;
 			}
 
-			$optionFilter = ['title', 'header', 'message', 'type', 'status'];
+			$optionFilter = ['title', 'type', 'status'];
 
 			if( empty($model) ) {
 				$model = new Lockers();
@@ -59,8 +59,6 @@
 			}
 
 			$model->title = $data['title'];
-			$model->header = $data['header'];
-			$model->message = $data['message'];
 			$model->type = $type;
 			$model->status = $data['status'];
 			$model->user_id = Yii::$app->user->getId();

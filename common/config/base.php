@@ -1,6 +1,6 @@
 <?php
 	$config = [
-		'name' => 'Yii2 Starter Kit',
+		'name' => 'Bizpanda 1.0 beta',
 		'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
 		'extensions' => require(__DIR__ . '/../../vendor/yiisoft/extensions.php'),
 		'sourceLanguage' => 'ru-RU',

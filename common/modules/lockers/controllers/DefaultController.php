@@ -6,9 +6,8 @@
 
 	namespace common\modules\lockers\controllers;
 
+	use backend\models\widgetsVisability\EditConditions;
 	use common\modules\lockers\models\lockers\metaboxes\EmailFormSettings;
-	use common\modules\lockers\models\visability\EditConditions;
-	use common\modules\lockers\widgets\conditionEditor\ConditionEditor;
 	use Yii;
 	use yii\helpers\Json;
 	use yii\helpers\Url;
@@ -18,7 +17,6 @@
 	use common\modules\lockers\models\lockers\LockersForm;
 	use common\modules\lockers\models\lockers\Lockers;
 	use common\modules\lockers\models\lockers\search\LockersSearch;
-	use common\modules\lockers\models\settings\Settings;
 
 	use common\modules\lockers\models\lockers\metaboxes\AdvancedMetabox;
 	use common\modules\lockers\models\lockers\metaboxes\BasicMetabox;
@@ -85,9 +83,9 @@
 
 			// Создаем черновик
 			if( $model->saveMultiModel($type, null, true) ) {
-				$locker_id = Yii::$app->db->getLastInsertID();
+				$widget_id = Yii::$app->db->getLastInsertID();
 
-				return $this->redirect(['default/edit', 'type' => $type, 'id' => $locker_id]);
+				return $this->redirect(['default/edit', 'type' => $type, 'id' => $widget_id]);
 			} else {
 				Yii::$app->session->setFlash('alert', [
 					'body' => 'Возникла не известная ошибка при создании замка!',
@@ -115,10 +113,10 @@
 				if( $multi_model->saveMultiModel($type, $lockers_model) ) {
 
 					$visability_model = EditConditions::getModel($id);
-					$redirect_url = ['visability/create', 'locker_id' => $id];
+					$redirect_url = ['/widgets-visability/create', 'widget_type' => $type, 'widget_id' => $id];
 
 					if( !empty($visability_model) ) {
-						$redirect_url = ['visability/edit', 'locker_id' => $id];
+						$redirect_url = ['/widgets-visability/edit', 'widget_type' => $type, 'widget_id' => $id];
 					}
 
 					$this->redirect($redirect_url);

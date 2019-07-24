@@ -69,52 +69,6 @@
 				</div>
 				<div class=" navbar-custom-menu">
 					<ul class="nav navbar-nav">
-						<li id="timeline-notifications" class="notifications-menu">
-							<a href="<?php echo Url::to(['/timeline-event/index']) ?>">
-								<i class="fa fa-bell"></i>
-                                <span class="label label-success">
-                                    <?php echo TimelineEvent::find()->today()->count() ?>
-                                </span>
-							</a>
-						</li>
-						<!-- Notifications: style can be found in dropdown.less -->
-						<li id="log-dropdown" class="dropdown notifications-menu">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-								<i class="fa fa-warning"></i>
-                            <span class="label label-danger">
-                                <?php echo \backend\models\SystemLog::find()->count() ?>
-                            </span>
-							</a>
-							<ul class="dropdown-menu">
-								<li class="header"><?php echo Yii::t('backend', 'You have {num} log items', [
-										'num' => \backend\models\SystemLog::find()->count()
-									]) ?></li>
-								<li>
-									<!-- inner menu: contains the actual data -->
-									<ul class="menu">
-										<?php foreach(\backend\models\SystemLog::find()
-											              ->orderBy(['log_time' => SORT_DESC])
-											              ->limit(5)
-											              ->all() as $logEntry): ?>
-											<li>
-												<a href="<?php echo Yii::$app->urlManager->createUrl([
-													'/log/view',
-													'id' => $logEntry->id
-												]) ?>">
-													<i class="fa fa-warning <?php echo $logEntry->level == \yii\log\Logger::LEVEL_ERROR
-														? 'text-red'
-														: 'text-yellow' ?>"></i>
-													<?php echo $logEntry->category ?>
-												</a>
-											</li>
-										<?php endforeach; ?>
-									</ul>
-								</li>
-								<li class="footer">
-									<?php echo Html::a(Yii::t('backend', 'View all'), ['/log/index']) ?>
-								</li>
-							</ul>
-						</li>
 						<!-- User Account: style can be found in dropdown.less -->
 						<li class="dropdown user user-menu">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -152,9 +106,6 @@
 									</div>
 								</li>
 							</ul>
-						</li>
-						<li>
-							<?php echo Html::a('<i class="fa fa-cogs"></i>', ['/site/settings']) ?>
 						</li>
 					</ul>
 				</div>

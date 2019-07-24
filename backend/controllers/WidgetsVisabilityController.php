@@ -3,16 +3,15 @@
 	 * Контроллер управляет отображением замка на фронтенде пользователей.
 	 * @author Alex Kovalev <alex.kovalevv@gmail.com>
 	 */
-	namespace common\modules\lockers\controllers;
+	namespace backend\controllers;
 
 	use Yii;
 	use yii\web\Controller;
-	use common\modules\lockers\models\visability\EditConditions;
-	use common\modules\lockers\models\lockers\Lockers;
+	use backend\models\widgetsVisability\EditConditions;
 
-	class VisabilityController extends Controller {
+	class WidgetsVisabilityController extends Controller {
 
-		public function actionEdit($locker_id)
+		public function actionEdit($widget_type, $locker_id)
 		{
 
 			$model = new EditConditions();
@@ -37,19 +36,19 @@
 			]);
 		}
 
-		public function actionCreate($locker_id)
+		public function actionCreate($widget_id)
 		{
 			$model = new EditConditions();
 
-			if( empty($locker_id) ) {
+			if( empty($widget_id) ) {
 				return $this->redirect(['index']);
 			}
 
-			$model->locker_id = $locker_id;
+			$model->widget_id = $widget_id;
 
 			// Создаем черновик
 			if( $model->save(true, null, true) ) {
-				return $this->redirect(['visability/edit?locker_id=' . $locker_id]);
+				return $this->redirect(['/widgets-visability/edit?widget_id=' . $widget_id]);
 			} else {
 				Yii::$app->session->setFlash('alert', [
 					'body' => 'Возникла не известная ошибка при создании замка!',

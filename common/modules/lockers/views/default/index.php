@@ -105,8 +105,9 @@
 					}
 
 					return '<a href="' . Url::toRoute([
-						'visability/edit',
-						'locker_id' => $data->id
+						'/widgets-visability/edit',
+						'widget_type' => $data->type,
+						'widget_id' => $data->id
 					]) . '" class="btn btn-default">Настройки отображения</a> ' . $activate_button;
 				}
 			],

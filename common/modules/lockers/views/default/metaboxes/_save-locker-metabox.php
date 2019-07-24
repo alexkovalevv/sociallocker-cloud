@@ -21,13 +21,13 @@
 	<?php
 		if( $fields->model->status == 'public' ) {
 			echo Html::submitButton('Обновить', ['class' => 'btn btn-default']) . " ";
-			echo Html::a('Удалить', ['/lockers/default/delete?id=' . $locker_id], ['class' => 'btn btn-danger']);
+			echo Html::a('Удалить', ['/lockers/default/delete?id=' . $widget_id], ['class' => 'btn btn-danger']);
 		} else {
 			if( $fields->model->status == 'draft' ) {
 				echo Html::submitButton('Активировать', ['class' => 'btn btn-primary locker-public-button']) . " ";
 			} else {
 				if( $fields->model->status == 'trash' ) {
-					echo Html::a('Восстановить', ['/lockers/default/recover?id=' . $locker_id], ['class' => 'btn btn-success']);
+					echo Html::a('Восстановить', ['/lockers/default/recover?id=' . $widget_id], ['class' => 'btn btn-success']);
 				}
 			}
 		}

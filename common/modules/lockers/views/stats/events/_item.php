@@ -16,7 +16,7 @@
     </span>
 
 	<?php
-		$allow_services = Yii::$app->getModule('signin')->params['services'];
+		$allow_services = Yii::$app->getModule('signin')->params['allow_services'];
 
 		$phrase = 'Подписался на лист рассылки "Яблочные пироги"';
 		$display_name = 'Неизвестный';
@@ -30,9 +30,10 @@
 			], $model->service);
 
 			if( !empty($client_info) && isset($client_info['current_conntection']) ) {
-				$share_buttons = Yii::$app->getModule('signin')->params['share_buttons'];
-				$subscribe_buttons = Yii::$app->getModule('signin')->params['subscribe_buttons'];
-				$like_buttons = Yii::$app->getModule('signin')->params['like_buttons'];
+
+				$share_buttons = ['vk-share', 'facebook-share', 'google-share', 'linkedin-share'];
+				$subscribe_buttons = ['vk-subscribe', 'facebook-subscribe', 'youtube-subscribe', 'twitter-follow'];
+				$like_buttons = ['vk-like', 'facebook-like'];
 
 				/*if( in_array($model->channel_name, $share_buttons) ) {
 					$phrase = 'Рассказал друзьям о странице ' . $model->channel_value;

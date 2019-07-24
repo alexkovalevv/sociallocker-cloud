@@ -5,7 +5,7 @@
 	 * @package emaillocker-create
 	 */
 
-	use \common\modules\lockers\widgets\fieldsEditor\FieldsEditor;
+	use backend\widgets\fieldsEditor\FieldsEditor;
 	use yii\helpers\Url;
 
 	/* @var $model common\base\MultiModel */

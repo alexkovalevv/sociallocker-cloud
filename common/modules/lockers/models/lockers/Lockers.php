@@ -6,7 +6,6 @@
 	use Yii;
 	use yii\db\ActiveRecord;
 	use yii\behaviors\TimestampBehavior;
-	use yii\web\NotFoundHttpException;
 
 	/**
 	 * This is the model class for table "lockers".
@@ -29,7 +28,7 @@
 		 */
 		public static function tableName()
 		{
-			return '{{%lockers}}';
+			return '{{%widgets}}';
 		}
 
 		public function behaviors()
@@ -45,8 +44,8 @@
 		public function rules()
 		{
 			return [
-				[['title', 'header', 'message', 'options'], 'required'],
-				[['title', 'header', 'message', 'options', 'status'], 'string'],
+				[['title', 'options'], 'required'],
+				[['title', 'options', 'status'], 'string'],
 			];
 		}
 
@@ -57,8 +56,6 @@
 		{
 			return [
 				'title' => 'Название замка',
-				'header' => 'Заголовок',
-				'message' => 'Описание',
 				'type' => 'Тип',
 				'status' => 'Статус',
 				'created_at' => 'Создан',

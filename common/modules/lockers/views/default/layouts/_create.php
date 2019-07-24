@@ -44,7 +44,7 @@ JS;
 	$output = <<<JS
 		window.onpwgt___options = {};
 		if(!window.bizpanda) window.bizpanda = {};
-		window.lockerId = {$locker_id};
+		window.lockerId = {$widget_id};
 		window.lockerTitle = '{$model->getModel('basic')->title}';
 		window.lockersSettings = {$settings};
 		window.lockerType = '{$type}';

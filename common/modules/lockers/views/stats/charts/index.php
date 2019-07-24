@@ -75,10 +75,10 @@ JS;
 		?>
 
 		<?= DropdownControl::widget([
-			'attribute' => 'locker_id',
+			'attribute' => 'widget_id',
 			'width' => 300,
 			'items' => $lockers_list,
-			'default' => Yii::$app->request->getQueryParam('locker_id', 0)
+			'default' => Yii::$app->request->getQueryParam('widget_id', 0)
 		]); ?>
 	</form>
 </div>
@@ -111,7 +111,7 @@ JS;
 				<div id="onp-sl-date-select">
 					<input type="hidden" name="locker_type"
 					       value="<?= Yii::$app->request->getQueryParam('locker_type') ?>">
-					<input type="hidden" name="locker_id" value="<?= Yii::$app->request->getQueryParam('locker_id') ?>">
+					<input type="hidden" name="locker_id" value="<?= Yii::$app->request->getQueryParam('widget_id') ?>">
 					<input type="hidden" name="screen" value="<?= Yii::$app->request->getQueryParam('screen') ?>">
 					<span class="onp-sl-range-label">Период:</span>
 

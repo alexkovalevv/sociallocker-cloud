@@ -95,13 +95,13 @@
 					return null;
 				}
 
-				$dep->sql = "SELECT MAX(updated_at) FROM lockers WHERE user_id = '{$filters['user_id']}'";
+				$dep->sql = "SELECT MAX(updated_at) FROM widgets WHERE user_id = '{$filters['user_id']}'";
 			} else if( isset($filters['id']) && !empty($filters['id']) ) {
 				$all = false;
 				$counter = false;
-				$dep->sql = "SELECT MAX(updated_at) FROM lockers WHERE id = '{$filters['id']}'";
+				$dep->sql = "SELECT MAX(updated_at) FROM widgets WHERE id = '{$filters['id']}'";
 			} else if( isset($filters['site_id']) && !empty($filters['site_id']) ) {
-				$dep->sql = "SELECT MAX(updated_at) FROM lockers WHERE site_id = '{$filters['site_id']}'";
+				$dep->sql = "SELECT MAX(updated_at) FROM widgets WHERE site_id = '{$filters['site_id']}'";
 			} else {
 				return null;
 			}
